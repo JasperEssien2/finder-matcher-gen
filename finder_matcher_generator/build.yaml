@@ -1,0 +1,8 @@
+builders:
+  finder_matcher_generator:
+    import: "package:finder_matcher_generator/builder.dart"
+    builder_factories: ["generateFinder", "generateMatcher"]
+    build_extenstions: {"{{file}}.dart": ["integration_test/matchers/{{file}}.matcher.dart", "integration_test/finders/{{file}}.finder.dart"]}
+    auto_apply: dependents
+    build_to: "source"
+  

@@ -2,7 +2,10 @@ import 'package:finder_matcher_generator/src/models/class_extract_model.dart';
 import 'package:finder_matcher_generator/src/models/override_method_model.dart';
 import 'package:finder_matcher_generator/src/utils/base_class_code_builder.dart';
 
+/// Builds a Finder class. Extends [ClassCodeBuilder] class
 class FinderClassBuilder extends ClassCodeBuilder {
+
+  ///
   FinderClassBuilder(super.classExtract);
 
   @override
@@ -38,6 +41,8 @@ class FinderClassBuilder extends ClassCodeBuilder {
         ),
       ];
 
+  /// A recursive function that writes the code content of MatchFinder `matches`
+  /// method
   void writeMatchesMethodContent(
     StringBuffer codeBuffer,
     String overridenMethodParamName,
@@ -85,6 +90,7 @@ class FinderClassBuilder extends ClassCodeBuilder {
         classExtract.methods!.length == extracts.length;
   }
 
+  /// Writes the code that validates if widget matches pattern
   String getValidationCodeFromExtract(
     MethodExtract extract, {
     bool first = false,

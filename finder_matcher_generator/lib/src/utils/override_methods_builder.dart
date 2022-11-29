@@ -1,10 +1,13 @@
 import 'package:finder_matcher_generator/src/models/override_method_model.dart';
 
+/// An abstraction responsible for writing methods to override
 abstract class OverrideMethodsBuiilder {
   final _stringBuffer = StringBuffer();
 
+  /// A list of methods information to override
   List<OverrideMethodModel> get methodsToOverride;
 
+  /// Call to write overriden methods in class
   String overrideMethods() {
     for (final element in methodsToOverride) {
       _overrideMethod(element);

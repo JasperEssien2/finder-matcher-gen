@@ -1,11 +1,14 @@
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/visitor.dart';
 import 'package:finder_matcher_generator/src/models/class_extract_model.dart';
+import 'package:finder_matcher_generator/src/utils/element_kind_checker.dart';
+import 'package:finder_matcher_generator/src/utils/extensions.dart';
 
 /// A visitor that visits widget elements and extracts neccessary widget info
 class ClassVisitor extends SimpleElementVisitor<void> {
   ClassElementExtract _classExtract = ClassElementExtract();
 
+  /// Extracts of this class found in the class element
   ClassElementExtract get classExtract => _classExtract;
 
   @override
@@ -18,26 +21,40 @@ class ClassVisitor extends SimpleElementVisitor<void> {
 
   @override
   void visitFieldElement(FieldElement element) {
-    _classExtract = _classExtract.addFieldExtract(
-      fieldExtract: FieldExtract(
-        name: element.name,
-        type: element.type,
-      ),
-    );
+    if (element.hasMatchFieldAnnotation) {
+      ///Should throw an error when this field element does not conform
+      ///to this package standard
+      checkBadTypeByFieldElement(element);
+
+      _classExtract = _classExtract.addFieldOrMethodExtract(
+        extract: FieldMethodExtract(
+          name: element.name,
+          type: element.type,
+          isMethod: false,
+        ),
+      );
+    }
   }
 
   @override
   void visitMethodElement(MethodElement element) {
-    assert(element.isPublic, 'Method must be public');
+    if (element.hasMatchFieldAnnotation) {
+      ///Should throw an error when this method element does not conform
+      ///to this package standard
+      checkBadTypeByMethodElement(element);
 
-    assert(!element.returnType.isVoid, 'Return type must not be void');
+      assert(element.isPublic, 'Method must be public');
 
-    _classExtract = _classExtract.addMethodExtract(
-      methodExtract: MethodExtract(
-        name: element.name,
-        type: element.type.returnType,
-        parameters: element.parameters,
-      ),
-    );
+      assert(!element.returnType.isVoid, 'Return type must not be void');
+
+      _classExtract = _classExtract.addFieldOrMethodExtract(
+        extract: FieldMethodExtract(
+          name: element.name,
+          type: element.type.returnType,
+          parameters: element.parameters,
+          isMethod: true,
+        ),
+      );
+    }
   }
 }

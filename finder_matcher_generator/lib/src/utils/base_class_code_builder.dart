@@ -3,7 +3,7 @@ import 'package:finder_matcher_generator/src/models/class_extract_model.dart';
 import 'package:finder_matcher_generator/src/utils/override_methods_builder.dart';
 
 /// The base class for class generator
-abstract class ClassCodeBuilder extends OverrideMethodsBuiilder {
+abstract class ClassCodeBuilder with OverrideMethodsBuiilder {
   /// Pass in class element extract model
   ClassCodeBuilder(this.classExtract);
 
@@ -13,19 +13,23 @@ abstract class ClassCodeBuilder extends OverrideMethodsBuiilder {
   final StringBuffer _stringBuffer = StringBuffer();
 
   /// A string buffer containing the written code
+  @override
   StringBuffer get stringBuffer => _stringBuffer;
 
-  /// The name to attach to existing class name, e.g ClassMatchFinder 
+  /// The name to attach to existing class name, e.g ClassMatchFinder
   /// where MatchFinder is the suffix
   String get suffix;
 
-  /// Handles writing import statement to the generated file
-  void writeImport() {
-    _stringBuffer.writeln('import ${classExtract.classUri!.toString()};\n\n');
-  }
+  /// Indicates if this class should be marked const or not
+  bool get isClassConst => false;
 
   /// Handles writing class header and opening a class curly brace
   void writeClassHeader() {
+    if (classExtract.className == null) {
+      //TODO: Throw an exception
+
+      return;
+    }
     _stringBuffer.writeln(
       'class ${classExtract.className!}$suffix extends $suffix {',
     );
@@ -33,7 +37,15 @@ abstract class ClassCodeBuilder extends OverrideMethodsBuiilder {
 
   /// Handles writing the class constructor
   void writeConstructor() {
-    _stringBuffer.writeln('const ${classExtract.className!}$suffix();');
+    if (classExtract.className == null) {
+      //TODO: Throw an exception
+
+      return;
+    }
+
+    _stringBuffer.writeln(
+      '${isClassConst ? 'const' : ''} ${classExtract.className!}$suffix();\n',
+    );
   }
 
   /// Closes class with its close curly brace

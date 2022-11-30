@@ -2,49 +2,49 @@ import 'package:finder_matcher_generator/src/models/override_method_model.dart';
 
 /// An abstraction responsible for writing methods to override
 abstract class OverrideMethodsBuiilder {
-  final _stringBuffer = StringBuffer();
+  /// String buffer to write class to
+  StringBuffer get stringBuffer;
 
   /// A list of methods information to override
   List<OverrideMethodModel> get methodsToOverride;
 
   /// Call to write overriden methods in class
-  String overrideMethods() {
+  void overrideMethods() {
     for (final element in methodsToOverride) {
       _overrideMethod(element);
+      stringBuffer.writeln();
     }
-
-    return _stringBuffer.toString();
   }
 
   void _overrideMethod(
     OverrideMethodModel overrideMethod,
   ) {
-    _stringBuffer.writeln('@override');
+    stringBuffer.writeln('@override');
 
     switch (overrideMethod.methodType) {
       case OverrideMethodType.getter:
-        _stringBuffer.write(
+        stringBuffer.write(
           '${overrideMethod.returnType} get ${overrideMethod.name} => ',
         );
-        overrideMethod.writeMethodCode(_stringBuffer);
+        overrideMethod.writeMethodCode(stringBuffer);
         return;
 
       case OverrideMethodType.method:
-        _stringBuffer
+        stringBuffer
             .writeln('${overrideMethod.returnType} ${overrideMethod.name} (');
 
         final methodTypeList = overrideMethod.paramTypeAndName!.keys;
 
         for (final dataType in methodTypeList) {
-          _stringBuffer
+          stringBuffer
               .write('$dataType ${overrideMethod.paramTypeAndName![dataType]}');
 
           if (dataType == methodTypeList.last) {
-            _stringBuffer.write(') {');
-            overrideMethod.writeMethodCode(_stringBuffer);
-            _stringBuffer.writeln('}');
+            stringBuffer.write(') {');
+            overrideMethod.writeMethodCode(stringBuffer);
+            stringBuffer.writeln('}');
           } else {
-            _stringBuffer.write(', ');
+            stringBuffer.write(', ');
           }
         }
 

@@ -12,6 +12,7 @@ dependencies:
   finder_matcher_gen: 
     path: ../finder_matcher_gen/
   analyzer: 
+  path: ^1.8.2
 
 dev_dependencies:
   build_test:

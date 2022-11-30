@@ -8,51 +8,38 @@ class ClassElementExtract {
     this.className,
     this.classUri,
     this.fields,
-    this.methods,
   });
 
   final String? className;
   final Uri? classUri;
-  final List<FieldExtract>? fields;
-  final List<MethodExtract>? methods;
+
+  final List<FieldMethodExtract>? fields;
 
   ClassElementExtract copyWith({
     String? className,
     Uri? classUri,
-    List<FieldExtract>? fields,
-    List<MethodExtract>? methods,
+    List<FieldMethodExtract>? fields,
   }) {
     return ClassElementExtract(
       className: className ?? this.className,
       classUri: classUri ?? this.classUri,
       fields: fields ?? this.fields,
-      methods: methods ?? this.methods,
     );
   }
 
-  ClassElementExtract addMethodExtract({
-    required MethodExtract methodExtract,
+  ClassElementExtract addFieldOrMethodExtract({
+    required FieldMethodExtract extract,
   }) {
-    final methodsNew = (methods ?? [])..add(methodExtract);
+    final newFields = (fields ?? [])..add(extract);
 
     return copyWith(
-      methods: methods ?? methodsNew,
-    );
-  }
-
-  ClassElementExtract addFieldExtract({
-    required FieldExtract fieldExtract,
-  }) {
-    final fieldsNew = (fields ?? [])..add(fieldExtract);
-
-    return copyWith(
-      fields: fields ?? fieldsNew,
+      fields: fields ?? newFields,
     );
   }
 
   @override
   String toString() {
-    return 'ClassElementExtract(className: $className, classUri: $classUri, fields: $fields, methods: $methods)';
+    return 'ClassElementExtract(className: $className, classUri: $classUri, methods: $fields)';
   }
 }
 
@@ -66,37 +53,32 @@ abstract class NameTypeExtract {
   String toString() => 'NameTypeExtract(name: $name, type: $type)';
 }
 
-class FieldExtract extends NameTypeExtract {
-  FieldExtract({super.name, super.type});
-
-  FieldExtract copyWith({
-    String? name,
-    DartType? type,
-  }) {
-    return FieldExtract(
-      name: name ?? this.name,
-      type: type ?? this.type,
-    );
-  }
-}
-
-class MethodExtract extends NameTypeExtract {
-  MethodExtract({super.name, super.type, this.parameters});
+class FieldMethodExtract extends NameTypeExtract {
+  FieldMethodExtract({
+    super.name,
+    super.type,
+    required this.isMethod,
+    this.parameters,
+  });
 
   final List<ParameterElement>? parameters;
+  final bool isMethod;
 
-  MethodExtract copyWith({
+  FieldMethodExtract copyWith({
     String? name,
     DartType? type,
     List<ParameterElement>? parameters,
+    bool? isMethod,
   }) {
-    return MethodExtract(
+    return FieldMethodExtract(
       name: name ?? this.name,
       type: type ?? this.type,
+      isMethod: isMethod ?? this.isMethod,
       parameters: parameters ?? this.parameters,
     );
   }
 
   @override
-  String toString() => 'MethodExtract(parameters: $parameters)';
+  String toString() =>
+      'FieldMethodExtract(parameters: $parameters, isMethod: $isMethod)';
 }

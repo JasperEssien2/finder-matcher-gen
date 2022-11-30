@@ -4,17 +4,8 @@ import 'package:finder_matcher_generator/src/utils/base_class_code_builder.dart'
 
 /// Builds a Finder class. Extends [ClassCodeBuilder] class
 class FinderClassBuilder extends ClassCodeBuilder {
-
   ///
   FinderClassBuilder(super.classExtract);
-
-  @override
-  void writeImport() {
-    stringBuffer
-      ..writeln("import 'package:flutter/material.dart';")
-      ..writeln("import 'package:flutter_test/flutter_test.dart';");
-    super.writeImport();
-  }
 
   @override
   List<OverrideMethodModel> get methodsToOverride => [
@@ -23,7 +14,7 @@ class FinderClassBuilder extends ClassCodeBuilder {
           returnType: 'String',
           methodType: OverrideMethodType.getter,
           writeMethodCode: (buffer) => buffer.write(
-            'custom widget is ${classExtract.className}',
+            "'Finds ${classExtract.className} widget';\n",
           ),
         ),
         OverrideMethodModel(
@@ -36,7 +27,7 @@ class FinderClassBuilder extends ClassCodeBuilder {
           writeMethodCode: (codeBuffer) => writeMatchesMethodContent(
             codeBuffer,
             'candidiate',
-            classExtract.methods ?? [],
+            classExtract.fields ?? [],
           ),
         ),
       ];
@@ -46,24 +37,26 @@ class FinderClassBuilder extends ClassCodeBuilder {
   void writeMatchesMethodContent(
     StringBuffer codeBuffer,
     String overridenMethodParamName,
-    List<MethodExtract> extracts,
+    List<FieldMethodExtract> extracts,
   ) {
-    final newExtracts = List<MethodExtract>.from(extracts);
+    if (classExtract.fields?.isEmpty ?? true) {
+      codeBuffer.writeln(
+        'return $overridenMethodParamName.widget is ${classExtract.className};',
+      );
+      return;
+    }
+
+    final newExtracts = List<FieldMethodExtract>.from(extracts);
 
     if (newExtracts.isEmpty) {
       codeBuffer
         ..write(';')
         ..writeln('}')
-        ..writeln('return false;')
-        ..writeln('}');
+        ..writeln('return false;');
       return;
-    }
-
-    if (classExtract.methods?.isEmpty ?? true) {
-      codeBuffer.writeln(
-        'return $overridenMethodParamName.widget is ${classExtract.className}',
-      );
     } else if (_isFirstCheckWrite(extracts)) {
+      final methodExtract = newExtracts.removeAt(0);
+
       codeBuffer
         ..writeln(
           'if ($overridenMethodParamName.widget is ${classExtract.className}) {',
@@ -71,7 +64,7 @@ class FinderClassBuilder extends ClassCodeBuilder {
         ..writeln(
           'final widget = $overridenMethodParamName.widget as ${classExtract.className};',
         )
-        ..writeln(getValidationCodeFromExtract(extracts.first, first: true));
+        ..writeln(getValidationCodeFromExtract(methodExtract, first: true));
     } else {
       final methodExtract = newExtracts.removeAt(0);
       codeBuffer.write(getValidationCodeFromExtract(methodExtract));
@@ -85,14 +78,14 @@ class FinderClassBuilder extends ClassCodeBuilder {
     );
   }
 
-  bool _isFirstCheckWrite(List<MethodExtract> extracts) {
-    return classExtract.methods!.isNotEmpty &&
-        classExtract.methods!.length == extracts.length;
+  bool _isFirstCheckWrite(List<FieldMethodExtract> extracts) {
+    return classExtract.fields!.isNotEmpty &&
+        classExtract.fields!.length == extracts.length;
   }
 
   /// Writes the code that validates if widget matches pattern
   String getValidationCodeFromExtract(
-    MethodExtract extract, {
+    FieldMethodExtract extract, {
     bool first = false,
   }) {
     final validateCodeBuffer = StringBuffer();
@@ -114,20 +107,39 @@ class FinderClassBuilder extends ClassCodeBuilder {
   }
 
   void _codeFromDartType(
-    MethodExtract extract,
+    FieldMethodExtract extract,
     StringBuffer validateCodeBuffer, {
     bool appendAnd = true,
   }) {
     if (appendAnd) {
       validateCodeBuffer.write('&& ');
     }
+
+    var equals = '';
+    //TODO: HANDLE OTHER TYPES
     if (extract.type!.isDartCoreBool) {
-      validateCodeBuffer.write('widget.${extract.name}');
+      //DO nothing
     } else if (extract.type!.isDartCoreNum) {
-      validateCodeBuffer.write('widget.${extract.name} == 0');
+      equals = '== 0';
     } else if (extract.type!.isDartCoreString) {
-      validateCodeBuffer.write("widget.${extract.name} == '");
+      equals = "== ''";
     }
+
+    _writeValidation(
+      validateCodeBuffer: validateCodeBuffer,
+      extract: extract,
+      equals: equals,
+    );
+  }
+
+  void _writeValidation({
+    required StringBuffer validateCodeBuffer,
+    required FieldMethodExtract extract,
+    required String equals,
+  }) {
+    validateCodeBuffer.write(
+      'widget.${extract.name}${extract.isMethod ? '()' : ''} $equals',
+    );
   }
 
   @override

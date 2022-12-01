@@ -4,7 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 @Match(
-    matchers: [MyHomePage, MyApp], finders: [MyHomePage, MyApp])
+  matchers: [
+    MatchWidget(MyHomePage, MatchSpecification.matchesAtleastOneWidget),
+    MatchWidget(MyApp, MatchSpecification.matchesNoWidget),
+  ],
+  finders: [MyHomePage, MyApp],
+)
 void main() {
   testWidgets('Counter increments smoke test', (WidgetTester tester) async {
     // Build our app and trigger a frame.

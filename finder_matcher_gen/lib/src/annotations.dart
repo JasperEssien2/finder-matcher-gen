@@ -8,8 +8,21 @@ class Match {
   });
 
   /// Control
-  final List<Type> matchers;
+  final List<MatchWidget> matchers;
   final List<Type> finders;
+}
+
+class MatchWidget {
+  const MatchWidget(this.type, this.specification);
+
+  final Type type;
+  final MatchSpecification specification;
+}
+
+enum MatchSpecification {
+  matchesNoWidget,
+  matchesAtleastOneWidget,
+  matchesNWidgets,
 }
 
 class MatchField {

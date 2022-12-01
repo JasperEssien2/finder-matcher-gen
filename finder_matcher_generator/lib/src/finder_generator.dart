@@ -89,8 +89,11 @@ class FinderGenerator extends GeneratorForAnnotation<Match> {
         ..writeln("import 'package:flutter_test/flutter_test.dart';");
     }
     if (classUri == null) return;
+    final uriImport = "import '${classUri.toString()}';";
 
-    _importsStringBuffer.writeln("import '${classUri.toString()}';\n\n");
+    if (!_importsStringBuffer.toString().split('\n').contains(uriImport)) {
+      _importsStringBuffer.writeln('$uriImport\n\n');
+    }
   }
 
   void writeFinderClassToBuffer(ClassElementExtract extract) {

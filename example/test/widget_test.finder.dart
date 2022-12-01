@@ -1,12 +1,12 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-import 'package:example/main.dart';
 // **************************************************************************
 // FinderGenerator
 // **************************************************************************
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:example/main.dart';
 
 class MyHomePageMatchFinder extends MatchFinder {
   MyHomePageMatchFinder();

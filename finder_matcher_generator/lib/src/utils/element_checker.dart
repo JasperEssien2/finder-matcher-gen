@@ -25,7 +25,7 @@ void checkBadTypeByClassElement(
 
   if (!hasWidgetSuperType) {
     throwException(
-      'Unsupported class: Finders or Matchers can only be generated for widgets',
+      '''Unsupported class: Finders or Matchers can only be generated for widgets''',
       element: element,
     );
   }
@@ -89,7 +89,7 @@ void checkAnnotationsKind(Element element) {
 
   if (_unsupportedAnnotationKind(kind)) {
     throwException(
-      'Unsupported entity annotated: Apply annotations to Fields, Methods, or Getters only',
+      '''Unsupported entity annotated: Apply annotations to Fields, Methods, or Getters only''',
       element: element,
     );
   }

@@ -117,8 +117,8 @@ abstract class BaseAnnotaionGenerator extends GeneratorForAnnotation<Match> {
 
   /// Implement this method to write class code to the [StringBuffer]
   ///
-  /// The [ClassElementExtract] contains all the class information extracted from
-  /// [ClassElement].
+  /// The [ClassElementExtract] contains all the class information extracted
+  ///  from [ClassElement].
   ///
   /// The [StringBuffer] is where you write the code to
   void writeClassToBuffer(

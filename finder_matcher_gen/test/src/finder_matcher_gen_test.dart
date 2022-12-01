@@ -5,7 +5,6 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import 'package:finder_matcher_gen/finder_matcher_gen.dart';
 // ignore_for_file: prefer_const_constructors
 import 'package:test/test.dart';
 

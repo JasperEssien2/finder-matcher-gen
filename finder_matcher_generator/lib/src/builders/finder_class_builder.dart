@@ -60,10 +60,10 @@ class FinderClassBuilder extends ClassCodeBuilder {
 
       codeBuffer
         ..writeln(
-          'if ($overridenMethodParamName.widget is ${classExtract.className}) {',
+          '''if ($overridenMethodParamName.widget is ${classExtract.className}) {''',
         )
         ..writeln(
-          'final widget = $overridenMethodParamName.widget as ${classExtract.className};',
+          '''final widget = $overridenMethodParamName.widget as ${classExtract.className};''',
         )
         ..writeln(getValidationCodeFromExtract(methodExtract, first: true));
     } else {
@@ -83,7 +83,6 @@ class FinderClassBuilder extends ClassCodeBuilder {
     return classExtract.fields!.isNotEmpty &&
         classExtract.fields!.length == extracts.length;
   }
-
 
   @override
   String get suffix => 'MatchFinder';

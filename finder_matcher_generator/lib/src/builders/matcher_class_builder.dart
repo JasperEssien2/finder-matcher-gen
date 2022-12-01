@@ -4,7 +4,7 @@ import 'package:finder_matcher_generator/src/models/class_extract_model.dart';
 import 'package:finder_matcher_generator/src/models/override_method_model.dart';
 import 'package:finder_matcher_generator/src/utils/validation_code_helper.dart';
 
-///
+///Builds Matcher classes string code for widgets
 class WidgetMatcherClassBuilder extends ClassCodeBuilder {
   /// Accepts a [ClassElementExtract] and [MatchSpecification]
   /// The [MatchSpecification] an enum specifies the count the generated Matcher
@@ -127,13 +127,13 @@ abstract class BaseMatcherMethodsCodeBuilder {
 /// Builds matcher method that ensures only one widget is matched
 class MatchOneWidgetMethodsBuilder extends BaseMatcherMethodsCodeBuilder {
   /// Mandatory [ClassElementExtract]
-  MatchOneWidgetMethodsBuilder(this.extract);
+  MatchOneWidgetMethodsBuilder(ClassElementExtract extract)
+      : _extract = extract;
 
-  /// The class element extract
-  final ClassElementExtract extract;
+  final ClassElementExtract _extract;
 
   @override
-  String get className => extract.className!;
+  String get className => _extract.className!;
 
   @override
   String get expectCount => 'one';
@@ -148,7 +148,7 @@ class MatchOneWidgetMethodsBuilder extends BaseMatcherMethodsCodeBuilder {
       ..writeln("matchState['custom.count'] = elements.length;")
       ..writeln('return false;')
       ..writeln(
-        '''} else if(elements.count == 1 && elements.first.widget is ${extract.className}) {''',
+        '''} else if(elements.count == 1 && elements.first.widget is ${_extract.className}) {''',
       )
       ..writeln(_writeValidationCode())
       ..writeln('}')
@@ -161,7 +161,7 @@ class MatchOneWidgetMethodsBuilder extends BaseMatcherMethodsCodeBuilder {
   String _writeValidationCode() {
     final buffer = StringBuffer();
 
-    final fields = extract.fields;
+    final fields = _extract.fields;
 
     if (fields?.isEmpty ?? true) {
       buffer.writeln('return true;');
@@ -181,17 +181,17 @@ class MatchOneWidgetMethodsBuilder extends BaseMatcherMethodsCodeBuilder {
     stringBuffer
       ..writeln("if(matchState['custom.count'] == 0) {")
       ..writeln(
-        """mismatchDescription.add('zero ${extract.className} widgets found but one was expected');""",
+        """mismatchDescription.add('zero ${_extract.className} widgets found but one was expected');""",
       )
       ..writeln("if(matchState['custom.count'] > 1) {")
       ..writeln(
-        """mismatchDescription.add('found multiple ${extract.className} widgets but one was expected');""",
+        """mismatchDescription.add('found multiple ${_extract.className} widgets but one was expected');""",
       )
       ..writeln('}')
       ..writeln("final finder = matchState['custom.finder'];")
       ..writeln('final widget = finder.evaluate().first.widget;')
       ..writeAll(
-        extract.fields?.map(
+        _extract.fields?.map(
               (e) {
                 final isBool = e.type!.isDartCoreBool;
                 final defaultValue = getDefaultValueForDartType(e.type!);
@@ -219,13 +219,13 @@ class MatchOneWidgetMethodsBuilder extends BaseMatcherMethodsCodeBuilder {
 class MatchAtleastOneWidgetMethodsBuilder
     extends BaseMatcherMethodsCodeBuilder {
   /// Mandatory [ClassElementExtract]
-  MatchAtleastOneWidgetMethodsBuilder(this.extract);
+  MatchAtleastOneWidgetMethodsBuilder(ClassElementExtract extract)
+      : _extract = extract;
 
-  /// The class element extract
-  final ClassElementExtract extract;
+  final ClassElementExtract _extract;
 
   @override
-  String get className => extract.className!;
+  String get className => _extract.className!;
 
   @override
   String get expectCount => 'atleast one';
@@ -239,7 +239,7 @@ class MatchAtleastOneWidgetMethodsBuilder
       ..writeln('final elements = finder.evaluate();')
       ..writeln('for(final element in elements) {')
       ..writeln(
-        '''if (element.widget is ${extract.className}) {''',
+        '''if (element.widget is ${_extract.className}) {''',
       )
       ..writeln('final widget = element.widget;')
       ..writeln(_writeValidationCode())
@@ -255,7 +255,7 @@ class MatchAtleastOneWidgetMethodsBuilder
   String _writeValidationCode() {
     final buffer = StringBuffer();
 
-    final fields = extract.fields;
+    final fields = _extract.fields;
 
     if (fields?.isEmpty ?? true) {
       buffer.writeln('matchedCount++;');
@@ -286,13 +286,13 @@ class MatchAtleastOneWidgetMethodsBuilder
     stringBuffer
       ..writeln("if(matchState['custom.matchedCount'] <= 0) {")
       ..writeln(
-        """mismatchDescription.add('found zero ${extract.className} widgets but at least one was expected');""",
+        """mismatchDescription.add('found zero ${_extract.className} widgets but at least one was expected');""",
       )
       ..writeln('}')
       ..writeln("final finder = matchState['custom.finder'];")
       ..writeln('final widget = finder.evaluate().first.widget;')
       ..writeAll(
-        extract.fields?.map(
+        _extract.fields?.map(
               (e) {
                 final isBool = e.type!.isDartCoreBool;
                 final defaultValue = getDefaultValueForDartType(e.type!);

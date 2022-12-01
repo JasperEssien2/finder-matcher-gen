@@ -39,7 +39,7 @@ class ClassElementExtract {
 
   @override
   String toString() {
-    return 'ClassElementExtract(className: $className, classUri: $classUri, methods: $fields)';
+    return '''ClassElementExtract(className: $className, classUri: $classUri, methods: $fields)''';
   }
 }
 

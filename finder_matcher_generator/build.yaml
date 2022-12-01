@@ -13,7 +13,7 @@ builders:
   # target: "finder_matcher_generator"
   finder_matcher_generator:
     import: "package:finder_matcher_generator/builder.dart"
-    builder_factories: ["generateFinder"]
+    builder_factories: ["generateFinder", "generateMatcher"]
     # builder_factories: ["generateFinder", "generateMatcher"]
     # build_extensions: { ".dart": [".g.dart"] }
     build_extensions: {"{{file}.dart": ["finders/{{file}}.finder.dart"]}

@@ -4,7 +4,8 @@ import 'package:finder_matcher_generator/src/utils/base_class_code_builder.dart'
 
 /// Builds a Finder class. Extends [ClassCodeBuilder] class
 class FinderClassBuilder extends ClassCodeBuilder {
-  ///
+  /// [FinderClassBuilder] uses the information gotten from
+  /// [ClassElementExtract] to write the Finder class
   FinderClassBuilder(super.classExtract);
 
   @override
@@ -116,12 +117,20 @@ class FinderClassBuilder extends ClassCodeBuilder {
     }
 
     var equals = '';
+    final extractType = extract.type!;
+
     //TODO: HANDLE OTHER TYPES
     if (extract.type!.isDartCoreBool) {
       //DO nothing
-    } else if (extract.type!.isDartCoreNum) {
+    } else if (extractType.isDartCoreNum || extractType.isDartCoreInt) {
       equals = '== 0';
-    } else if (extract.type!.isDartCoreString) {
+    } else if (extractType.isDartCoreDouble) {
+      equals = '== 0.0';
+    } else if (extractType.isDartCoreList) {
+      equals = '== []';
+    } else if (extractType.isDartCoreMap) {
+      equals = '== {}';
+    } else if (extractType.isDartCoreString) {
       equals = "== ''";
     }
 

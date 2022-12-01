@@ -7,14 +7,14 @@ import 'package:build/build.dart';
 import 'package:finder_matcher_gen/finder_matcher_gen.dart';
 import 'package:finder_matcher_generator/src/class_visitor.dart';
 import 'package:finder_matcher_generator/src/models/class_extract_model.dart';
-import 'package:finder_matcher_generator/src/utils/element_kind_checker.dart';
+import 'package:finder_matcher_generator/src/utils/element_checker.dart';
 import 'package:finder_matcher_generator/src/utils/extensions.dart';
 import 'package:finder_matcher_generator/src/utils/finder_class_builder.dart';
 import 'package:source_gen/source_gen.dart';
 
 class FinderGenerator extends GeneratorForAnnotation<Match> {
-  final importsStringBuffer = StringBuffer();
-  final classesStringBuffer = StringBuffer();
+  final _importsStringBuffer = StringBuffer();
+  final _classesStringBuffer = StringBuffer();
 
   @override
   FutureOr<String> generateForAnnotatedElement(
@@ -27,30 +27,29 @@ class FinderGenerator extends GeneratorForAnnotation<Match> {
     for (final matcher in matchersObjects) {
       final className = matcher.toTypeValue()!.dartTypeStr;
 
-      final classLibraryElements =
-          element.library!.importedLibraries.map((e) => e.getClass(className));
+      final classLibraryElements = element.library!.importedLibraries
+          .map((e) => e.getClass(className))
+          .where((element) => element != null);
 
-      ///Idealy you should only get one class element (widget) matching this class
-      ///name from any of the imported library
+      ///Idealy you should only get one class element (widget) matching this
+      ///class name from any of the imported library
       if (classLibraryElements.isNotEmpty) {
         if (classLibraryElements.length > 1) {
-          //TODO: Throw an error you should not have exactly the same class name
-          //in different .dart files
+          throwException(
+            'Found multiple classes with name $className. '
+            'Consider changing the name of one class to avoid name conflict',
+            element: element,
+          );
         }
         final classElement = classLibraryElements.first;
 
-        print(
-          'CLASS SUPER TYPES ================ ${classElement?.allSupertypes}',
-        );
-
-        //TODO: Should Throw an error, cannot generate for private class
         checkBadTypeByClassElement(classElement!);
 
         final elements = List<Element>.from([])
           ..addAll(classElement.fields)
           ..addAll(classElement.methods);
 
-        if (elements.hasMatchFieldAnnotation) {
+        if (elements.hasAtleastOneMatchFieldAnnotation) {
           final classVisitor = ClassVisitor();
 
           classElement.visitChildren(classVisitor);
@@ -76,22 +75,22 @@ class FinderGenerator extends GeneratorForAnnotation<Match> {
     //     .toString();
 
     return '''
-      ${importsStringBuffer
+      ${_importsStringBuffer
           ..write('\n')
-          ..writeln(classesStringBuffer.toString())}
+          ..writeln(_classesStringBuffer.toString())}
   ''';
   }
 
   void writeImports({Uri? classUri}) {
-    if (importsStringBuffer.isEmpty) {
+    if (_importsStringBuffer.isEmpty) {
       /// Write the neccessary imports first
-      importsStringBuffer
+      _importsStringBuffer
         ..writeln("import 'package:flutter/material.dart';")
         ..writeln("import 'package:flutter_test/flutter_test.dart';");
     }
     if (classUri == null) return;
 
-    importsStringBuffer.writeln("import '${classUri.toString()}';\n\n");
+    _importsStringBuffer.writeln("import '${classUri.toString()}';\n\n");
   }
 
   void writeFinderClassToBuffer(ClassElementExtract extract) {
@@ -101,7 +100,7 @@ class FinderGenerator extends GeneratorForAnnotation<Match> {
       ..overrideMethods()
       ..closeClass();
 
-    classesStringBuffer
+    _classesStringBuffer
       ..write(finderGenerator.stringBuffer.toString())
       ..writeln('\n\n');
   }

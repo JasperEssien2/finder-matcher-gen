@@ -31,10 +31,16 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
+  const MyHomePage({
+    super.key,
+    required this.title,
+  });
 
   @matchField
   final String title;
+
+  @matchField
+  List<DataRow> incrementCounter() => [];
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
@@ -43,6 +49,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
 
+  @matchField
   void _incrementCounter() {
     setState(() {
       _counter++;

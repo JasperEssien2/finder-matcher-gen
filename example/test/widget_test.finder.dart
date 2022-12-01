@@ -1,14 +1,12 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
+import 'package:example/main.dart';
 // **************************************************************************
 // FinderGenerator
 // **************************************************************************
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:example/main.dart';
-
-import 'package:example/main.dart';
 
 class MyHomePageMatchFinder extends MatchFinder {
   MyHomePageMatchFinder();
@@ -20,7 +18,7 @@ class MyHomePageMatchFinder extends MatchFinder {
   bool matches(Element candidiate) {
     if (candidiate.widget is MyHomePage) {
       final widget = candidiate.widget as MyHomePage;
-      return widget.title == '';
+      return widget.title == '' && widget.incrementCounter() == [];
     }
     return false;
   }

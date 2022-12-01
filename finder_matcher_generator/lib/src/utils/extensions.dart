@@ -1,7 +1,7 @@
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:finder_matcher_gen/finder_matcher_gen.dart';
-import 'package:finder_matcher_generator/src/utils/element_kind_checker.dart';
+import 'package:finder_matcher_generator/src/utils/element_checker.dart';
 import 'package:source_gen/source_gen.dart';
 
 /// An extension to provide additional functionalities for String
@@ -30,13 +30,13 @@ extension ElementExt on Element {
 extension ElementListExt on List<Element> {
   /// Checks all element, Return true if annotated with [MatchField]
   /// otherwise return false
-  bool get hasMatchFieldAnnotation {
+  bool get hasAtleastOneMatchFieldAnnotation {
     for (final element in this) {
-      //Should throw an error if annotated type doesn't
-      //- Return supported type
-      checkBadTypeByElement(element);
-
-      if (element.hasMatchFieldAnnotation) return true;
+      if (element.hasMatchFieldAnnotation) {
+        /// Ensures that annotation kind is supported
+        checkAnnotationsKind(element);
+        return true;
+      }
     }
 
     return false;

@@ -19,9 +19,4 @@ class MatchField {
   final bool initialiseInConstructor;
 }
 
-class MatchMethod {
-  const MatchMethod();
-}
-
 const matchField = MatchField();
-const matchMethod = MatchMethod();

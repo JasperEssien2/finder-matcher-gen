@@ -20,6 +20,7 @@ class MatchWidget {
 }
 
 enum MatchSpecification {
+  matchesOneWidget,
   matchesNoWidget,
   matchesAtleastOneWidget,
   matchesNWidgets,

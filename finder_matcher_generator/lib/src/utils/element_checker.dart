@@ -95,7 +95,7 @@ void checkAnnotationsKind(Element element) {
   }
 }
 
-/// A reusuable function to throw exception
+/// A reusuable function that throws an [InvalidGenerationSourceError] exception
 void throwException(String message, {required Element? element}) {
   throw InvalidGenerationSourceError(
     message,

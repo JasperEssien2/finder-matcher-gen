@@ -2,13 +2,13 @@
 
 import 'dart:async';
 
+import 'package:analyzer/dart/constant/value.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:build/build.dart';
 import 'package:finder_matcher_gen/finder_matcher_gen.dart';
 import 'package:finder_matcher_generator/src/class_visitor.dart';
 import 'package:finder_matcher_generator/src/models/class_extract_model.dart';
-import 'package:finder_matcher_generator/src/utils/element_checker.dart';
-import 'package:finder_matcher_generator/src/utils/extensions.dart';
+import 'package:finder_matcher_generator/src/utils/utils_export.dart';
 import 'package:source_gen/source_gen.dart';
 
 /// Extends this class to create a generate a class code that conforms to
@@ -33,7 +33,7 @@ abstract class BaseAnnotaionGenerator extends GeneratorForAnnotation<Match> {
     ConstantReader annotation,
     BuildStep buildStep,
   ) async {
-    final matchersObjects = annotation.read(annotationFieldName).listValue;
+    final matchersObjects = generateFor(annotation);
 
     for (final matcher in matchersObjects) {
       final className = matcher.toTypeValue()!.dartTypeStr;
@@ -97,7 +97,7 @@ abstract class BaseAnnotaionGenerator extends GeneratorForAnnotation<Match> {
   }
 
   /// A getter specifying the annotation field name to generate for
-  String get annotationFieldName;
+  List<DartObject> generateFor(ConstantReader annotation);
 
   /// Responsible for writing the required imports for the generated class
   void writeImports({Uri? classUri}) {

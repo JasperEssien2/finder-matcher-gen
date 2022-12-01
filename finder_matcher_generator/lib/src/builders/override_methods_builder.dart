@@ -21,27 +21,27 @@ abstract class OverrideMethodsBuiilder {
   ) {
     stringBuffer.writeln('@override');
 
-    switch (overrideMethod.methodType) {
-      case OverrideMethodType.getter:
+    switch (overrideMethod.methodCategory) {
+      case MethodCategory.getter:
         stringBuffer.write(
           '${overrideMethod.returnType} get ${overrideMethod.name} => ',
         );
-        overrideMethod.writeMethodCode(stringBuffer);
+        overrideMethod.methodCodeBuilder(stringBuffer);
         return;
 
-      case OverrideMethodType.method:
+      case MethodCategory.method:
         stringBuffer
             .writeln('${overrideMethod.returnType} ${overrideMethod.name} (');
 
-        final methodTypeList = overrideMethod.paramTypeAndName!.keys;
+        final methodParametersTypeList = overrideMethod.paramTypeAndName!.keys;
 
-        for (final dataType in methodTypeList) {
+        for (final dataType in methodParametersTypeList) {
           stringBuffer
               .write('$dataType ${overrideMethod.paramTypeAndName![dataType]}');
 
-          if (dataType == methodTypeList.last) {
+          if (dataType == methodParametersTypeList.last) {
             stringBuffer.write(') {');
-            overrideMethod.writeMethodCode(stringBuffer);
+            overrideMethod.methodCodeBuilder(stringBuffer);
             stringBuffer.writeln('}');
           } else {
             stringBuffer.write(', ');
@@ -49,7 +49,7 @@ abstract class OverrideMethodsBuiilder {
         }
 
         return;
-      case OverrideMethodType.setter:
+      case MethodCategory.setter:
         break;
     }
   }

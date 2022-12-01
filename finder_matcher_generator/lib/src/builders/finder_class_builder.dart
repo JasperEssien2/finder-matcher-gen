@@ -1,6 +1,6 @@
 import 'package:finder_matcher_generator/src/builders/base_class_code_builder.dart';
-import 'package:finder_matcher_generator/src/models/class_extract_model.dart';
-import 'package:finder_matcher_generator/src/models/override_method_model.dart';
+import 'package:finder_matcher_generator/src/models/models_export.dart';
+import 'package:finder_matcher_generator/src/utils/validation_code_helper.dart';
 
 /// Builds a Finder class. Extends [ClassCodeBuilder] class
 class FinderClassBuilder extends ClassCodeBuilder {
@@ -13,8 +13,8 @@ class FinderClassBuilder extends ClassCodeBuilder {
         OverrideMethodModel(
           name: 'description',
           returnType: 'String',
-          methodType: OverrideMethodType.getter,
-          writeMethodCode: (buffer) => buffer.write(
+          methodCategory: MethodCategory.getter,
+          methodCodeBuilder: (buffer) => buffer.write(
             "'Finds ${classExtract.className} widget';\n",
           ),
         ),
@@ -24,8 +24,8 @@ class FinderClassBuilder extends ClassCodeBuilder {
           paramTypeAndName: {
             'Element': 'candidiate',
           },
-          methodType: OverrideMethodType.method,
-          writeMethodCode: (codeBuffer) => writeMatchesMethodContent(
+          methodCategory: MethodCategory.method,
+          methodCodeBuilder: (codeBuffer) => writeMatchesMethodContent(
             codeBuffer,
             'candidiate',
             classExtract.fields ?? [],
@@ -84,72 +84,6 @@ class FinderClassBuilder extends ClassCodeBuilder {
         classExtract.fields!.length == extracts.length;
   }
 
-  /// Writes the code that validates if widget matches pattern
-  String getValidationCodeFromExtract(
-    FieldMethodExtract extract, {
-    bool first = false,
-  }) {
-    final validateCodeBuffer = StringBuffer();
-
-    if (first) {
-      validateCodeBuffer.write(
-        'return ',
-      );
-
-      _codeFromDartType(
-        extract,
-        validateCodeBuffer,
-        appendAnd: false,
-      );
-    } else {
-      _codeFromDartType(extract, validateCodeBuffer);
-    }
-    return validateCodeBuffer.toString();
-  }
-
-  void _codeFromDartType(
-    FieldMethodExtract extract,
-    StringBuffer validateCodeBuffer, {
-    bool appendAnd = true,
-  }) {
-    if (appendAnd) {
-      validateCodeBuffer.write('&& ');
-    }
-
-    var equals = '';
-    final extractType = extract.type!;
-
-    //TODO: HANDLE OTHER TYPES
-    if (extract.type!.isDartCoreBool) {
-      //DO nothing
-    } else if (extractType.isDartCoreNum || extractType.isDartCoreInt) {
-      equals = '== 0';
-    } else if (extractType.isDartCoreDouble) {
-      equals = '== 0.0';
-    } else if (extractType.isDartCoreList) {
-      equals = '== []';
-    } else if (extractType.isDartCoreMap) {
-      equals = '== {}';
-    } else if (extractType.isDartCoreString) {
-      equals = "== ''";
-    }
-
-    _writeValidation(
-      validateCodeBuffer: validateCodeBuffer,
-      extract: extract,
-      equals: equals,
-    );
-  }
-
-  void _writeValidation({
-    required StringBuffer validateCodeBuffer,
-    required FieldMethodExtract extract,
-    required String equals,
-  }) {
-    validateCodeBuffer.write(
-      'widget.${extract.name}${extract.isMethod ? '()' : ''} $equals',
-    );
-  }
 
   @override
   String get suffix => 'MatchFinder';

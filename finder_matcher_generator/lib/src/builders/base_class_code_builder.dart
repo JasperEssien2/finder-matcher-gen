@@ -39,8 +39,7 @@ abstract class ClassCodeBuilder with OverrideMethodsBuiilder {
   /// Handles writing the class constructor
   void writeConstructor() {
     if (classExtract.className == null) {
-      //TODO: Throw an exception
-
+      throwException('Class not found', element: null);
       return;
     }
 
@@ -48,6 +47,9 @@ abstract class ClassCodeBuilder with OverrideMethodsBuiilder {
       '${isClassConst ? 'const' : ''} ${classExtract.className!}$suffix();\n',
     );
   }
+
+  /// Handle writing other methods
+  void writeHelperMethods() {}
 
   /// Closes class with its close curly brace
   void closeClass() {

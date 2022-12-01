@@ -1,6 +1,7 @@
+import 'package:finder_matcher_generator/src/builders/override_methods_builder.dart';
 import 'package:finder_matcher_generator/src/class_visitor.dart';
 import 'package:finder_matcher_generator/src/models/class_extract_model.dart';
-import 'package:finder_matcher_generator/src/utils/override_methods_builder.dart';
+import 'package:finder_matcher_generator/src/utils/element_checker.dart';
 
 /// The base class for class generator
 abstract class ClassCodeBuilder with OverrideMethodsBuiilder {
@@ -26,7 +27,7 @@ abstract class ClassCodeBuilder with OverrideMethodsBuiilder {
   /// Handles writing class header and opening a class curly brace
   void writeClassHeader() {
     if (classExtract.className == null) {
-      //TODO: Throw an exception
+      throwException('Class name cannot be null', element: null);
 
       return;
     }

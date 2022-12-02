@@ -65,12 +65,15 @@ abstract class BaseAnnotaionGenerator extends GeneratorForAnnotation<Match> {
 
           classElement.visitChildren(classVisitor);
 
-          writeImports(classUri: classVisitor.classExtract.classUri);
+          writeImports(
+            _importsStringBuffer,
+            classUri: classVisitor.classExtract.classUri,
+          );
           writeClassToBuffer(classVisitor.classExtract, _classesStringBuffer);
         } else {
           final classUri = classElement.librarySource.uri;
 
-          writeImports(classUri: classUri);
+          writeImports(_importsStringBuffer, classUri: classUri);
           writeClassToBuffer(
             ClassElementExtract(className: className, classUri: classUri),
             _classesStringBuffer,
@@ -100,7 +103,7 @@ abstract class BaseAnnotaionGenerator extends GeneratorForAnnotation<Match> {
   List<DartObject> generateFor(ConstantReader annotation);
 
   /// Responsible for writing the required imports for the generated class
-  void writeImports({Uri? classUri}) {
+  void writeImports(StringBuffer importBuffer, {Uri? classUri}) {
     if (_importsStringBuffer.isEmpty) {
       /// Write the Flutter imports first
       _importsStringBuffer
@@ -110,10 +113,15 @@ abstract class BaseAnnotaionGenerator extends GeneratorForAnnotation<Match> {
     if (classUri == null) return;
     final uriImport = "import '${classUri.toString()}';";
 
-    if (!_importsStringBuffer.toString().split('\n').contains(uriImport)) {
+    if (doesNotContainImport(uriImport)) {
       _importsStringBuffer.writeln('$uriImport\n\n');
     }
   }
+
+  /// Return true if [importToWrite] does not exist in import string buffer
+  /// Returns false otherwise
+  bool doesNotContainImport(String importToWrite) =>
+      !_importsStringBuffer.toString().split('\n').contains(importToWrite);
 
   /// Implement this method to write class code to the [StringBuffer]
   ///

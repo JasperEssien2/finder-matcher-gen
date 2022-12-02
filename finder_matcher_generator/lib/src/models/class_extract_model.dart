@@ -7,39 +7,39 @@ class ClassElementExtract {
   ClassElementExtract({
     this.className,
     this.classUri,
-    this.fields,
+    this.declarations,
   });
 
   final String? className;
   final Uri? classUri;
 
-  final List<FieldMethodExtract>? fields;
+  final List<DeclarationExtract>? declarations;
 
   ClassElementExtract copyWith({
     String? className,
     Uri? classUri,
-    List<FieldMethodExtract>? fields,
+    List<DeclarationExtract>? declarations,
   }) {
     return ClassElementExtract(
       className: className ?? this.className,
       classUri: classUri ?? this.classUri,
-      fields: fields ?? this.fields,
+      declarations: declarations ?? this.declarations,
     );
   }
 
   ClassElementExtract addFieldOrMethodExtract({
-    required FieldMethodExtract extract,
+    required DeclarationExtract extract,
   }) {
-    final newFields = (fields ?? [])..add(extract);
+    final newDeclarations = (declarations ?? [])..add(extract);
 
     return copyWith(
-      fields: fields ?? newFields,
+      declarations: declarations ?? newDeclarations,
     );
   }
 
   @override
   String toString() {
-    return '''ClassElementExtract(className: $className, classUri: $classUri, methods: $fields)''';
+    return '''ClassElementExtract(className: $className, classUri: $classUri, methods: $declarations)''';
   }
 }
 
@@ -53,8 +53,8 @@ abstract class NameTypeExtract {
   String toString() => 'NameTypeExtract(name: $name, type: $type)';
 }
 
-class FieldMethodExtract extends NameTypeExtract {
-  FieldMethodExtract({
+class DeclarationExtract extends NameTypeExtract {
+  DeclarationExtract({
     super.name,
     super.type,
     required this.isMethod,
@@ -64,13 +64,13 @@ class FieldMethodExtract extends NameTypeExtract {
   final List<ParameterElement>? parameters;
   final bool isMethod;
 
-  FieldMethodExtract copyWith({
+  DeclarationExtract copyWith({
     String? name,
     DartType? type,
     List<ParameterElement>? parameters,
     bool? isMethod,
   }) {
-    return FieldMethodExtract(
+    return DeclarationExtract(
       name: name ?? this.name,
       type: type ?? this.type,
       isMethod: isMethod ?? this.isMethod,
@@ -80,5 +80,5 @@ class FieldMethodExtract extends NameTypeExtract {
 
   @override
   String toString() =>
-      'FieldMethodExtract(parameters: $parameters, isMethod: $isMethod)';
+      'DeclarationExtract(parameters: $parameters, isMethod: $isMethod)';
 }

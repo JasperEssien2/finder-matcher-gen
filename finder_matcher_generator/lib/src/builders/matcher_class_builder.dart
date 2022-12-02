@@ -108,7 +108,7 @@ abstract class BaseMatcherMethodsCodeBuilder {
                     frame.package == 'stream_channel' ||
                     frame.package == 'matcher',
                 terse: true)
-            .toString()
+            .toString();
 ''';
 
   /// Responsible for writing describeMismatch() into [StringBuffer]
@@ -117,10 +117,11 @@ abstract class BaseMatcherMethodsCodeBuilder {
       ..writeln("if(matchState['custom.exception'] != null) {")
       ..writeln("mismatchDescription.add('threw')")
       ..writeln(
-        '''mismatchDescription.addDescriptionOf('matchState['custom.exception']')''',
+        '''.addDescriptionOf(matchState['custom.exception'])''',
       )
-      ..writeln('\n')
-      ..writeln("'matchState['custom.stack'].toString();");
+      ..writeln()
+      ..writeln(".add(matchState['custom.stack'].toString());")
+      ..writeln('}');
   }
 }
 
@@ -155,13 +156,14 @@ class MatchOneWidgetMethodsBuilder extends BaseMatcherMethodsCodeBuilder {
       ..writeln('return false;')
       ..writeln('} catch (exception, stack) {')
       ..writeln(exceptionHandlerCode)
-      ..writeln('}');
+      ..writeln('}')
+      ..writeln('return false;');
   }
 
   String _writeValidationCode() {
     final buffer = StringBuffer();
 
-    final fields = _extract.fields;
+    final fields = _extract.declarations;
 
     if (fields?.isEmpty ?? true) {
       buffer.writeln('return true;');
@@ -191,27 +193,11 @@ class MatchOneWidgetMethodsBuilder extends BaseMatcherMethodsCodeBuilder {
       ..writeln("final finder = matchState['custom.finder'];")
       ..writeln('final widget = finder.evaluate().first.widget;')
       ..writeAll(
-        _extract.fields?.map(
-              (e) {
-                final isBool = e.type!.isDartCoreBool;
-                final defaultValue = getDefaultValueForDartType(e.type!);
-
-                final entityCode = 'widget.${e.name}${e.isMethod ? '()' : ''}';
-
-                var code = '';
-                code +=
-                    '''if(!$entityCode${!isBool ? '!= $defaultValue' : ''}) {\n''';
-                code +=
-                    """mismatchDescription.add('${e.name} is ${isBool ? 'false' : entityCode} but ${isBool ? true : defaultValue} was expected');\n""";
-                code += '}\n';
-
-                return code;
-              },
-            ) ??
-            [],
+        _getMatchOneDeclarationsMismatchCheckCode(_extract.declarations ?? []),
         '\n',
       )
-      ..writeln('return mismatchDescription;');
+      ..writeln('return mismatchDescription;')
+      ..writeln('}');
   }
 }
 
@@ -233,7 +219,7 @@ class MatchAtleastOneWidgetMethodsBuilder
   @override
   void writeMatchesMethod(StringBuffer stringBuffer) {
     stringBuffer
-      ..writeln("matchState['custom.finder'] = finder")
+      ..writeln("matchState['custom.finder'] = finder;")
       ..writeln('try {')
       ..writeln('var matchedCount = 0;')
       ..writeln('final elements = finder.evaluate();')
@@ -241,7 +227,7 @@ class MatchAtleastOneWidgetMethodsBuilder
       ..writeln(
         '''if (element.widget is ${_extract.className}) {''',
       )
-      ..writeln('final widget = element.widget;')
+      ..writeln('final widget = element.widget as ${_extract.className};')
       ..writeln(_writeValidationCode())
       ..writeln('}')
       ..writeln('}')
@@ -249,13 +235,14 @@ class MatchAtleastOneWidgetMethodsBuilder
       ..writeln('return matchedCount >= 1;')
       ..writeln('} catch (exception, stack) {')
       ..writeln(exceptionHandlerCode)
-      ..writeln('}');
+      ..writeln('}')
+      ..writeln('return false;');
   }
 
   String _writeValidationCode() {
     final buffer = StringBuffer();
 
-    final fields = _extract.fields;
+    final fields = _extract.declarations;
 
     if (fields?.isEmpty ?? true) {
       buffer.writeln('matchedCount++;');
@@ -292,26 +279,31 @@ class MatchAtleastOneWidgetMethodsBuilder
       ..writeln("final finder = matchState['custom.finder'];")
       ..writeln('final widget = finder.evaluate().first.widget;')
       ..writeAll(
-        _extract.fields?.map(
-              (e) {
-                final isBool = e.type!.isDartCoreBool;
-                final defaultValue = getDefaultValueForDartType(e.type!);
-
-                final entityCode = 'widget.${e.name}${e.isMethod ? '()' : ''}';
-
-                var code = '';
-                code +=
-                    '''if(!$entityCode${!isBool ? '!= $defaultValue' : ''}) {\n''';
-                code +=
-                    """mismatchDescription.add('${e.name} is ${isBool ? 'false' : entityCode} but ${isBool ? true : defaultValue} was expected');\n""";
-                code += '}\n';
-
-                return code;
-              },
-            ) ??
-            [],
+        _getMatchOneDeclarationsMismatchCheckCode(_extract.declarations ?? []),
         '\n',
       )
       ..writeln('return mismatchDescription;');
   }
+}
+
+Iterable<String> _getMatchOneDeclarationsMismatchCheckCode(
+  List<DeclarationExtract> declarations,
+) {
+  return declarations.map(
+    (e) {
+      final isBool = e.type!.isDartCoreBool;
+      final defaultValue = getDefaultValueForDartType(e.type!);
+
+      final entityCode = '''widget.${e.name}${e.isMethod ? '()' : ''}''';
+
+      var code = '';
+      code +=
+          '''if(${isBool ? '!' : ''}$entityCode${!isBool ? '!= $defaultValue' : ''}) {\n''';
+      code +=
+          """mismatchDescription.add('${e.name} is "\${${isBool ? 'false' : entityCode}}" but ${isBool ? true : defaultValue} was expected');\n""";
+      code += '}\n';
+
+      return code;
+    },
+  );
 }

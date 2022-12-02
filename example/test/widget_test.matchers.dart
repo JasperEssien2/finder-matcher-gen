@@ -1,0 +1,136 @@
+// GENERATED CODE - DO NOT MODIFY BY HAND
+
+// **************************************************************************
+// MatcherGenerator
+// **************************************************************************
+
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:example/main.dart';
+
+
+import 'package:stack_trace/stack_trace.dart' show Chain;
+
+class MyHomePageMatcher extends Matcher {
+ MyHomePageMatcher();
+
+@override
+Description describe (
+Description description) {return description.add('matches atleast one MyHomePage widget').addDescriptionOf(this);
+}
+
+@override
+bool matches (
+covariant Finder finder, Map matchState) {matchState['custom.finder'] = finder;
+try {
+var matchedCount = 0;
+final elements = finder.evaluate();
+for(final element in elements) {
+if (element.widget is MyHomePage) {
+final widget = element.widget as MyHomePage;
+if (widget.title == ''&& widget.incrementCounter() == []) {
+matchedCount++;
+}
+
+}
+}
+matchState['custom.matchedCount'] = matchedCount;
+return matchedCount >= 1;
+} catch (exception, stack) {
+      matchState['custom.exception'] = exception.toString();
+      matchState['custom.stack'] = Chain.forTrace(stack)
+            .foldFrames(
+                (frame) =>
+                    frame.package == 'test' ||
+                    frame.package == 'stream_channel' ||
+                    frame.package == 'matcher',
+                terse: true)
+            .toString();
+
+}
+return false;
+}
+
+@override
+Description describeMismatch (
+covariant Finder finder, Description mismatchDescription, Map matchState, bool verbose) {if(matchState['custom.exception'] != null) {
+mismatchDescription.add('threw')
+.addDescriptionOf(matchState['custom.exception'])
+
+.add(matchState['custom.stack'].toString());
+}
+if(matchState['custom.matchedCount'] <= 0) {
+mismatchDescription.add('found zero MyHomePage widgets but at least one was expected');
+}
+final finder = matchState['custom.finder'];
+final widget = finder.evaluate().first.widget;
+if(widget.title!= '') {
+mismatchDescription.add('title is "${widget.title}" but '' was expected');
+}
+
+if(widget.incrementCounter()!= []) {
+mismatchDescription.add('incrementCounter is "${widget.incrementCounter()}" but [] was expected');
+}
+return mismatchDescription;
+}
+
+}
+
+
+
+class MyAppMatcher extends Matcher {
+ MyAppMatcher();
+
+@override
+Description describe (
+Description description) {return description.add('matches one MyApp widget').addDescriptionOf(this);
+}
+
+@override
+bool matches (
+covariant Finder finder, Map matchState) {matchState['custom.finder'] = finder
+try {
+final elements = finder.evaluate();
+if(elements.length > 1) {
+matchState['custom.count'] = elements.length;
+return false;
+} else if(elements.count == 1 && elements.first.widget is MyApp) {
+return true;
+
+}
+return false;
+} catch (exception, stack) {
+      matchState['custom.exception'] = exception.toString();
+      matchState['custom.stack'] = Chain.forTrace(stack)
+            .foldFrames(
+                (frame) =>
+                    frame.package == 'test' ||
+                    frame.package == 'stream_channel' ||
+                    frame.package == 'matcher',
+                terse: true)
+            .toString();
+
+}
+return false;
+}
+
+@override
+Description describeMismatch (
+covariant Finder finder, Description mismatchDescription, Map matchState, bool verbose) {if(matchState['custom.exception'] != null) {
+mismatchDescription.add('threw')
+.addDescriptionOf(matchState['custom.exception'])
+
+.add(matchState['custom.stack'].toString());
+}
+if(matchState['custom.count'] == 0) {
+mismatchDescription.add('zero MyApp widgets found but one was expected');
+if(matchState['custom.count'] > 1) {
+mismatchDescription.add('found multiple MyApp widgets but one was expected');
+}
+final finder = matchState['custom.finder'];
+final widget = finder.evaluate().first.widget;
+return mismatchDescription;
+}
+}
+
+}

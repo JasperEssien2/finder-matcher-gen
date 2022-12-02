@@ -28,7 +28,7 @@ class FinderClassBuilder extends ClassCodeBuilder {
           methodCodeBuilder: (codeBuffer) => writeMatchesMethodContent(
             codeBuffer,
             'candidiate',
-            classExtract.fields ?? [],
+            classExtract.declarations ?? [],
           ),
         ),
       ];
@@ -38,16 +38,16 @@ class FinderClassBuilder extends ClassCodeBuilder {
   void writeMatchesMethodContent(
     StringBuffer codeBuffer,
     String overridenMethodParamName,
-    List<FieldMethodExtract> extracts,
+    List<DeclarationExtract> extracts,
   ) {
-    if (classExtract.fields?.isEmpty ?? true) {
+    if (classExtract.declarations?.isEmpty ?? true) {
       codeBuffer.writeln(
         'return $overridenMethodParamName.widget is ${classExtract.className};',
       );
       return;
     }
 
-    final newExtracts = List<FieldMethodExtract>.from(extracts);
+    final newExtracts = List<DeclarationExtract>.from(extracts);
 
     if (newExtracts.isEmpty) {
       codeBuffer
@@ -79,9 +79,9 @@ class FinderClassBuilder extends ClassCodeBuilder {
     );
   }
 
-  bool _isFirstCheckWrite(List<FieldMethodExtract> extracts) {
-    return classExtract.fields!.isNotEmpty &&
-        classExtract.fields!.length == extracts.length;
+  bool _isFirstCheckWrite(List<DeclarationExtract> extracts) {
+    return classExtract.declarations!.isNotEmpty &&
+        classExtract.declarations!.length == extracts.length;
   }
 
   @override

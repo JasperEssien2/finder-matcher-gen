@@ -63,7 +63,7 @@ String getDefaultValueForDartType(DartType type) {
   } else if (type.isDartCoreMap) {
     return '{}';
   } else if (type.isDartCoreString) {
-    return '';
+    return "''";
   }
   throw InvalidGenerationSourceError('Unsupported type: $type');
 }

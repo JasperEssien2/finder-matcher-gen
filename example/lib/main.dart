@@ -36,10 +36,10 @@ class MyHomePage extends StatefulWidget {
     required this.title,
   });
 
-  @matchField
+  @matchDeclaration
   final String title;
 
-  @matchField
+  @matchDeclaration
   List<DataRow> incrementCounter() => [];
 
   @override
@@ -49,7 +49,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
 
-  @matchField
+  @matchDeclaration
   void _incrementCounter() {
     setState(() {
       _counter++;

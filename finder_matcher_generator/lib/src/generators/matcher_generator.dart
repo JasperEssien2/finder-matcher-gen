@@ -9,7 +9,7 @@ import 'package:source_gen/source_gen.dart';
 
 /// A generator for generating Matcher classes
 class MatcherGenerator extends BaseAnnotaionGenerator {
-  final _typeToSpecification = <String, MatchSpecification>{};
+  final _typeToSpecification = <String, dynamic>{};
 
   @override
   List<DartObject> generateFor(ConstantReader annotation) {
@@ -20,7 +20,9 @@ class MatcherGenerator extends BaseAnnotaionGenerator {
       types.add(element.getField('type')!);
       _typeToSpecification[element.getField('type').toString()] =
           // ignore: cast_nullable_to_non_nullable
-          element.getField('specification') as MatchSpecification;
+          element.getField('specification');
+
+      print("Specification ------ ${element.getField('specification')?.variable?.displayName}");
     }
     return types;
   }
@@ -32,7 +34,7 @@ class MatcherGenerator extends BaseAnnotaionGenerator {
   ) {
     final matcherGenerator = WidgetMatcherClassBuilder(
       extract,
-      _typeToSpecification[extract.className]!,
+      _typeToSpecification[extract.className]! as MatchSpecification,
     )
       ..writeClassHeader()
       ..writeConstructor()

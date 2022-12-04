@@ -111,7 +111,6 @@ abstract class BaseMatcherMethodsCodeBuilder {
       ..writeln(
         '''if (element.widget is ${_extract.className}) {''',
       )
-      ..writeln('final widget = element.widget as ${_extract.className};\n')
       ..writeln(_writeValidationCode())
       ..writeln('}')
       ..writeln('}\n')
@@ -131,7 +130,9 @@ abstract class BaseMatcherMethodsCodeBuilder {
     if (fields?.isEmpty ?? true) {
       buffer.writeln('matchedCount++;');
     } else {
-      buffer.write('if (');
+      buffer
+        ..writeln('final widget = element.widget as ${_extract.className};\n')
+        ..write('if (');
       for (var i = 0; i < fields!.length; i++) {
         buffer.write(
           getValidationCodeFromExtract(
@@ -193,7 +194,7 @@ class MatchOneWidgetMethodsBuilder extends BaseMatcherMethodsCodeBuilder {
   String get expectCount => 'one';
 
   @override
-  String get matchReturnStatement => "return matchState['custom.count'] == 1;";
+  String get matchReturnStatement => 'return matchedCount == 1;';
 
   @override
   String _writeValidationCode() {
@@ -202,10 +203,14 @@ class MatchOneWidgetMethodsBuilder extends BaseMatcherMethodsCodeBuilder {
     final fields = _extract.declarations;
 
     if (fields?.isEmpty ?? true) {
-      buffer.writeln('return true;');
+      buffer
+        ..writeln('matchedCount++;')
+        ..writeln('break;');
     } else {
       for (var i = 0; i < fields!.length; i++) {
-        buffer.write(getValidationCodeFromExtract(fields[i], first: i == 0));
+        buffer
+          ..writeln('matchedCount++;')
+          ..write(getValidationCodeFromExtract(fields[i], first: i == 0));
       }
     }
 
@@ -282,7 +287,7 @@ class MatchNoWidgetMethodsBuilder extends BaseMatcherMethodsCodeBuilder {
   String get expectCount => 'no';
 
   @override
-  String get matchReturnStatement => "return matchState['custom.count'] == 0;";
+  String get matchReturnStatement => 'return matchedCount == 0;';
 
   @override
   void writeDescribeMismatchMethod(StringBuffer stringBuffer) {
@@ -293,6 +298,7 @@ class MatchNoWidgetMethodsBuilder extends BaseMatcherMethodsCodeBuilder {
       ..writeln(
         """mismatchDescription.add('zero ${_extract.className} widgets expected but found \${matchState['custom.count'] ?? 0}');""",
       )
+      ..writeln('}')
       ..writeln('return mismatchDescription;');
   }
 }

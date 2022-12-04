@@ -102,15 +102,20 @@ class MyAppMatcher extends Matcher {
     matchState['custom.finder'] = finder;
 
     try {
+      var matchedCount = 0;
+
       final elements = finder.evaluate();
 
-      if (elements.length > 1) {
-        matchState['custom.count'] = elements.length;
-
-        return false;
-      } else if (elements.length == 1 && elements.first.widget is MyApp) {
-        return true;
+      for (final element in elements) {
+        if (element.widget is MyApp) {
+          matchedCount++;
+          break;
+        }
       }
+
+      matchState['custom.matchedCount'] = matchedCount;
+
+      return matchedCount == 1;
     } catch (exception, stack) {
       matchState['custom.exception'] = exception.toString();
       matchState['custom.stack'] = Chain.forTrace(stack)
@@ -122,6 +127,7 @@ class MyAppMatcher extends Matcher {
               terse: true)
           .toString();
     }
+
     return false;
   }
 
@@ -142,6 +148,67 @@ class MyAppMatcher extends Matcher {
           .add('found multiple MyApp widgets but one was expected');
     }
 
+    return mismatchDescription;
+  }
+}
+
+class FileImageMatcher extends Matcher {
+  FileImageMatcher();
+
+  @override
+  Description describe(Description description) {
+    return description
+        .add('matches no FileImage widget')
+        .addDescriptionOf(this);
+  }
+
+  @override
+  bool matches(covariant Finder finder, Map matchState) {
+    matchState['custom.finder'] = finder;
+
+    try {
+      var matchedCount = 0;
+
+      final elements = finder.evaluate();
+
+      for (final element in elements) {
+        if (element.widget is FileImage) {
+          matchedCount++;
+        }
+      }
+
+      matchState['custom.matchedCount'] = matchedCount;
+
+      return matchedCount == 0;
+    } catch (exception, stack) {
+      matchState['custom.exception'] = exception.toString();
+      matchState['custom.stack'] = Chain.forTrace(stack)
+          .foldFrames(
+              (frame) =>
+                  frame.package == 'test' ||
+                  frame.package == 'stream_channel' ||
+                  frame.package == 'matcher',
+              terse: true)
+          .toString();
+    }
+
+    return false;
+  }
+
+  @override
+  Description describeMismatch(covariant Finder finder,
+      Description mismatchDescription, Map matchState, bool verbose) {
+    if (matchState['custom.exception'] != null) {
+      mismatchDescription
+          .add('threw')
+          .addDescriptionOf(matchState['custom.exception'])
+          .add(matchState['custom.stack'].toString());
+    }
+
+    if (matchState['custom.count'] >= 1) {
+      mismatchDescription.add(
+          'zero FileImage widgets expected but found ${matchState['custom.count'] ?? 0}');
+    }
     return mismatchDescription;
   }
 }

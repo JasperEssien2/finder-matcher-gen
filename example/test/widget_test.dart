@@ -6,7 +6,8 @@ import 'package:flutter_test/flutter_test.dart';
 @Match(
   matchers: [
     MatchWidget(MyHomePage, MatchSpecification.matchesAtleastOneWidget),
-    MatchWidget(MyApp, MatchSpecification.matchesNoWidget),
+    MatchWidget(MyApp, MatchSpecification.matchesOneWidget),
+    MatchWidget(FileImage, MatchSpecification.matchesNoWidget),
   ],
   finders: [MyHomePage, MyApp],
 )

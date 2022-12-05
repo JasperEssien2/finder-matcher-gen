@@ -4,7 +4,7 @@ import 'package:source_gen/source_gen.dart';
 
 /// Writes the code that validates if widget matches pattern
 String getValidationCodeFromExtract(
-  FieldMethodExtract extract, {
+  DeclarationExtract extract, {
   bool first = false,
   String? writeFirstKeyword,
 }) {
@@ -27,7 +27,7 @@ String getValidationCodeFromExtract(
 }
 
 void _codeFromDartType(
-  FieldMethodExtract extract,
+  DeclarationExtract extract,
   StringBuffer validateCodeBuffer, {
   bool appendAnd = true,
 }) {
@@ -44,7 +44,7 @@ void _codeFromDartType(
 
 void _writeValidation({
   required StringBuffer validateCodeBuffer,
-  required FieldMethodExtract extract,
+  required DeclarationExtract extract,
   required String equals,
 }) {
   validateCodeBuffer.write(

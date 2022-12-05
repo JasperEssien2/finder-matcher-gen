@@ -27,7 +27,7 @@ class ClassVisitor extends SimpleElementVisitor<void> {
       checkBadTypeByFieldElement(element);
 
       _classExtract = _classExtract.addFieldOrMethodExtract(
-        extract: FieldMethodExtract(
+        extract: DeclarationExtract(
           name: element.name,
           type: element.type,
           isMethod: false,
@@ -44,7 +44,7 @@ class ClassVisitor extends SimpleElementVisitor<void> {
       checkBadTypeByMethodElement(element);
 
       _classExtract = _classExtract.addFieldOrMethodExtract(
-        extract: FieldMethodExtract(
+        extract: DeclarationExtract(
           name: element.name,
           type: element.type.returnType,
           parameters: element.parameters,

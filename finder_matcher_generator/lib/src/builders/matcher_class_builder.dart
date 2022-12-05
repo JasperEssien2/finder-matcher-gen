@@ -53,8 +53,7 @@ class WidgetMatcherClassBuilder extends ClassCodeBuilder {
   BaseMatcherMethodsCodeBuilder get _getSpecificationCodeBuilder {
     switch (_specification) {
       case MatchSpecification.matchesNoWidget:
-        // TODO: Handle this case.
-        break;
+        return MatchNoWidgetMethodsBuilder(classExtract);
       case MatchSpecification.matchesAtleastOneWidget:
         return MatchAtleastOneWidgetMethodsBuilder(classExtract);
       case MatchSpecification.matchesNWidgets:
@@ -73,6 +72,12 @@ class WidgetMatcherClassBuilder extends ClassCodeBuilder {
 
 /// A base class for writing Matcher method code to [StringBuffer]
 abstract class BaseMatcherMethodsCodeBuilder {
+  /// Mandatory [ClassElementExtract]
+  BaseMatcherMethodsCodeBuilder(ClassElementExtract extract)
+      : _extract = extract;
+
+  final ClassElementExtract _extract;
+
   /// Responsible for writing all required methods into the [StringBuffer]
   void write(StringBuffer stringBuffer) {
     writeDescribeMethod(stringBuffer);
@@ -96,171 +101,38 @@ abstract class BaseMatcherMethodsCodeBuilder {
   }
 
   /// Responsible for writing matches() into [StringBuffer]
-  void writeMatchesMethod(StringBuffer stringBuffer);
-
-  /// Code string to handle exceptions
-  String get exceptionHandlerCode => '''
-      matchState['custom.exception'] = exception.toString();
-      matchState['custom.stack'] = Chain.forTrace(stack)
-            .foldFrames(
-                (frame) =>
-                    frame.package == 'test' ||
-                    frame.package == 'stream_channel' ||
-                    frame.package == 'matcher',
-                terse: true)
-            .toString()
-''';
-
-  /// Responsible for writing describeMismatch() into [StringBuffer]
-  void writeDescribeMismatchMethod(StringBuffer stringBuffer) {
-    stringBuffer
-      ..writeln("if(matchState['custom.exception'] != null) {")
-      ..writeln("mismatchDescription.add('threw')")
-      ..writeln(
-        '''mismatchDescription.addDescriptionOf('matchState['custom.exception']')''',
-      )
-      ..writeln('\n')
-      ..writeln("'matchState['custom.stack'].toString();");
-  }
-}
-
-/// Builds matcher method that ensures only one widget is matched
-class MatchOneWidgetMethodsBuilder extends BaseMatcherMethodsCodeBuilder {
-  /// Mandatory [ClassElementExtract]
-  MatchOneWidgetMethodsBuilder(ClassElementExtract extract)
-      : _extract = extract;
-
-  final ClassElementExtract _extract;
-
-  @override
-  String get className => _extract.className!;
-
-  @override
-  String get expectCount => 'one';
-
-  @override
   void writeMatchesMethod(StringBuffer stringBuffer) {
     stringBuffer
-      ..writeln("matchState['custom.finder'] = finder")
+      ..writeln("matchState['custom.finder'] = finder;\n")
       ..writeln('try {')
-      ..writeln('final elements = finder.evaluate();')
-      ..writeln('if(elements.length > 1) {')
-      ..writeln("matchState['custom.count'] = elements.length;")
-      ..writeln('return false;')
-      ..writeln(
-        '''} else if(elements.count == 1 && elements.first.widget is ${_extract.className}) {''',
-      )
-      ..writeln(_writeValidationCode())
-      ..writeln('}')
-      ..writeln('return false;')
-      ..writeln('} catch (exception, stack) {')
-      ..writeln(exceptionHandlerCode)
-      ..writeln('}');
-  }
-
-  String _writeValidationCode() {
-    final buffer = StringBuffer();
-
-    final fields = _extract.fields;
-
-    if (fields?.isEmpty ?? true) {
-      buffer.writeln('return true;');
-    } else {
-      for (var i = 0; i < fields!.length; i++) {
-        buffer.write(getValidationCodeFromExtract(fields[i], first: i == 0));
-      }
-    }
-
-    return buffer.toString();
-  }
-
-  @override
-  void writeDescribeMismatchMethod(StringBuffer stringBuffer) {
-    super.writeDescribeMismatchMethod(stringBuffer);
-
-    stringBuffer
-      ..writeln("if(matchState['custom.count'] == 0) {")
-      ..writeln(
-        """mismatchDescription.add('zero ${_extract.className} widgets found but one was expected');""",
-      )
-      ..writeln("if(matchState['custom.count'] > 1) {")
-      ..writeln(
-        """mismatchDescription.add('found multiple ${_extract.className} widgets but one was expected');""",
-      )
-      ..writeln('}')
-      ..writeln("final finder = matchState['custom.finder'];")
-      ..writeln('final widget = finder.evaluate().first.widget;')
-      ..writeAll(
-        _extract.fields?.map(
-              (e) {
-                final isBool = e.type!.isDartCoreBool;
-                final defaultValue = getDefaultValueForDartType(e.type!);
-
-                final entityCode = 'widget.${e.name}${e.isMethod ? '()' : ''}';
-
-                var code = '';
-                code +=
-                    '''if(!$entityCode${!isBool ? '!= $defaultValue' : ''}) {\n''';
-                code +=
-                    """mismatchDescription.add('${e.name} is ${isBool ? 'false' : entityCode} but ${isBool ? true : defaultValue} was expected');\n""";
-                code += '}\n';
-
-                return code;
-              },
-            ) ??
-            [],
-        '\n',
-      )
-      ..writeln('return mismatchDescription;');
-  }
-}
-
-/// Builds matcher method that ensures at least one widget is matched
-class MatchAtleastOneWidgetMethodsBuilder
-    extends BaseMatcherMethodsCodeBuilder {
-  /// Mandatory [ClassElementExtract]
-  MatchAtleastOneWidgetMethodsBuilder(ClassElementExtract extract)
-      : _extract = extract;
-
-  final ClassElementExtract _extract;
-
-  @override
-  String get className => _extract.className!;
-
-  @override
-  String get expectCount => 'atleast one';
-
-  @override
-  void writeMatchesMethod(StringBuffer stringBuffer) {
-    stringBuffer
-      ..writeln("matchState['custom.finder'] = finder")
-      ..writeln('try {')
-      ..writeln('var matchedCount = 0;')
-      ..writeln('final elements = finder.evaluate();')
+      ..writeln('var matchedCount = 0;\n')
+      ..writeln('final elements = finder.evaluate();\n')
       ..writeln('for(final element in elements) {')
       ..writeln(
         '''if (element.widget is ${_extract.className}) {''',
       )
-      ..writeln('final widget = element.widget;')
       ..writeln(_writeValidationCode())
       ..writeln('}')
-      ..writeln('}')
-      ..writeln("matchState['custom.matchedCount'] = matchedCount;")
-      ..writeln('return matchedCount >= 1;')
+      ..writeln('}\n')
+      ..writeln("matchState['custom.matchedCount'] = matchedCount;\n")
+      ..writeln(matchReturnStatement)
       ..writeln('} catch (exception, stack) {')
       ..writeln(exceptionHandlerCode)
-      ..writeln('}');
+      ..writeln('}\n')
+      ..writeln('return false;');
   }
 
   String _writeValidationCode() {
     final buffer = StringBuffer();
 
-    final fields = _extract.fields;
+    final fields = _extract.declarations;
 
     if (fields?.isEmpty ?? true) {
       buffer.writeln('matchedCount++;');
     } else {
-      buffer.write('if (');
+      buffer
+        ..writeln('final widget = element.widget as ${_extract.className};\n')
+        ..write('if (');
       for (var i = 0; i < fields!.length; i++) {
         buffer.write(
           getValidationCodeFromExtract(
@@ -279,6 +151,111 @@ class MatchAtleastOneWidgetMethodsBuilder
     return buffer.toString();
   }
 
+  /// Code string to handle exceptions
+  String get exceptionHandlerCode => '''
+      matchState['custom.exception'] = exception.toString();
+      matchState['custom.stack'] = Chain.forTrace(stack)
+            .foldFrames(
+                (frame) =>
+                    frame.package == 'test' ||
+                    frame.package == 'stream_channel' ||
+                    frame.package == 'matcher',
+                terse: true)
+            .toString();
+''';
+
+  /// Returns the string code that uses the match count to validate if
+  /// this widget (and it's pr) was found
+  String get matchReturnStatement;
+
+  /// Responsible for writing describeMismatch() into [StringBuffer]
+  void writeDescribeMismatchMethod(StringBuffer stringBuffer) {
+    stringBuffer
+      ..writeln("if(matchState['custom.exception'] != null) {")
+      ..writeln("mismatchDescription.add('threw')")
+      ..writeln(
+        '''.addDescriptionOf(matchState['custom.exception'])''',
+      )
+      ..writeln()
+      ..writeln(".add(matchState['custom.stack'].toString());")
+      ..writeln('}\n');
+  }
+}
+
+/// Builds matcher method that ensures only one widget is matched
+class MatchOneWidgetMethodsBuilder extends BaseMatcherMethodsCodeBuilder {
+  /// Mandatory [ClassElementExtract]
+  MatchOneWidgetMethodsBuilder(super.extract);
+
+  @override
+  String get className => _extract.className!;
+
+  @override
+  String get expectCount => 'one';
+
+  @override
+  String get matchReturnStatement => 'return matchedCount == 1;';
+
+  @override
+  String _writeValidationCode() {
+    final buffer = StringBuffer();
+
+    final fields = _extract.declarations;
+
+    if (fields?.isEmpty ?? true) {
+      buffer
+        ..writeln('matchedCount++;')
+        ..writeln('break;');
+    } else {
+      for (var i = 0; i < fields!.length; i++) {
+        buffer
+          ..writeln('matchedCount++;')
+          ..write(getValidationCodeFromExtract(fields[i], first: i == 0));
+      }
+    }
+
+    return buffer.toString();
+  }
+
+  @override
+  void writeDescribeMismatchMethod(StringBuffer stringBuffer) {
+    super.writeDescribeMismatchMethod(stringBuffer);
+
+    stringBuffer
+      ..writeln("if(matchState['custom.count'] <= 0) {")
+      ..writeln(
+        """mismatchDescription.add('zero ${_extract.className} widgets found but one was expected');""",
+      )
+      ..writeln('}\n')
+      ..writeln("else if(matchState['custom.count'] > 1) {")
+      ..writeln(
+        """mismatchDescription.add('found multiple ${_extract.className} widgets but one was expected');""",
+      )
+      ..writeln('}\n')
+      ..write(_getWidgetInitializationCode(_extract.declarations ?? []))
+      ..writeAll(
+        _getMatchOneDeclarationsMismatchCheckCode(_extract.declarations ?? []),
+        '\n',
+      )
+      ..writeln('return mismatchDescription;');
+  }
+}
+
+/// Builds matcher method that ensures at least one widget is matched
+class MatchAtleastOneWidgetMethodsBuilder
+    extends BaseMatcherMethodsCodeBuilder {
+  /// Mandatory [ClassElementExtract]
+  MatchAtleastOneWidgetMethodsBuilder(super.extract);
+
+  @override
+  String get className => _extract.className!;
+
+  @override
+  String get expectCount => 'atleast one';
+
+  @override
+  String get matchReturnStatement => 'return matchedCount >= 1;';
+
   @override
   void writeDescribeMismatchMethod(StringBuffer stringBuffer) {
     super.writeDescribeMismatchMethod(stringBuffer);
@@ -288,30 +265,69 @@ class MatchAtleastOneWidgetMethodsBuilder
       ..writeln(
         """mismatchDescription.add('found zero ${_extract.className} widgets but at least one was expected');""",
       )
-      ..writeln('}')
-      ..writeln("final finder = matchState['custom.finder'];")
-      ..writeln('final widget = finder.evaluate().first.widget;')
+      ..writeln('}\n')
+      ..write(_getWidgetInitializationCode(_extract.declarations ?? []))
       ..writeAll(
-        _extract.fields?.map(
-              (e) {
-                final isBool = e.type!.isDartCoreBool;
-                final defaultValue = getDefaultValueForDartType(e.type!);
-
-                final entityCode = 'widget.${e.name}${e.isMethod ? '()' : ''}';
-
-                var code = '';
-                code +=
-                    '''if(!$entityCode${!isBool ? '!= $defaultValue' : ''}) {\n''';
-                code +=
-                    """mismatchDescription.add('${e.name} is ${isBool ? 'false' : entityCode} but ${isBool ? true : defaultValue} was expected');\n""";
-                code += '}\n';
-
-                return code;
-              },
-            ) ??
-            [],
+        _getMatchOneDeclarationsMismatchCheckCode(_extract.declarations ?? []),
         '\n',
       )
       ..writeln('return mismatchDescription;');
   }
+}
+
+/// Builds matcher method that ensures no widget is matched
+class MatchNoWidgetMethodsBuilder extends BaseMatcherMethodsCodeBuilder {
+  /// Mandatory [ClassElementExtract]
+  MatchNoWidgetMethodsBuilder(super.extract);
+
+  @override
+  String get className => _extract.className!;
+
+  @override
+  String get expectCount => 'no';
+
+  @override
+  String get matchReturnStatement => 'return matchedCount == 0;';
+
+  @override
+  void writeDescribeMismatchMethod(StringBuffer stringBuffer) {
+    super.writeDescribeMismatchMethod(stringBuffer);
+
+    stringBuffer
+      ..writeln("if(matchState['custom.count'] >= 1) {")
+      ..writeln(
+        """mismatchDescription.add('zero ${_extract.className} widgets expected but found \${matchState['custom.count'] ?? 0}');""",
+      )
+      ..writeln('}')
+      ..writeln('return mismatchDescription;');
+  }
+}
+
+Iterable<String> _getMatchOneDeclarationsMismatchCheckCode(
+  List<DeclarationExtract> declarations,
+) {
+  return declarations.map(
+    (e) {
+      final isBool = e.type!.isDartCoreBool;
+      final defaultValue = getDefaultValueForDartType(e.type!);
+
+      final entityCode = '''widget.${e.name}${e.isMethod ? '()' : ''}''';
+
+      var code = '';
+
+      code +=
+          '''if(${isBool ? '!' : ''}$entityCode${!isBool ? '!= $defaultValue' : ''}) {\n''';
+      code +=
+          """mismatchDescription.add('${e.name} is "\${${isBool ? 'false' : entityCode}}" but ${isBool ? true : defaultValue} was expected');\n""";
+      code += '}\n\n';
+
+      return code;
+    },
+  );
+}
+
+String _getWidgetInitializationCode(List<DeclarationExtract> declarations) {
+  return declarations.isNotEmpty
+      ? """final finder = matchState['custom.finder'];\nfinal widget = finder.evaluate().first.widget;\n\n"""
+      : '';
 }

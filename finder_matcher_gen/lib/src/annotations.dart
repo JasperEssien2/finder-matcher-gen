@@ -26,7 +26,7 @@ enum MatchSpecification {
   matchesNWidgets,
 }
 
-extension _MatchSpecificationExt on MatchSpecification {
+extension MatchSpecificationExt on MatchSpecification {
   String get toStringValue {
     switch (this) {
       case MatchSpecification.matchesOneWidget:
@@ -38,6 +38,23 @@ extension _MatchSpecificationExt on MatchSpecification {
       case MatchSpecification.matchesNWidgets:
         return 'matchesNWidgets';
     }
+  }
+}
+
+extension StringExt on String {
+  MatchSpecification get specificationValue {
+    switch (this) {
+      case 'matchesOneWidget':
+        return MatchSpecification.matchesOneWidget;
+      case 'matchesNoWidget':
+        return MatchSpecification.matchesNoWidget;
+      case 'matchesAtleastOneWidget':
+        return MatchSpecification.matchesAtleastOneWidget;
+      case 'matchesNWidgets':
+        return MatchSpecification.matchesNWidgets;
+    }
+
+    throw Exception('Unrecognised MatchSpecification: $this');
   }
 }
 

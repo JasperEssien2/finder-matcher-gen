@@ -17,8 +17,8 @@ abstract class ClassCodeBuilder with OverrideMethodsBuiilder {
   @override
   StringBuffer get stringBuffer => _stringBuffer;
 
-  /// The name to attach to existing class name, e.g ClassMatchFinder
-  /// where MatchFinder is the suffix
+  /// The name to attach to existing class name, e.g HomePageMatchFinder
+  /// where MatchFinder is the suffix and HomePage is the class name
   String get suffix;
 
   /// Indicates if this class should be marked const or not
@@ -36,7 +36,9 @@ abstract class ClassCodeBuilder with OverrideMethodsBuiilder {
     );
   }
 
-  void writeConstructorFields;
+  void writeConstructorFields(){
+
+  }
 
   /// Handles writing the class constructor
   void writeConstructor() {

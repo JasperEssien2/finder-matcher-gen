@@ -212,3 +212,71 @@ class FileImageMatcher extends Matcher {
     return mismatchDescription;
   }
 }
+
+class MyWorldWidgetMatcher extends Matcher {
+  MyWorldWidgetMatcher({
+    required int n,
+    required String nasa,
+  })  : _n = n,
+        _nasa = nasa;
+  final int _n;
+  final String _nasa;
+
+  @override
+  Description describe(Description description) {
+    return description
+        .add('matches atleast one MyWorldWidget widget')
+        .addDescriptionOf(this);
+  }
+
+  @override
+  bool matches(covariant Finder finder, Map matchState) {
+    matchState['custom.finder'] = finder;
+
+    try {
+      var matchedCount = 0;
+
+      final elements = finder.evaluate();
+
+      for (final element in elements) {
+        if (element.widget is MyWorldWidget) {
+          matchedCount++;
+        }
+      }
+
+      matchState['custom.matchedCount'] = matchedCount;
+
+      return matchedCount >= 1;
+    } catch (exception, stack) {
+      matchState['custom.exception'] = exception.toString();
+      matchState['custom.stack'] = Chain.forTrace(stack)
+          .foldFrames(
+              (frame) =>
+                  frame.package == 'test' ||
+                  frame.package == 'stream_channel' ||
+                  frame.package == 'matcher',
+              terse: true)
+          .toString();
+    }
+
+    return false;
+  }
+
+  @override
+  Description describeMismatch(covariant Finder finder,
+      Description mismatchDescription, Map matchState, bool verbose) {
+    if (matchState['custom.exception'] != null) {
+      mismatchDescription
+          .add('threw')
+          .addDescriptionOf(matchState['custom.exception'])
+          .add(matchState['custom.stack'].toString());
+    }
+
+    if (matchState['custom.matchedCount'] <= 0) {
+      mismatchDescription.add(
+          'found zero MyWorldWidget widgets but at least one was expected');
+    }
+
+    return mismatchDescription;
+  }
+}

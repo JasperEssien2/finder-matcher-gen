@@ -9,10 +9,13 @@ environment:
 dependencies: 
   analyzer: 
   build:
+  equatable: ^2.0.5
   finder_matcher_gen: 
     path: ../finder_matcher_gen/
+  meta: ^1.8.0
   path: ^1.8.2
   source_gen:   
+  
 
 dev_dependencies:
   build_runner:

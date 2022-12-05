@@ -51,14 +51,10 @@ class MatcherGenerator extends BaseAnnotaionGenerator {
     final matcherGenerator = WidgetMatcherClassBuilder(
       extract,
       _typeToSpecification[extract.className]!,
-    )
-      ..writeClassHeader()
-      ..writeConstructor()
-      ..overrideMethods()
-      ..closeClass();
+    )..buildClassCode();
 
     classStringBuffer
-      ..write(matcherGenerator.stringBuffer.toString())
+      ..write(matcherGenerator.classCode)
       ..writeln('\n\n');
   }
 }

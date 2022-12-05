@@ -1,6 +1,7 @@
 import 'package:finder_matcher_gen/finder_matcher_gen.dart';
 import 'package:finder_matcher_generator/src/builders/builders_export.dart';
 import 'package:finder_matcher_generator/src/models/class_extract_model.dart';
+import 'package:finder_matcher_generator/src/models/constructor_field_model.dart';
 import 'package:finder_matcher_generator/src/models/override_method_model.dart';
 import 'package:finder_matcher_generator/src/utils/validation_code_helper.dart';
 
@@ -16,37 +17,45 @@ class WidgetMatcherClassBuilder extends ClassCodeBuilder {
 
   final MatchSpecification _specification;
 
+  final _constructorFields = <ConstructorFieldModel>{};
+
+  @override
+  Iterable<ConstructorFieldModel> get constructorFields =>
+      List.unmodifiable(_constructorFields);
+
   @override
   List<OverrideMethodModel> get methodsToOverride => [
         OverrideMethodModel(
           name: 'describe',
           returnType: 'Description',
           methodCategory: MethodCategory.method,
-          paramTypeAndName: {'Description': 'description'},
-          methodCodeBuilder: _getSpecificationCodeBuilder.writeDescribeMethod,
+          paramTypeAndName: const {'Description': 'description'},
+          methodCodeBuilder: (buffer) =>
+              _getSpecificationCodeBuilder.writeDescribeMethod(buffer),
         ),
         OverrideMethodModel(
           name: 'matches',
           returnType: 'bool',
-          paramTypeAndName: {
+          paramTypeAndName: const {
             'covariant Finder': 'finder',
             'Map': 'matchState',
           },
           methodCategory: MethodCategory.method,
-          methodCodeBuilder: _getSpecificationCodeBuilder.writeMatchesMethod,
+          methodCodeBuilder: (buffer) =>
+              _getSpecificationCodeBuilder.writeMatchesMethod(buffer),
         ),
         OverrideMethodModel(
           name: 'describeMismatch',
           returnType: 'Description',
-          paramTypeAndName: {
+          paramTypeAndName: const {
             'covariant Finder': 'finder',
             'Description': 'mismatchDescription',
             'Map': 'matchState',
             'bool': 'verbose',
           },
           methodCategory: MethodCategory.method,
-          methodCodeBuilder:
-              _getSpecificationCodeBuilder.writeDescribeMismatchMethod,
+          methodCodeBuilder: (buffer) =>
+              _getSpecificationCodeBuilder.writeDescribeMismatchMethod(buffer),
         ),
       ];
 
@@ -57,13 +66,19 @@ class WidgetMatcherClassBuilder extends ClassCodeBuilder {
       case MatchSpecification.matchesAtleastOneWidget:
         return MatchAtleastOneWidgetMethodsBuilder(classExtract);
       case MatchSpecification.matchesNWidgets:
-        // TODO: Handle this case.
-        break;
+        //TODO: Test sake only
+        _constructorFields
+            .add(const ConstructorFieldModel(name: 'n', type: 'int'));
+        _constructorFields
+            .add(const ConstructorFieldModel(name: 'nasa', type: 'String'));
+
+        print('Constructor fields ==================== $_constructorFields');
+
+        return MatchAtleastOneWidgetMethodsBuilder(classExtract);
+
       case MatchSpecification.matchesOneWidget:
         return MatchOneWidgetMethodsBuilder(classExtract);
     }
-
-    return MatchOneWidgetMethodsBuilder(classExtract);
   }
 
   @override
@@ -73,8 +88,9 @@ class WidgetMatcherClassBuilder extends ClassCodeBuilder {
 /// A base class for writing Matcher method code to [StringBuffer]
 abstract class BaseMatcherMethodsCodeBuilder {
   /// Mandatory [ClassElementExtract]
-  BaseMatcherMethodsCodeBuilder(ClassElementExtract extract)
-      : _extract = extract;
+  BaseMatcherMethodsCodeBuilder(
+    ClassElementExtract extract,
+  ) : _extract = extract;
 
   final ClassElementExtract _extract;
 
@@ -246,6 +262,41 @@ class MatchAtleastOneWidgetMethodsBuilder
     extends BaseMatcherMethodsCodeBuilder {
   /// Mandatory [ClassElementExtract]
   MatchAtleastOneWidgetMethodsBuilder(super.extract);
+
+  @override
+  String get className => _extract.className!;
+
+  @override
+  String get expectCount => 'atleast one';
+
+  @override
+  String get matchReturnStatement => 'return matchedCount >= 1;';
+
+  @override
+  void writeDescribeMismatchMethod(StringBuffer stringBuffer) {
+    super.writeDescribeMismatchMethod(stringBuffer);
+
+    stringBuffer
+      ..writeln("if(matchState['custom.matchedCount'] <= 0) {")
+      ..writeln(
+        """mismatchDescription.add('found zero ${_extract.className} widgets but at least one was expected');""",
+      )
+      ..writeln('}\n')
+      ..write(_getWidgetInitializationCode(_extract.declarations ?? []))
+      ..writeAll(
+        _getMatchOneDeclarationsMismatchCheckCode(_extract.declarations ?? []),
+        '\n',
+      )
+      ..writeln('return mismatchDescription;');
+  }
+}
+
+/// Builds matcher method that ensures exact N number of widgets is matched
+class MatchNWidgetMethodsBuilder extends BaseMatcherMethodsCodeBuilder {
+  /// Mandatory [ClassElementExtract]
+  MatchNWidgetMethodsBuilder(
+    super.extract,
+  );
 
   @override
   String get className => _extract.className!;

@@ -1,4 +1,5 @@
-import 'package:finder_matcher_generator/src/builders/base_class_code_builder.dart';
+import 'package:finder_matcher_generator/src/builders/class_code_builder_base.dart';
+import 'package:finder_matcher_generator/src/models/constructor_field_model.dart';
 import 'package:finder_matcher_generator/src/models/models_export.dart';
 import 'package:finder_matcher_generator/src/utils/validation_code_helper.dart';
 
@@ -21,7 +22,7 @@ class FinderClassBuilder extends ClassCodeBuilder {
         OverrideMethodModel(
           name: 'matches',
           returnType: 'bool',
-          paramTypeAndName: {
+          paramTypeAndName: const {
             'Element': 'candidiate',
           },
           methodCategory: MethodCategory.method,
@@ -86,4 +87,7 @@ class FinderClassBuilder extends ClassCodeBuilder {
 
   @override
   String get suffix => 'MatchFinder';
+
+  @override
+  Iterable<ConstructorFieldModel> get constructorFields => [];
 }

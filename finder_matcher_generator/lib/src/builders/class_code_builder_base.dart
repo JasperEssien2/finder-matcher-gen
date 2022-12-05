@@ -36,6 +36,8 @@ abstract class ClassCodeBuilder with OverrideMethodsBuiilder {
     );
   }
 
+  void writeConstructorFields;
+
   /// Handles writing the class constructor
   void writeConstructor() {
     if (classExtract.className == null) {

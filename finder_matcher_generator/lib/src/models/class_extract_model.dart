@@ -8,22 +8,26 @@ class ClassElementExtract {
     this.className,
     this.classUri,
     this.declarations,
+    this.constructorFields,
   });
 
   final String? className;
   final Uri? classUri;
 
   final List<DeclarationExtract>? declarations;
+  final List<ConstructorFieldExtract>? constructorFields;
 
   ClassElementExtract copyWith({
     String? className,
     Uri? classUri,
     List<DeclarationExtract>? declarations,
+    List<ConstructorFieldExtract>? constructorFields,
   }) {
     return ClassElementExtract(
       className: className ?? this.className,
       classUri: classUri ?? this.classUri,
       declarations: declarations ?? this.declarations,
+      constructorFields: constructorFields ?? this.constructorFields,
     );
   }
 
@@ -34,6 +38,16 @@ class ClassElementExtract {
 
     return copyWith(
       declarations: declarations ?? newDeclarations,
+    );
+  }
+
+  ClassElementExtract addConstructorFieldExtract({
+    required ConstructorFieldExtract extract,
+  }) {
+    final newConstructorFields = (constructorFields ?? [])..add(extract);
+
+    return copyWith(
+      constructorFields: constructorFields ?? newConstructorFields,
     );
   }
 
@@ -81,4 +95,18 @@ class DeclarationExtract extends NameTypeExtract {
   @override
   String toString() =>
       'DeclarationExtract(parameters: $parameters, isMethod: $isMethod)';
+}
+
+class ConstructorFieldExtract extends NameTypeExtract {
+  ConstructorFieldExtract({super.name, super.type});
+
+  ConstructorFieldExtract copyWith({
+    String? name,
+    DartType? type,
+  }) {
+    return ConstructorFieldExtract(
+      name: name ?? this.name,
+      type: type ?? this.type,
+    );
+  }
 }

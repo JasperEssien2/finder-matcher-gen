@@ -1,4 +1,4 @@
-import 'package:finder_matcher_generator/src/builders/base_class_code_builder.dart';
+import 'package:finder_matcher_generator/src/builders/class_code_builder_base.dart';
 import 'package:finder_matcher_generator/src/models/models_export.dart';
 import 'package:finder_matcher_generator/src/utils/validation_code_helper.dart';
 

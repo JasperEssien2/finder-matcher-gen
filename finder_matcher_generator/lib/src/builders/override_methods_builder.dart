@@ -1,4 +1,5 @@
 import 'package:finder_matcher_generator/src/models/override_method_model.dart';
+import 'package:meta/meta.dart';
 
 /// An abstraction responsible for writing methods to override
 abstract class OverrideMethodsBuiilder {
@@ -9,6 +10,7 @@ abstract class OverrideMethodsBuiilder {
   List<OverrideMethodModel> get methodsToOverride;
 
   /// Call to write overriden methods in class
+  @visibleForOverriding
   void overrideMethods() {
     for (final element in methodsToOverride) {
       _overrideMethod(element);

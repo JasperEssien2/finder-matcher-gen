@@ -34,11 +34,13 @@ abstract class ClassCodeBuilder with OverrideMethodsBuiilder {
   /// Indicates if this class should be marked const or not
   bool get isClassConst => false;
 
+  ///Writes class header and body into a [StringBuffer] 
   void buildClassCode() {
     //Constructors and methods writes to different buffers.
     // Constructor parameters may sometimes depend on the generated methods.
     // Example, the matchNWidget needs an int parameter, which is passed via
     //the generated constructor
+    // ignore: invalid_use_of_visible_for_overriding_member
     overrideMethods();
     writeClassHeader();
     writeConstructor();
@@ -46,6 +48,7 @@ abstract class ClassCodeBuilder with OverrideMethodsBuiilder {
   }
 
   /// Handles writing class header and opening a class curly brace
+  @visibleForOverriding
   void writeClassHeader() {
     if (classExtract.className == null) {
       throwException('Class name cannot be null', element: null);
@@ -58,6 +61,7 @@ abstract class ClassCodeBuilder with OverrideMethodsBuiilder {
   }
 
   /// Handles writing the class constructor
+  @visibleForOverriding
   void writeConstructor() {
     if (classExtract.className == null) {
       throwException('Class not found', element: null);
@@ -118,6 +122,7 @@ abstract class ClassCodeBuilder with OverrideMethodsBuiilder {
   }
 
   /// Closes class with its close curly brace
+  @visibleForOverriding
   void closeClass() {
     _classBodyBuffer.writeln('}');
   }

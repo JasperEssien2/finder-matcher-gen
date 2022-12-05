@@ -1,10 +1,12 @@
+import 'package:equatable/equatable.dart';
+
 /// A typedef pointing to a function that accepts [StringBuffer]
 typedef OverrideMethodCodeBuilder = void Function(StringBuffer buffer);
 
 /// A data class information of method to override
-class OverrideMethodModel {
+class OverrideMethodModel extends Equatable {
   ///
-  OverrideMethodModel({
+  const OverrideMethodModel({
     required this.name,
     required this.returnType,
     this.paramTypeAndName,
@@ -29,6 +31,16 @@ class OverrideMethodModel {
 
   /// A callback that writes this method code to [StringBuffer]
   final OverrideMethodCodeBuilder methodCodeBuilder;
+
+  @override
+  List<Object?> get props {
+    return [
+      name,
+      returnType,
+      paramTypeAndName,
+      methodCategory,
+    ];
+  }
 }
 
 /// An enum of method categories

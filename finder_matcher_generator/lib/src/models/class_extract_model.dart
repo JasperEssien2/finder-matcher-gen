@@ -2,9 +2,10 @@
 
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
+import 'package:equatable/equatable.dart';
 
-class ClassElementExtract {
-  ClassElementExtract({
+class ClassElementExtract extends Equatable {
+  const ClassElementExtract({
     this.className,
     this.classUri,
     this.declarations,
@@ -41,26 +42,21 @@ class ClassElementExtract {
   String toString() {
     return '''ClassElementExtract(className: $className, classUri: $classUri, methods: $declarations)''';
   }
-}
-
-abstract class NameTypeExtract {
-  NameTypeExtract({this.name, this.type});
-
-  final String? name;
-  final DartType? type;
 
   @override
-  String toString() => 'NameTypeExtract(name: $name, type: $type)';
+  List<Object?> get props => [className, classUri, declarations];
 }
 
-class DeclarationExtract extends NameTypeExtract {
-  DeclarationExtract({
-    super.name,
-    super.type,
+class DeclarationExtract extends Equatable {
+  const DeclarationExtract({
+    this.name,
+    this.type,
     required this.isMethod,
     this.parameters,
   });
 
+  final String? name;
+  final DartType? type;
   final List<ParameterElement>? parameters;
   final bool isMethod;
 
@@ -81,4 +77,7 @@ class DeclarationExtract extends NameTypeExtract {
   @override
   String toString() =>
       'DeclarationExtract(parameters: $parameters, isMethod: $isMethod)';
+
+  @override
+  List<Object?> get props => [name, type, parameters, isMethod];
 }

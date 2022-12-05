@@ -17,14 +17,10 @@ class FinderGenerator extends BaseAnnotaionGenerator {
     ClassElementExtract extract,
     StringBuffer classStringBuffer,
   ) {
-    final finderGenerator = FinderClassBuilder(extract)
-      ..writeClassHeader()
-      ..writeConstructor()
-      ..overrideMethods()
-      ..closeClass();
+    final finderGenerator = FinderClassBuilder(extract)..buildClassCode();
 
     classStringBuffer
-      ..write(finderGenerator.stringBuffer.toString())
+      ..write(finderGenerator.classCode)
       ..writeln('\n\n');
   }
 }

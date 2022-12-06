@@ -216,16 +216,13 @@ class FileImageMatcher extends Matcher {
 class MyWorldWidgetMatcher extends Matcher {
   MyWorldWidgetMatcher({
     required int n,
-    required String nasa,
-  })  : _n = n,
-        _nasa = nasa;
+  }) : _n = n;
   final int _n;
-  final String _nasa;
 
   @override
   Description describe(Description description) {
     return description
-        .add('matches atleast one MyWorldWidget widget')
+        .add('matches $_n MyWorldWidget widget')
         .addDescriptionOf(this);
   }
 
@@ -246,7 +243,7 @@ class MyWorldWidgetMatcher extends Matcher {
 
       matchState['custom.matchedCount'] = matchedCount;
 
-      return matchedCount >= 1;
+      return matchedCount == _n;
     } catch (exception, stack) {
       matchState['custom.exception'] = exception.toString();
       matchState['custom.stack'] = Chain.forTrace(stack)
@@ -272,9 +269,9 @@ class MyWorldWidgetMatcher extends Matcher {
           .add(matchState['custom.stack'].toString());
     }
 
-    if (matchState['custom.matchedCount'] <= 0) {
+    if (matchState['custom.matchedCount'] != _n) {
       mismatchDescription.add(
-          'found zero MyWorldWidget widgets but at least one was expected');
+          'found ${matchState['custom.matchedCount']} MyWorldWidget widgets $_n was expected');
     }
 
     return mismatchDescription;

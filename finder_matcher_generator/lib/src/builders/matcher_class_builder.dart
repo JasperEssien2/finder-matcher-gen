@@ -66,15 +66,10 @@ class WidgetMatcherClassBuilder extends ClassCodeBuilder {
       case MatchSpecification.matchesAtleastOneWidget:
         return MatchAtleastOneWidgetMethodsBuilder(classExtract);
       case MatchSpecification.matchesNWidgets:
-        //TODO: Test sake only
         _constructorFields
             .add(const ConstructorFieldModel(name: 'n', type: 'int'));
-        _constructorFields
-            .add(const ConstructorFieldModel(name: 'nasa', type: 'String'));
 
-        print('Constructor fields ==================== $_constructorFields');
-
-        return MatchAtleastOneWidgetMethodsBuilder(classExtract);
+        return MatchNWidgetMethodsBuilder(classExtract);
 
       case MatchSpecification.matchesOneWidget:
         return MatchOneWidgetMethodsBuilder(classExtract);
@@ -294,27 +289,25 @@ class MatchAtleastOneWidgetMethodsBuilder
 /// Builds matcher method that ensures exact N number of widgets is matched
 class MatchNWidgetMethodsBuilder extends BaseMatcherMethodsCodeBuilder {
   /// Mandatory [ClassElementExtract]
-  MatchNWidgetMethodsBuilder(
-    super.extract,
-  );
+  MatchNWidgetMethodsBuilder(super.extract);
 
   @override
   String get className => _extract.className!;
 
   @override
-  String get expectCount => 'atleast one';
+  String get expectCount => r'$_n';
 
   @override
-  String get matchReturnStatement => 'return matchedCount >= 1;';
+  String get matchReturnStatement => 'return matchedCount == _n;';
 
   @override
   void writeDescribeMismatchMethod(StringBuffer stringBuffer) {
     super.writeDescribeMismatchMethod(stringBuffer);
 
     stringBuffer
-      ..writeln("if(matchState['custom.matchedCount'] <= 0) {")
+      ..writeln("if(matchState['custom.matchedCount'] != _n) {")
       ..writeln(
-        """mismatchDescription.add('found zero ${_extract.className} widgets but at least one was expected');""",
+        """mismatchDescription.add('found \${matchState['custom.matchedCount']} ${_extract.className} widgets \$_n was expected');""",
       )
       ..writeln('}\n')
       ..write(_getWidgetInitializationCode(_extract.declarations ?? []))

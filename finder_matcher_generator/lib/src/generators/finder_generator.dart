@@ -10,7 +10,7 @@ import 'package:source_gen/source_gen.dart';
 class FinderGenerator extends BaseAnnotaionGenerator {
   @override
   List<DartObject> generateFor(ConstantReader annotation) =>
-      annotation.read('finders').listValue;
+      annotation.read('_finders').listValue;
 
   @override
   void writeClassToBuffer(

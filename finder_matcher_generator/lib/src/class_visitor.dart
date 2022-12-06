@@ -6,7 +6,7 @@ import 'package:finder_matcher_generator/src/utils/extensions.dart';
 
 /// A visitor that visits widget elements and extracts neccessary widget info
 class ClassVisitor extends SimpleElementVisitor<void> {
-  ClassElementExtract _classExtract = ClassElementExtract();
+  ClassElementExtract _classExtract = const ClassElementExtract();
 
   /// Extracts of this class found in the class element
   ClassElementExtract get classExtract => _classExtract;

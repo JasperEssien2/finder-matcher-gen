@@ -18,7 +18,7 @@ extension DartTypeExt on DartType {
 
 /// An extension of [Element]
 extension ElementExt on Element {
-  /// Check if element is annotated with the [matchDeclaration] annotation
+  /// Check if element is annotated with the [MatchDeclaration] annotation
   bool get hasMatchFieldAnnotation {
     const checker = TypeChecker.fromRuntime(MatchDeclaration);
 

@@ -4,6 +4,7 @@ import 'package:finder_matcher_generator/src/models/class_extract_model.dart';
 import 'package:finder_matcher_generator/src/models/constructor_field_model.dart';
 import 'package:finder_matcher_generator/src/models/override_method_model.dart';
 import 'package:finder_matcher_generator/src/utils/validation_code_helper.dart';
+import 'package:meta/meta.dart';
 
 ///Builds Matcher classes string code for widgets
 class WidgetMatcherClassBuilder extends ClassCodeBuilder {
@@ -245,7 +246,7 @@ class MatchOneWidgetMethodsBuilder extends BaseMatcherMethodsCodeBuilder {
       ..writeln('}\n')
       ..write(_getWidgetInitializationCode(_extract.declarations ?? []))
       ..writeAll(
-        _getMatchOneDeclarationsMismatchCheckCode(_extract.declarations ?? []),
+        getMatchOneDeclarationsMismatchCheckCode(_extract.declarations ?? []),
         '\n',
       )
       ..writeln('return mismatchDescription;');
@@ -279,7 +280,7 @@ class MatchAtleastOneWidgetMethodsBuilder
       ..writeln('}\n')
       ..write(_getWidgetInitializationCode(_extract.declarations ?? []))
       ..writeAll(
-        _getMatchOneDeclarationsMismatchCheckCode(_extract.declarations ?? []),
+        getMatchOneDeclarationsMismatchCheckCode(_extract.declarations ?? []),
         '\n',
       )
       ..writeln('return mismatchDescription;');
@@ -312,7 +313,7 @@ class MatchNWidgetMethodsBuilder extends BaseMatcherMethodsCodeBuilder {
       ..writeln('}\n')
       ..write(_getWidgetInitializationCode(_extract.declarations ?? []))
       ..writeAll(
-        _getMatchOneDeclarationsMismatchCheckCode(_extract.declarations ?? []),
+        getMatchOneDeclarationsMismatchCheckCode(_extract.declarations ?? []),
         '\n',
       )
       ..writeln('return mismatchDescription;');
@@ -347,7 +348,9 @@ class MatchNoWidgetMethodsBuilder extends BaseMatcherMethodsCodeBuilder {
   }
 }
 
-Iterable<String> _getMatchOneDeclarationsMismatchCheckCode(
+@visibleForTesting
+// ignore: public_member_api_docs
+Iterable<String> getMatchOneDeclarationsMismatchCheckCode(
   List<DeclarationExtract> declarations,
 ) {
   return declarations.map(

@@ -14,17 +14,17 @@ class MatcherGenerator extends BaseAnnotaionGenerator {
 
   @override
   List<DartObject> generateFor(ConstantReader annotation) {
-    final annotationFields = annotation.read('matchers').listValue;
+    final annotationFields = annotation.read('_matchers').listValue;
     final types = <DartObject>[];
 
     for (final element in annotationFields) {
-      types.add(element.getField('type')!);
+      types.add(element.getField('_type')!);
 
       final fieldTypeName =
-          element.getField('type')!.toTypeValue().toString().replaceAsterisk;
+          element.getField('_type')!.toTypeValue().toString().replaceAsterisk;
 
       _typeToSpecification[fieldTypeName] = element
-          .getField('specification')!
+          .getField('_specification')!
           .variable!
           .displayName
           .specificationValue;

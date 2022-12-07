@@ -1,5 +1,6 @@
 // ignore_for_file: public_member_api_docs
 
+import 'package:analyzer/dart/constant/value.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:equatable/equatable.dart';
@@ -53,31 +54,35 @@ class DeclarationExtract extends Equatable {
     this.type,
     required this.isMethod,
     this.parameters,
+    this.defaultValue,
   });
 
   final String? name;
   final DartType? type;
   final List<ParameterElement>? parameters;
   final bool isMethod;
+  final dynamic defaultValue;
 
   DeclarationExtract copyWith({
     String? name,
     DartType? type,
     List<ParameterElement>? parameters,
     bool? isMethod,
+    DartObject? defaultValue,
   }) {
     return DeclarationExtract(
       name: name ?? this.name,
       type: type ?? this.type,
       isMethod: isMethod ?? this.isMethod,
       parameters: parameters ?? this.parameters,
+      defaultValue: defaultValue ?? this.defaultValue,
     );
   }
 
   @override
   String toString() =>
-      'DeclarationExtract(parameters: $parameters, isMethod: $isMethod)';
+      '''DeclarationExtract(name: $name, parameters: $parameters, isMethod: $isMethod, defaultValue: $defaultValue)''';
 
   @override
-  List<Object?> get props => [name, type, parameters, isMethod];
+  List<Object?> get props => [name, type, parameters, isMethod, defaultValue];
 }

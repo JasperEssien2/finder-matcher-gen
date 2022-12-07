@@ -3,6 +3,7 @@ import 'package:analyzer/dart/element/visitor.dart';
 import 'package:finder_matcher_generator/src/models/class_extract_model.dart';
 import 'package:finder_matcher_generator/src/utils/element_checker.dart';
 import 'package:finder_matcher_generator/src/utils/extensions.dart';
+import 'package:finder_matcher_generator/src/utils/validation_code_helper.dart';
 
 /// A visitor that visits widget elements and extracts neccessary widget info
 class ClassVisitor extends SimpleElementVisitor<void> {
@@ -22,6 +23,18 @@ class ClassVisitor extends SimpleElementVisitor<void> {
   @override
   void visitFieldElement(FieldElement element) {
     if (element.hasMatchFieldAnnotation) {
+      final annotationObjects = element.getAnnotationObjects;
+
+      final defaultValueObject = annotationObjects.isEmpty
+          ? null
+          : annotationObjects.first.getField('_defaultValue');
+
+      dynamic defaultValue;
+
+      if (defaultValueObject != null) {
+        defaultValue = getDartObjectValue(defaultValueObject);
+      }
+
       ///Should throw an error when this field element does not conform
       ///to this package standard
       checkBadTypeByFieldElement(element);
@@ -31,6 +44,7 @@ class ClassVisitor extends SimpleElementVisitor<void> {
           name: element.name,
           type: element.type,
           isMethod: false,
+          defaultValue: defaultValue,
         ),
       );
     }

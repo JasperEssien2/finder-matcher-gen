@@ -33,7 +33,7 @@ class MyHomePageMatcher extends Matcher {
         if (element.widget is MyHomePage) {
           final widget = element.widget as MyHomePage;
 
-          if (widget.title == '' && widget.incrementCounter() == []) {
+          if (widget.title == 'love-title' && widget.incrementCounter() == []) {
             matchedCount++;
           }
         }

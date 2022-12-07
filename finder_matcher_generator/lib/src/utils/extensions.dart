@@ -1,3 +1,4 @@
+import 'package:analyzer/dart/constant/value.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:finder_matcher_gen/finder_matcher_gen.dart';
@@ -23,6 +24,12 @@ extension ElementExt on Element {
     const checker = TypeChecker.fromRuntime(MatchDeclaration);
 
     return checker.hasAnnotationOf(this, throwOnUnresolved: false);
+  }
+
+  Iterable<DartObject> get getAnnotationObjects {
+    const checker = TypeChecker.fromRuntime(MatchDeclaration);
+
+    return checker.annotationsOf(this);
   }
 }
 

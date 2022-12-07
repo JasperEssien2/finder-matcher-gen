@@ -18,7 +18,7 @@ class MyHomePageMatchFinder extends MatchFinder {
   bool matches(Element candidiate) {
     if (candidiate.widget is MyHomePage) {
       final widget = candidiate.widget as MyHomePage;
-      return widget.title == '' && widget.incrementCounter() == [];
+      return widget.title == 'love-title' && widget.incrementCounter() == [];
     }
     return false;
   }

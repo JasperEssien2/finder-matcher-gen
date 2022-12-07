@@ -1,3 +1,4 @@
+import 'package:analyzer/dart/constant/value.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:finder_matcher_generator/src/models/class_extract_model.dart';
 import 'package:source_gen/source_gen.dart';
@@ -38,7 +39,8 @@ void _codeFromDartType(
   _writeValidation(
     validateCodeBuffer: validateCodeBuffer,
     extract: extract,
-    equals: '== ${getDefaultValueForDartType(extract.type!)}',
+    equals:
+        '''== ${extract.defaultValue ?? getDefaultValueForDartType(extract.type!)}''',
   );
 }
 
@@ -65,5 +67,26 @@ String getDefaultValueForDartType(DartType type) {
   } else if (type.isDartCoreString) {
     return "''";
   }
+  throw InvalidGenerationSourceError('Unsupported type: $type');
+}
+
+/// Gets the field actual value from a [DartObject]
+///
+/// Throws an Unsupported exception when the field type is not supported
+dynamic getDartObjectValue(DartObject dartObject) {
+  final type = dartObject.type!;
+
+  if (type.isDartCoreInt) {
+    return dartObject.toIntValue();
+  } else if (type.isDartCoreDouble) {
+    return dartObject.toDoubleValue();
+  } else if (type.isDartCoreList) {
+    return dartObject.toListValue();
+  } else if (type.isDartCoreMap) {
+    return dartObject.toMapValue();
+  } else if (type.isDartCoreString) {
+    return "'${dartObject.toStringValue()}'";
+  }
+
   throw InvalidGenerationSourceError('Unsupported type: $type');
 }

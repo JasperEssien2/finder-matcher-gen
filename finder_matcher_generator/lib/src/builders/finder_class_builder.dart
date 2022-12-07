@@ -57,7 +57,7 @@ class FinderClassBuilder extends ClassCodeBuilder {
         ..writeln('return false;');
       return;
     } else if (_isFirstCheckWrite(extracts)) {
-      final methodExtract = newExtracts.removeAt(0);
+      final declarationExtract = newExtracts.removeAt(0);
 
       codeBuffer
         ..writeln(
@@ -66,10 +66,10 @@ class FinderClassBuilder extends ClassCodeBuilder {
         ..writeln(
           '''final widget = $overridenMethodParamName.widget as ${classExtract.className};''',
         )
-        ..writeln(getValidationCodeFromExtract(methodExtract, first: true));
+        ..writeln(getValidationCodeFromExtract(declarationExtract, first: true));
     } else {
-      final methodExtract = newExtracts.removeAt(0);
-      codeBuffer.write(getValidationCodeFromExtract(methodExtract));
+      final declarationExtract = newExtracts.removeAt(0);
+      codeBuffer.write(getValidationCodeFromExtract(declarationExtract));
     }
 
     /// Recursively write method check, pop method extract in the process

@@ -36,7 +36,7 @@ abstract class ClassCodeBuilder with OverrideMethodsBuiilder {
 
   ///Writes class header and body into a [StringBuffer] 
   void buildClassCode() {
-    //Constructors and methods writes to different buffers.
+    // Constructors and methods writes to different buffers.
     // Constructor parameters may sometimes depend on the generated methods.
     // Example, the matchNWidget needs an int parameter, which is passed via
     //the generated constructor
@@ -103,7 +103,7 @@ abstract class ClassCodeBuilder with OverrideMethodsBuiilder {
       );
 
       privateFieldsBuffer.writeln(
-        "final ${field.type} _${field.name} ${isLastField ? '' : ';'}",
+        "\nfinal ${field.type} _${field.name} ${isLastField ? '' : ';'}",
       );
     }
 

@@ -9,7 +9,11 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:example/main.dart';
 
 class MyHomePageMatchFinder extends MatchFinder {
-  MyHomePageMatchFinder();
+  MyHomePageMatchFinder({
+    required List<DataRow> incrementCounterValue,
+  }) : _incrementCounterValue = incrementCounterValue;
+
+  final List<DataRow> _incrementCounterValue;
 
   @override
   String get description => 'Finds MyHomePage widget';
@@ -18,7 +22,9 @@ class MyHomePageMatchFinder extends MatchFinder {
   bool matches(Element candidiate) {
     if (candidiate.widget is MyHomePage) {
       final widget = candidiate.widget as MyHomePage;
-      return widget.title == 'love-title' && widget.incrementCounter() == [];
+
+      return widget.title == 'love-title' &&
+          widget.incrementCounter() == _incrementCounterValue;
     }
     return false;
   }

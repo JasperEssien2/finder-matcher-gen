@@ -1,10 +1,9 @@
 import 'package:analyzer/dart/constant/value.dart';
-import 'package:analyzer/dart/element/type.dart';
 import 'package:finder_matcher_generator/src/models/class_extract_model.dart';
 import 'package:source_gen/source_gen.dart';
 
 /// Writes the code that validates if widget matches pattern
-String getValidationCodeFromExtract(
+String getConditionCodeFromExtract(
   DeclarationExtract extract, {
   bool first = false,
   String? writeFirstKeyword,
@@ -40,7 +39,7 @@ void _codeFromDartType(
     validateCodeBuffer: validateCodeBuffer,
     extract: extract,
     equals:
-        '''== ${extract.defaultValue ?? getDefaultValueForDartType(extract.type!)}''',
+        '''== ${extract.defaultValue ?? getConstructorNameInPlaceOfDefaultValue(extract, isPrivate: true)}''',
   );
 }
 
@@ -52,22 +51,6 @@ void _writeValidation({
   validateCodeBuffer.write(
     'widget.${extract.name}${extract.isMethod ? '()' : ''} $equals',
   );
-}
-
-/// Returns a default value based on the [DartType]
-String getDefaultValueForDartType(DartType type) {
-  if (type.isDartCoreNum || type.isDartCoreInt) {
-    return '0';
-  } else if (type.isDartCoreDouble) {
-    return '0.0';
-  } else if (type.isDartCoreList) {
-    return '[]';
-  } else if (type.isDartCoreMap) {
-    return '{}';
-  } else if (type.isDartCoreString) {
-    return "''";
-  }
-  throw InvalidGenerationSourceError('Unsupported type: $type');
 }
 
 /// Gets the field actual value from a [DartObject]
@@ -89,4 +72,16 @@ dynamic getDartObjectValue(DartObject dartObject) {
   }
 
   throw InvalidGenerationSourceError('Unsupported type: $type');
+}
+
+/// When [DeclarationExtract] defaultValue is null, a constructor field will be
+/// generated to use for validation.
+///
+/// Returns the name of the constructor, if [isPrivate] set to true,
+/// an undersccore would be appended to the generated field
+String getConstructorNameInPlaceOfDefaultValue(
+  DeclarationExtract extract, {
+  bool isPrivate = false,
+}) {
+  return "${isPrivate ? '_' : ''}${extract.name}Value";
 }

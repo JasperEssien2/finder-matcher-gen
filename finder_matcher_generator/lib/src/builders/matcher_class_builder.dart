@@ -1,9 +1,10 @@
+import 'package:analyzer/dart/element/element.dart';
 import 'package:finder_matcher_gen/finder_matcher_gen.dart';
 import 'package:finder_matcher_generator/src/builders/builders_export.dart';
 import 'package:finder_matcher_generator/src/models/class_extract_model.dart';
 import 'package:finder_matcher_generator/src/models/constructor_field_model.dart';
 import 'package:finder_matcher_generator/src/models/override_method_model.dart';
-import 'package:finder_matcher_generator/src/utils/validation_code_helper.dart';
+import 'package:finder_matcher_generator/src/utils/utils_export.dart';
 import 'package:meta/meta.dart';
 
 ///Builds Matcher classes string code for widgets
@@ -63,17 +64,20 @@ class WidgetMatcherClassBuilder extends ClassCodeBuilder {
   BaseMatcherMethodsCodeBuilder get _getSpecificationCodeBuilder {
     switch (_specification) {
       case MatchSpecification.matchesNoWidget:
-        return MatchNoWidgetMethodsBuilder(classExtract);
+        return MatchNoWidgetMethodsBuilder(classExtract, _constructorFields);
       case MatchSpecification.matchesAtleastOneWidget:
-        return MatchAtleastOneWidgetMethodsBuilder(classExtract);
+        return MatchAtleastOneWidgetMethodsBuilder(
+          classExtract,
+          _constructorFields,
+        );
       case MatchSpecification.matchesNWidgets:
         _constructorFields
             .add(const ConstructorFieldModel(name: 'n', type: 'int'));
 
-        return MatchNWidgetMethodsBuilder(classExtract);
+        return MatchNWidgetMethodsBuilder(classExtract, _constructorFields);
 
       case MatchSpecification.matchesOneWidget:
-        return MatchOneWidgetMethodsBuilder(classExtract);
+        return MatchOneWidgetMethodsBuilder(classExtract, _constructorFields);
     }
   }
 
@@ -85,10 +89,16 @@ class WidgetMatcherClassBuilder extends ClassCodeBuilder {
 abstract class BaseMatcherMethodsCodeBuilder {
   /// Mandatory [ClassElementExtract]
   BaseMatcherMethodsCodeBuilder(
-    ClassElementExtract extract,
-  ) : _extract = extract;
+    this.extract,
+    this.mutableConstructorFields,
+  );
 
-  final ClassElementExtract _extract;
+  /// [ClassElementExtract] contains extracted information from [ClassElement]
+  final ClassElementExtract extract;
+
+  /// A mutable set of constructor fields data that will be generated alonside 
+  /// constructor.
+  final Set<ConstructorFieldModel> mutableConstructorFields;
 
   /// Responsible for writing all required methods into the [StringBuffer]
   void write(StringBuffer stringBuffer) {
@@ -121,7 +131,7 @@ abstract class BaseMatcherMethodsCodeBuilder {
       ..writeln('final elements = finder.evaluate();\n')
       ..writeln('for(final element in elements) {')
       ..writeln(
-        '''if (element.widget is ${_extract.className}) {''',
+        '''if (element.widget is ${extract.className}) {''',
       )
       ..writeln(_writeValidationCode())
       ..writeln('}')
@@ -137,17 +147,17 @@ abstract class BaseMatcherMethodsCodeBuilder {
   String _writeValidationCode() {
     final buffer = StringBuffer();
 
-    final fields = _extract.declarations;
+    final fields = extract.declarations;
 
     if (fields?.isEmpty ?? true) {
       buffer.writeln('matchedCount++;');
     } else {
       buffer
-        ..writeln('final widget = element.widget as ${_extract.className};\n')
+        ..writeln('final widget = element.widget as ${extract.className};\n')
         ..write('if (');
       for (var i = 0; i < fields!.length; i++) {
         buffer.write(
-          getValidationCodeFromExtract(
+          getConditionCodeFromExtract(
             fields[i],
             first: i == 0,
             writeFirstKeyword: '',
@@ -197,10 +207,10 @@ abstract class BaseMatcherMethodsCodeBuilder {
 /// Builds matcher method that ensures only one widget is matched
 class MatchOneWidgetMethodsBuilder extends BaseMatcherMethodsCodeBuilder {
   /// Mandatory [ClassElementExtract]
-  MatchOneWidgetMethodsBuilder(super.extract);
+  MatchOneWidgetMethodsBuilder(super.extract, super.mutableConstructorFields);
 
   @override
-  String get className => _extract.className!;
+  String get className => extract.className!;
 
   @override
   String get expectCount => 'one';
@@ -212,7 +222,7 @@ class MatchOneWidgetMethodsBuilder extends BaseMatcherMethodsCodeBuilder {
   String _writeValidationCode() {
     final buffer = StringBuffer();
 
-    final fields = _extract.declarations;
+    final fields = extract.declarations;
 
     if (fields?.isEmpty ?? true) {
       buffer
@@ -222,7 +232,7 @@ class MatchOneWidgetMethodsBuilder extends BaseMatcherMethodsCodeBuilder {
       for (var i = 0; i < fields!.length; i++) {
         buffer
           ..writeln('matchedCount++;')
-          ..write(getValidationCodeFromExtract(fields[i], first: i == 0));
+          ..write(getConditionCodeFromExtract(fields[i], first: i == 0));
       }
     }
 
@@ -236,17 +246,20 @@ class MatchOneWidgetMethodsBuilder extends BaseMatcherMethodsCodeBuilder {
     stringBuffer
       ..writeln("if(matchState['custom.count'] <= 0) {")
       ..writeln(
-        """mismatchDescription.add('zero ${_extract.className} widgets found but one was expected');""",
+        """mismatchDescription.add('zero ${extract.className} widgets found but one was expected');""",
       )
       ..writeln('}\n')
       ..writeln("else if(matchState['custom.count'] > 1) {")
       ..writeln(
-        """mismatchDescription.add('found multiple ${_extract.className} widgets but one was expected');""",
+        """mismatchDescription.add('found multiple ${extract.className} widgets but one was expected');""",
       )
       ..writeln('}\n')
-      ..write(_getWidgetInitializationCode(_extract.declarations ?? []))
+      ..write(_getWidgetInitializationCode(extract.declarations ?? []))
       ..writeAll(
-        getMatchOneDeclarationsMismatchCheckCode(_extract.declarations ?? []),
+        getMatchOneDeclarationsMismatchCheckCode(
+          extract.declarations ?? [],
+          mutableConstructorFields,
+        ),
         '\n',
       )
       ..writeln('return mismatchDescription;');
@@ -257,10 +270,13 @@ class MatchOneWidgetMethodsBuilder extends BaseMatcherMethodsCodeBuilder {
 class MatchAtleastOneWidgetMethodsBuilder
     extends BaseMatcherMethodsCodeBuilder {
   /// Mandatory [ClassElementExtract]
-  MatchAtleastOneWidgetMethodsBuilder(super.extract);
+  MatchAtleastOneWidgetMethodsBuilder(
+    super.extract,
+    super.mutableConstructorFields,
+  );
 
   @override
-  String get className => _extract.className!;
+  String get className => extract.className!;
 
   @override
   String get expectCount => 'atleast one';
@@ -275,12 +291,15 @@ class MatchAtleastOneWidgetMethodsBuilder
     stringBuffer
       ..writeln("if(matchState['custom.matchedCount'] <= 0) {")
       ..writeln(
-        """mismatchDescription.add('found zero ${_extract.className} widgets but at least one was expected');""",
+        """mismatchDescription.add('found zero ${extract.className} widgets but at least one was expected');""",
       )
       ..writeln('}\n')
-      ..write(_getWidgetInitializationCode(_extract.declarations ?? []))
+      ..write(_getWidgetInitializationCode(extract.declarations ?? []))
       ..writeAll(
-        getMatchOneDeclarationsMismatchCheckCode(_extract.declarations ?? []),
+        getMatchOneDeclarationsMismatchCheckCode(
+          extract.declarations ?? [],
+          mutableConstructorFields,
+        ),
         '\n',
       )
       ..writeln('return mismatchDescription;');
@@ -290,10 +309,10 @@ class MatchAtleastOneWidgetMethodsBuilder
 /// Builds matcher method that ensures exact N number of widgets is matched
 class MatchNWidgetMethodsBuilder extends BaseMatcherMethodsCodeBuilder {
   /// Mandatory [ClassElementExtract]
-  MatchNWidgetMethodsBuilder(super.extract);
+  MatchNWidgetMethodsBuilder(super.extract, super.mutableConstructorFields);
 
   @override
-  String get className => _extract.className!;
+  String get className => extract.className!;
 
   @override
   String get expectCount => r'$_n';
@@ -308,12 +327,15 @@ class MatchNWidgetMethodsBuilder extends BaseMatcherMethodsCodeBuilder {
     stringBuffer
       ..writeln("if(matchState['custom.matchedCount'] != _n) {")
       ..writeln(
-        """mismatchDescription.add('found \${matchState['custom.matchedCount']} ${_extract.className} widgets \$_n was expected');""",
+        """mismatchDescription.add('found \${matchState['custom.matchedCount']} ${extract.className} widgets \$_n was expected');""",
       )
       ..writeln('}\n')
-      ..write(_getWidgetInitializationCode(_extract.declarations ?? []))
+      ..write(_getWidgetInitializationCode(extract.declarations ?? []))
       ..writeAll(
-        getMatchOneDeclarationsMismatchCheckCode(_extract.declarations ?? []),
+        getMatchOneDeclarationsMismatchCheckCode(
+          extract.declarations ?? [],
+          mutableConstructorFields,
+        ),
         '\n',
       )
       ..writeln('return mismatchDescription;');
@@ -323,10 +345,10 @@ class MatchNWidgetMethodsBuilder extends BaseMatcherMethodsCodeBuilder {
 /// Builds matcher method that ensures no widget is matched
 class MatchNoWidgetMethodsBuilder extends BaseMatcherMethodsCodeBuilder {
   /// Mandatory [ClassElementExtract]
-  MatchNoWidgetMethodsBuilder(super.extract);
+  MatchNoWidgetMethodsBuilder(super.extract, super.mutableConstructorFields);
 
   @override
-  String get className => _extract.className!;
+  String get className => extract.className!;
 
   @override
   String get expectCount => 'no';
@@ -341,7 +363,7 @@ class MatchNoWidgetMethodsBuilder extends BaseMatcherMethodsCodeBuilder {
     stringBuffer
       ..writeln("if(matchState['custom.count'] >= 1) {")
       ..writeln(
-        """mismatchDescription.add('zero ${_extract.className} widgets expected but found \${matchState['custom.count'] ?? 0}');""",
+        """mismatchDescription.add('zero ${extract.className} widgets expected but found \${matchState['custom.count'] ?? 0}');""",
       )
       ..writeln('}')
       ..writeln('return mismatchDescription;');
@@ -352,23 +374,42 @@ class MatchNoWidgetMethodsBuilder extends BaseMatcherMethodsCodeBuilder {
 // ignore: public_member_api_docs
 Iterable<String> getMatchOneDeclarationsMismatchCheckCode(
   List<DeclarationExtract> declarations,
+  Set<ConstructorFieldModel> mutableConstructorFields,
 ) {
   return declarations.map(
     (e) {
       final isBool = e.type!.isDartCoreBool;
-      final defaultValue = getDefaultValueForDartType(e.type!);
 
+      final conditionValue = e.defaultValue ??
+          getConstructorNameInPlaceOfDefaultValue(e, isPrivate: true);
+
+      if (e.defaultValue == null) {
+        print('defaultValue is null, using type: ${e.name}');
+
+        mutableConstructorFields.add(
+          ConstructorFieldModel(
+            name: getConstructorNameInPlaceOfDefaultValue(e),
+            type: e.type!.dartTypeStr,
+          ),
+        );
+      }
       final entityCode = '''widget.${e.name}${e.isMethod ? '()' : ''}''';
 
       var code = '';
 
+      //TODO: There's likely to be an issue here, when default value selected for booleans declaration
       code +=
-          '''if(${isBool ? '!' : ''}$entityCode${!isBool ? '!= $defaultValue' : ''}) {\n''';
-      code +=
-          """mismatchDescription.add('${e.name} is "\${${isBool ? 'false' : entityCode}}" but ${isBool ? true : defaultValue} was expected');\n""";
-      code += '}\n\n';
+          '''if(${isBool ? '!' : ''}$entityCode${!isBool ? '!= $conditionValue' : ''}) {\n''';
 
-      return code;
+      if (e.defaultValue != null) {
+        code +=
+            """mismatchDescription.add("${e.name} is \${${isBool ? 'false' : entityCode}} but ${isBool ? true : conditionValue} was expected");\n""";
+      } else {
+        code +=
+            '''mismatchDescription.add("${e.name} is \${$entityCode} but ${getConstructorNameInPlaceOfDefaultValue(e, isPrivate: true)} was expected");\n''';
+      }
+
+      return code += '}\n\n';
     },
   );
 }

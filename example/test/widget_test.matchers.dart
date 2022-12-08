@@ -11,7 +11,11 @@ import 'package:example/main.dart';
 import 'package:stack_trace/stack_trace.dart' show Chain;
 
 class MyHomePageMatcher extends Matcher {
-  MyHomePageMatcher();
+  MyHomePageMatcher({
+    required List<DataRow> incrementCounterValue,
+  }) : _incrementCounterValue = incrementCounterValue;
+
+  final List<DataRow> _incrementCounterValue;
 
   @override
   Description describe(Description description) {
@@ -33,7 +37,8 @@ class MyHomePageMatcher extends Matcher {
         if (element.widget is MyHomePage) {
           final widget = element.widget as MyHomePage;
 
-          if (widget.title == 'love-title' && widget.incrementCounter() == []) {
+          if (widget.title == 'love-title' &&
+              widget.incrementCounter() == _incrementCounterValue) {
             matchedCount++;
           }
         }
@@ -75,14 +80,14 @@ class MyHomePageMatcher extends Matcher {
     final finder = matchState['custom.finder'];
     final widget = finder.evaluate().first.widget;
 
-    if (widget.title != '') {
+    if (widget.title != 'love-title') {
       mismatchDescription
-          .add('title is "${widget.title}" but ' ' was expected');
+          .add("title is ${widget.title} but 'love-title' was expected");
     }
 
-    if (widget.incrementCounter() != []) {
+    if (widget.incrementCounter() != _incrementCounterValue) {
       mismatchDescription.add(
-          'incrementCounter is "${widget.incrementCounter()}" but [] was expected');
+          "incrementCounter is ${widget.incrementCounter()} but _incrementCounterValue was expected");
     }
 
     return mismatchDescription;
@@ -217,6 +222,7 @@ class MyWorldWidgetMatcher extends Matcher {
   MyWorldWidgetMatcher({
     required int n,
   }) : _n = n;
+
   final int _n;
 
   @override

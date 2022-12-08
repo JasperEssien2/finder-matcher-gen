@@ -26,6 +26,7 @@ extension ElementExt on Element {
     return checker.hasAnnotationOf(this, throwOnUnresolved: false);
   }
 
+  /// Returns a list of annotated declaration object
   Iterable<DartObject> get getAnnotationObjects {
     const checker = TypeChecker.fromRuntime(MatchDeclaration);
 

@@ -96,7 +96,7 @@ abstract class BaseMatcherMethodsCodeBuilder {
   /// [ClassElementExtract] contains extracted information from [ClassElement]
   final ClassElementExtract extract;
 
-  /// A mutable set of constructor fields data that will be generated alonside 
+  /// A mutable set of constructor fields data that will be generated alonside
   /// constructor.
   final Set<ConstructorFieldModel> mutableConstructorFields;
 
@@ -384,8 +384,6 @@ Iterable<String> getMatchOneDeclarationsMismatchCheckCode(
           getConstructorNameInPlaceOfDefaultValue(e, isPrivate: true);
 
       if (e.defaultValue == null) {
-        print('defaultValue is null, using type: ${e.name}');
-
         mutableConstructorFields.add(
           ConstructorFieldModel(
             name: getConstructorNameInPlaceOfDefaultValue(e),
@@ -397,7 +395,7 @@ Iterable<String> getMatchOneDeclarationsMismatchCheckCode(
 
       var code = '';
 
-      //TODO: There's likely to be an issue here, when default value selected for booleans declaration
+      // TODO(jasperessien2): There's likely to be an issue here, when default value selected for booleans declaration
       code +=
           '''if(${isBool ? '!' : ''}$entityCode${!isBool ? '!= $conditionValue' : ''}) {\n''';
 

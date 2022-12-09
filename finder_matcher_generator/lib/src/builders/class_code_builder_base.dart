@@ -1,7 +1,6 @@
 import 'package:finder_matcher_generator/src/builders/override_methods_builder.dart';
 import 'package:finder_matcher_generator/src/class_visitor.dart';
 import 'package:finder_matcher_generator/src/models/class_extract_model.dart';
-import 'package:finder_matcher_generator/src/models/constructor_field_model.dart';
 import 'package:finder_matcher_generator/src/utils/utils_export.dart';
 import 'package:meta/meta.dart';
 
@@ -23,9 +22,6 @@ abstract class ClassCodeBuilder with OverrideMethodsBuiilder {
   /// The complete class string
   String get classCode =>
       _classHeaderBuffer.toString() + _classBodyBuffer.toString();
-
-  /// Defines the generated constructor fields and parameters
-  Iterable<ConstructorFieldModel> get constructorFields;
 
   /// The name to attach to existing class name, e.g HomePageMatchFinder
   /// where MatchFinder is the suffix and HomePage is the class name
@@ -86,6 +82,8 @@ abstract class ClassCodeBuilder with OverrideMethodsBuiilder {
   }
 
   List<String> _getConstructorParamFields() {
+    final constructorFields = classExtract.constructorFields ?? {};
+
     final paramBuffer = StringBuffer(constructorFields.isEmpty ? '' : '{');
     final initialisationBuffer =
         StringBuffer(constructorFields.isEmpty ? '' : ':');

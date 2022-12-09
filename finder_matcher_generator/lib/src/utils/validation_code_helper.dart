@@ -1,6 +1,5 @@
 import 'package:analyzer/dart/constant/value.dart';
 import 'package:finder_matcher_generator/src/models/class_extract_model.dart';
-import 'package:source_gen/source_gen.dart';
 
 /// Writes the code that validates if widget matches pattern
 String getConditionCodeFromExtract(
@@ -71,7 +70,7 @@ dynamic getDartObjectValue(DartObject dartObject) {
     return "'${dartObject.toStringValue()}'";
   }
 
-  throw InvalidGenerationSourceError('Unsupported type: $type');
+  return null;
 }
 
 /// When [DeclarationExtract] defaultValue is null, a constructor field will be

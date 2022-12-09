@@ -1,6 +1,7 @@
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/visitor.dart';
 import 'package:finder_matcher_generator/src/models/class_extract_model.dart';
+import 'package:finder_matcher_generator/src/models/constructor_field_model.dart';
 import 'package:finder_matcher_generator/src/utils/element_checker.dart';
 import 'package:finder_matcher_generator/src/utils/extensions.dart';
 import 'package:finder_matcher_generator/src/utils/validation_code_helper.dart';
@@ -23,23 +24,24 @@ class ClassVisitor extends SimpleElementVisitor<void> {
   @override
   void visitFieldElement(FieldElement element) {
     if (element.hasMatchFieldAnnotation) {
-      final annotationObjects = element.getAnnotationObjects;
+      final defaultValue = _getAnnotationDefaultValue(element);
 
-      final defaultValueObject = annotationObjects.isEmpty
-          ? null
-          : annotationObjects.first.getField('_defaultValue');
-
-      dynamic defaultValue;
-
-      if (defaultValueObject != null) {
-        defaultValue = getDartObjectValue(defaultValueObject);
+      /// Checks if annotation has a default value set, if not pass it as a
+      /// variable to the generated constructor
+      if (defaultValue == null) {
+        _classExtract = _classExtract.copyWithConstructorField(
+          fieldModel: ConstructorFieldModel(
+            name: '${element.name}Value',
+            type: element.type.dartTypeStr,
+          ),
+        );
       }
 
       ///Should throw an error when this field element does not conform
       ///to this package standard
       checkBadTypeByFieldElement(element);
 
-      _classExtract = _classExtract.addFieldOrMethodExtract(
+      _classExtract = _classExtract.copyWithDeclarationExtract(
         extract: DeclarationExtract(
           name: element.name,
           type: element.type,
@@ -57,7 +59,20 @@ class ClassVisitor extends SimpleElementVisitor<void> {
       ///to this package standard
       checkBadTypeByMethodElement(element);
 
-      _classExtract = _classExtract.addFieldOrMethodExtract(
+      final defaultValue = _getAnnotationDefaultValue(element);
+
+      /// Checks if annotation has a default value set, if not pass it as a
+      /// variable to the generated constructor
+      if (defaultValue == null) {
+        _classExtract = _classExtract.copyWithConstructorField(
+          fieldModel: ConstructorFieldModel(
+            name: '${element.name}Value',
+            type: element.returnType.dartTypeStr,
+          ),
+        );
+      }
+
+      _classExtract = _classExtract.copyWithDeclarationExtract(
         extract: DeclarationExtract(
           name: element.name,
           type: element.type.returnType,
@@ -66,5 +81,20 @@ class ClassVisitor extends SimpleElementVisitor<void> {
         ),
       );
     }
+  }
+
+  dynamic _getAnnotationDefaultValue(Element element) {
+    final annotationObjects = element.getAnnotationObjects;
+
+    final defaultValueObject = annotationObjects.isEmpty
+        ? null
+        : annotationObjects.first.getField('_defaultValue');
+
+    dynamic defaultValue;
+
+    if (defaultValueObject != null) {
+      defaultValue = getDartObjectValue(defaultValueObject);
+    }
+    return defaultValue;
   }
 }

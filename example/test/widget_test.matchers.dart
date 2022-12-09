@@ -15,7 +15,7 @@ matchesAtleastOneMyHomePage({required List<DataRow> incrementCounterValue}) =>
 
 final matchesOneMyApp = _MyAppMatcher();
 
-final matchesNMyWorldWidget = _MyWorldWidgetMatcher();
+matchesNMyWorldWidget({required int n}) => _MyWorldWidgetMatcher(n: n);
 
 class _MyHomePageMatcher extends Matcher {
   _MyHomePageMatcher({

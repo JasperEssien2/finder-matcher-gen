@@ -8,6 +8,7 @@ import 'package:build/build.dart';
 import 'package:finder_matcher_gen/finder_matcher_gen.dart';
 import 'package:finder_matcher_generator/src/class_visitor.dart';
 import 'package:finder_matcher_generator/src/models/class_extract_model.dart';
+import 'package:finder_matcher_generator/src/models/constructor_field_model.dart';
 import 'package:finder_matcher_generator/src/utils/utils_export.dart';
 import 'package:meta/meta.dart';
 import 'package:source_gen/source_gen.dart';
@@ -22,12 +23,20 @@ import 'package:source_gen/source_gen.dart';
 /// It depends on [ClassVisitor] which visit classes specified via the match
 /// annotation, performs checks and extract neccessary information need to
 /// generate a class code.
-///
-///
 abstract class BaseAnnotaionGenerator extends GeneratorForAnnotation<Match> {
   final _importsStringBuffer = StringBuffer();
   final _globalVariablesStringBuffer = StringBuffer();
   final _classesStringBuffer = StringBuffer();
+
+  /// Default constructor fields are fields that is needed by the generated
+  /// Finder or Matcher. For instance, to generate a Matcher with specification
+  /// `matchNWidget`, this will mean that a variable `n` will need to be
+  /// generated in the constructor.
+  ///
+  /// [defaultConstructorFields] is map that maps a `className` to
+  /// [Set<ConstructorFieldModel>], where [ConstructorFieldModel] is a data
+  /// class containing
+  Map<String, Set<ConstructorFieldModel>> get defaultConstructorFields;
 
   @override
   FutureOr<String> generateForAnnotatedElement(
@@ -75,18 +84,13 @@ abstract class BaseAnnotaionGenerator extends GeneratorForAnnotation<Match> {
       }
     }
 
-    // return (importsStringBuffer
-    //       ..write('\n')
-    //       ..writeln(classesStringBuffer.toString()))
-    //     .toString();
+    _importsStringBuffer
+      ..writeln('\n')
+      ..writeln(_globalVariablesStringBuffer.toString())
+      ..writeln('\n')
+      ..writeln(_classesStringBuffer.toString());
 
-    return '''
-      ${_importsStringBuffer
-          ..writeln('\n')
-          ..writeln(_globalVariablesStringBuffer.toString())
-          ..writeln('\n')
-          ..writeln(_classesStringBuffer.toString())}
-  ''';
+    return _importsStringBuffer.toString();
   }
 
   void _buildClassWithDeclarationValidation(ClassElement classElement) {
@@ -94,12 +98,17 @@ abstract class BaseAnnotaionGenerator extends GeneratorForAnnotation<Match> {
 
     classElement.visitChildren(classVisitor);
 
+    final classExtract = classVisitor.classExtract.copyWithConstructorFields(
+      fieldModels:
+          defaultConstructorFields[classVisitor.classExtract.className] ?? {},
+    );
+
     writeImports(
       _importsStringBuffer,
       classUri: classVisitor.classExtract.classUri,
     );
-    writeClassToBuffer(classVisitor.classExtract, _classesStringBuffer);
-    writeGlobalVariables(classVisitor.classExtract);
+    writeClassToBuffer(classExtract, _classesStringBuffer);
+    writeGlobalVariables(classExtract);
   }
 
   void _buildClassWithTypeValidation(
@@ -110,8 +119,11 @@ abstract class BaseAnnotaionGenerator extends GeneratorForAnnotation<Match> {
 
     writeImports(_importsStringBuffer, classUri: classUri);
 
-    final extract =
-        ClassElementExtract(className: className, classUri: classUri);
+    final extract = ClassElementExtract(
+      className: className,
+      classUri: classUri,
+      constructorFields: defaultConstructorFields[className],
+    );
 
     writeClassToBuffer(extract, _classesStringBuffer);
 
@@ -166,22 +178,21 @@ abstract class BaseAnnotaionGenerator extends GeneratorForAnnotation<Match> {
   void writeGlobalVariables(ClassElementExtract extract) {
     final generatedClassName = '${extract.generatedClassName}$suffix';
 
-    final declarationsWithNoDefaultValue =
-        _declarationsWithNoDefaultValue(extract);
+    final constructorFields = extract.constructorFields ?? {};
 
-    if (declarationsWithNoDefaultValue.isNotEmpty) {
+    if (constructorFields.isNotEmpty) {
       _globalVariablesStringBuffer
         ..write('${prefix(extract)}${extract.className}({')
         ..write(
-          declarationsWithNoDefaultValue
-              .map((e) => 'required ${e.type!.dartTypeStr} ${e.name}Value')
+          constructorFields
+              .map((e) => 'required ${e.type} ${e.name}')
               .toList()
               .join(', '),
         )
         ..write('}) => $generatedClassName(')
         ..write(
-          declarationsWithNoDefaultValue
-              .map((e) => '${e.name}Value: ${e.name}Value')
+          constructorFields
+              .map((e) => '${e.name}: ${e.name}')
               .toList()
               .join(', '),
         )
@@ -192,12 +203,4 @@ abstract class BaseAnnotaionGenerator extends GeneratorForAnnotation<Match> {
       );
     }
   }
-
-  List<DeclarationExtract> _declarationsWithNoDefaultValue(
-    ClassElementExtract element,
-  ) =>
-      element.declarations
-          ?.where((element) => element.defaultValue == null)
-          .toList() ??
-      [];
 }

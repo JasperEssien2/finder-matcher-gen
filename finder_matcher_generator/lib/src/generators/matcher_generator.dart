@@ -5,12 +5,14 @@ import 'package:finder_matcher_gen/finder_matcher_gen.dart';
 import 'package:finder_matcher_generator/src/builders/builders_export.dart';
 import 'package:finder_matcher_generator/src/generators/base_annotation_generator.dart';
 import 'package:finder_matcher_generator/src/models/class_extract_model.dart';
+import 'package:finder_matcher_generator/src/models/constructor_field_model.dart';
 import 'package:finder_matcher_generator/src/utils/utils_export.dart';
 import 'package:source_gen/source_gen.dart';
 
 /// A generator for generating Matcher classes
 class MatcherGenerator extends BaseAnnotaionGenerator {
   final _typeToSpecification = <String, MatchSpecification>{};
+  final _defaultConstructorFields = <String, Set<ConstructorFieldModel>>{};
 
   @override
   List<DartObject> generateFor(ConstantReader annotation) {
@@ -23,11 +25,21 @@ class MatcherGenerator extends BaseAnnotaionGenerator {
       final fieldTypeName =
           element.getField('_type')!.toTypeValue().toString().replaceAsterisk;
 
-      _typeToSpecification[fieldTypeName] = element
+      final specificationValue = element
           .getField('_specification')!
           .variable!
           .displayName
           .specificationValue;
+
+      _typeToSpecification[fieldTypeName] = specificationValue;
+
+      if (specificationValue == MatchSpecification.matchesNWidgets) {
+        if (!_defaultConstructorFields.containsKey(fieldTypeName)) {
+          _defaultConstructorFields[fieldTypeName] = {};
+        }
+        _defaultConstructorFields[fieldTypeName]!
+            .add(const ConstructorFieldModel(name: 'n', type: 'int'));
+      }
     }
     return types;
   }
@@ -50,7 +62,7 @@ class MatcherGenerator extends BaseAnnotaionGenerator {
   ) {
     final matcherGenerator = WidgetMatcherClassBuilder(
       extract,
-      _typeToSpecification[extract.className]!,
+      _getClassSpecification(extract)!,
     )..buildClassCode();
 
     classStringBuffer
@@ -60,7 +72,7 @@ class MatcherGenerator extends BaseAnnotaionGenerator {
 
   @override
   String prefix(ClassElementExtract extract) {
-    switch (_typeToSpecification[extract.className]) {
+    switch (_getClassSpecification(extract)) {
       case MatchSpecification.matchesOneWidget:
         return 'matchesOne';
       case MatchSpecification.matchesNoWidget:
@@ -76,4 +88,11 @@ class MatcherGenerator extends BaseAnnotaionGenerator {
 
   @override
   String get suffix => 'Matcher';
+
+  MatchSpecification? _getClassSpecification(ClassElementExtract extract) =>
+      _typeToSpecification[extract.className];
+
+  @override
+  Map<String, Set<ConstructorFieldModel>> get defaultConstructorFields =>
+      _defaultConstructorFields;
 }

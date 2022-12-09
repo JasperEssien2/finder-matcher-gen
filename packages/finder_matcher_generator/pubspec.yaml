@@ -1,6 +1,7 @@
 name: finder_matcher_generator
 description: A Flutter package for generating custom Finders and Matchers for widget tests.
 version: 0.0.1
+publish_to: none
 
 environment:
   sdk: ">=2.18.0 <3.0.0"
@@ -12,7 +13,7 @@ dependencies:
   finder_matcher_gen: 
     git: 
       url: https://github.com/JasperEssien2/finder-matcher-gen.git
-      ref: master
+      ref: chore/restructure-package
       path: packages/finder_matcher_gen
   meta: ^1.8.0
   path: ^1.8.2
@@ -25,7 +26,7 @@ dev_dependencies:
   finder_matcher_generator: 
     git: 
       url: https://github.com/JasperEssien2/finder-matcher-gen.git
-      ref: master
+      ref: chore/restructure-package
       path: packages/finder_matcher_generator
   mocktail: ^0.3.0
   test: ^1.19.2

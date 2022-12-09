@@ -14,8 +14,11 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  finder_matcher_gen:
-    path: ../finder_matcher_gen
+  finder_matcher_gen: 
+    git: 
+      url: https://github.com/JasperEssien2/finder-matcher-gen.git
+      ref: chore/restructure-package
+      path: packages/finder_matcher_gen
 
   cupertino_icons: ^1.0.2
   
@@ -24,9 +27,6 @@ dev_dependencies:
     sdk: flutter
   
   build_runner:
-  finder_matcher_generator:
-    path: ../finder_matcher_generator
-    
   flutter_lints: ^2.0.0
 
 flutter:

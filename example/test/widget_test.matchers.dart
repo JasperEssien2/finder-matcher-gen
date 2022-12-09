@@ -15,6 +15,8 @@ matchesAtleastOneMyHomePage({required List<DataRow> incrementCounterValue}) =>
 
 final matchesOneMyApp = _MyAppMatcher();
 
+final matchesNoFileImage = _FileImageMatcher();
+
 matchesNMyWorldWidget({required int n}) => _MyWorldWidgetMatcher(n: n);
 
 class _MyHomePageMatcher extends Matcher {

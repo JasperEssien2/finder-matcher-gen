@@ -108,7 +108,6 @@ abstract class BaseAnnotaionGenerator extends GeneratorForAnnotation<Match> {
       classUri: classVisitor.classExtract.classUri,
     );
     writeClassToBuffer(classExtract, _classesStringBuffer);
-    writeGlobalVariables(classExtract);
   }
 
   void _buildClassWithTypeValidation(
@@ -126,8 +125,6 @@ abstract class BaseAnnotaionGenerator extends GeneratorForAnnotation<Match> {
     );
 
     writeClassToBuffer(extract, _classesStringBuffer);
-
-    writeGlobalVariables(extract);
   }
 
   /// A getter specifying the annotation field name to generate for
@@ -161,22 +158,20 @@ abstract class BaseAnnotaionGenerator extends GeneratorForAnnotation<Match> {
   ///  from [ClassElement].
   ///
   /// The [StringBuffer] is where you write the code to
+
+  @mustCallSuper
   void writeClassToBuffer(
     ClassElementExtract extract,
     StringBuffer classStringBuffer,
-  );
-
-  /// Used to prefix global variables names
-  ///
-  /// [ClassElementExtract] get neccessary class information
-  String prefix(ClassElementExtract extract);
-
-  /// A name that is appended to generated class
-  String get suffix;
+  ) {
+    writeGlobalVariables(extract);
+  }
 
   /// Writes global instantiation of generated classes
   void writeGlobalVariables(ClassElementExtract extract) {
     final generatedClassName = '${extract.generatedClassName}$suffix';
+
+    print('GENErATED CLASS NAME ----------------- $generatedClassName');
 
     final constructorFields = extract.constructorFields ?? {};
 
@@ -203,4 +198,12 @@ abstract class BaseAnnotaionGenerator extends GeneratorForAnnotation<Match> {
       );
     }
   }
+
+  /// Used to prefix global variables names
+  ///
+  /// [ClassElementExtract] get neccessary class information
+  String prefix(ClassElementExtract extract);
+
+  /// A name that is appended to generated class
+  String get suffix;
 }

@@ -23,6 +23,8 @@ class FinderGenerator extends BaseAnnotaionGenerator {
     classStringBuffer
       ..write(finderGenerator.classCode)
       ..writeln('\n\n');
+
+    super.writeClassToBuffer(extract, classStringBuffer);
   }
 
   @override

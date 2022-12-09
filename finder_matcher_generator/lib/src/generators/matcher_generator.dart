@@ -68,6 +68,8 @@ class MatcherGenerator extends BaseAnnotaionGenerator {
     classStringBuffer
       ..write(matcherGenerator.classCode)
       ..writeln('\n\n');
+
+    super.writeClassToBuffer(extract, classStringBuffer);
   }
 
   @override

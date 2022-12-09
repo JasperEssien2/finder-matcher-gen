@@ -155,7 +155,9 @@ abstract class BaseAnnotaionGenerator extends GeneratorForAnnotation<Match> {
   );
 
   /// Used to prefix global variables names
-  String get prefix;
+  ///
+  /// [ClassElementExtract] get neccessary class information
+  String prefix(ClassElementExtract extract);
 
   /// A name that is appended to generated class
   String get suffix;
@@ -169,7 +171,7 @@ abstract class BaseAnnotaionGenerator extends GeneratorForAnnotation<Match> {
 
     if (declarationsWithNoDefaultValue.isNotEmpty) {
       _globalVariablesStringBuffer
-        ..write('$generatedClassName $prefix${extract.className}({')
+        ..write('$generatedClassName ${prefix(extract)}${extract.className}({')
         ..write(
           declarationsWithNoDefaultValue
               .map((e) => 'required ${e.type!.dartTypeStr} ${e.name}Value')
@@ -186,7 +188,7 @@ abstract class BaseAnnotaionGenerator extends GeneratorForAnnotation<Match> {
         ..write('); \n\n');
     } else {
       _globalVariablesStringBuffer.writeln(
-        'final $prefix${extract.className} = $generatedClassName(); \n',
+        '''final ${prefix(extract)}${extract.className} = $generatedClassName(); \n''',
       );
     }
   }

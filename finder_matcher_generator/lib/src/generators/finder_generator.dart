@@ -25,7 +25,7 @@ class FinderGenerator extends BaseAnnotaionGenerator {
   }
 
   @override
-  String get prefix => 'find';
+  String prefix(ClassElementExtract extract) => 'find';
 
   @override
   String get suffix => 'MatchFinder';

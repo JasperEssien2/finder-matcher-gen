@@ -59,7 +59,20 @@ class MatcherGenerator extends BaseAnnotaionGenerator {
   }
 
   @override
-  String get prefix => 'matches';
+  String prefix(ClassElementExtract extract) {
+    switch (_typeToSpecification[extract.className]) {
+      case MatchSpecification.matchesOneWidget:
+        return 'matchesOne';
+      case MatchSpecification.matchesNoWidget:
+        return 'matchesNo';
+      case MatchSpecification.matchesAtleastOneWidget:
+        return 'matchesAtleastOne';
+      case MatchSpecification.matchesNWidgets:
+        return 'matchesN';
+      case null:
+        return 'matches';
+    }
+  }
 
   @override
   String get suffix => 'Matcher';

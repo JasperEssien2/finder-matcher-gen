@@ -5,11 +5,10 @@ import 'dart:async';
 import 'package:analyzer/dart/constant/value.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:build/build.dart';
-import 'package:finder_matcher_gen/finder_matcher_gen.dart';
-import 'package:finder_matcher_generator/src/class_visitor.dart';
-import 'package:finder_matcher_generator/src/models/class_extract_model.dart';
-import 'package:finder_matcher_generator/src/models/constructor_field_model.dart';
-import 'package:finder_matcher_generator/src/utils/utils_export.dart';
+import 'package:finder_matcher_gen/src/class_visitor.dart';
+import 'package:finder_matcher_gen/src/models/class_extract_model.dart';
+import 'package:finder_matcher_gen/src/models/constructor_field_model.dart';
+import 'package:finder_matcher_gen/src/utils/utils_export.dart';
 import 'package:meta/meta.dart';
 import 'package:source_gen/source_gen.dart';
 

@@ -1,10 +1,7 @@
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/visitor.dart';
-import 'package:finder_matcher_generator/src/models/class_extract_model.dart';
-import 'package:finder_matcher_generator/src/models/constructor_field_model.dart';
-import 'package:finder_matcher_generator/src/utils/element_checker.dart';
-import 'package:finder_matcher_generator/src/utils/extensions.dart';
-import 'package:finder_matcher_generator/src/utils/validation_code_helper.dart';
+import 'package:finder_matcher_gen/src/models/models_export.dart';
+import 'package:finder_matcher_gen/src/utils/utils_export.dart';
 
 /// A visitor that visits widget elements and extracts neccessary widget info
 class ClassVisitor extends SimpleElementVisitor<void> {

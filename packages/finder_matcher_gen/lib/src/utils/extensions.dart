@@ -1,8 +1,8 @@
 import 'package:analyzer/dart/constant/value.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
-import 'package:finder_matcher_gen/finder_matcher_gen.dart';
-import 'package:finder_matcher_generator/src/utils/element_checker.dart';
+import 'package:finder_matcher_annotation/finder_matcher_annotation.dart';
+import 'package:finder_matcher_gen/src/utils/element_checker.dart';
 import 'package:source_gen/source_gen.dart';
 
 /// An extension to provide additional functionalities for String

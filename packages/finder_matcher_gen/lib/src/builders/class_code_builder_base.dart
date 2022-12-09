@@ -1,7 +1,7 @@
-import 'package:finder_matcher_generator/src/builders/override_methods_builder.dart';
-import 'package:finder_matcher_generator/src/class_visitor.dart';
-import 'package:finder_matcher_generator/src/models/class_extract_model.dart';
-import 'package:finder_matcher_generator/src/utils/utils_export.dart';
+import 'package:finder_matcher_gen/src/builders/override_methods_builder.dart';
+import 'package:finder_matcher_gen/src/class_visitor.dart';
+import 'package:finder_matcher_gen/src/models/models_export.dart';
+import 'package:finder_matcher_gen/src/utils/utils_export.dart';
 import 'package:meta/meta.dart';
 
 /// The base class for class generator

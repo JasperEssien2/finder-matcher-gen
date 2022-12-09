@@ -1,12 +1,11 @@
 // ignore_for_file: type_annotate_public_apis
 
 import 'package:analyzer/dart/constant/value.dart';
-import 'package:finder_matcher_gen/finder_matcher_gen.dart';
-import 'package:finder_matcher_generator/src/builders/builders_export.dart';
-import 'package:finder_matcher_generator/src/generators/base_annotation_generator.dart';
-import 'package:finder_matcher_generator/src/models/class_extract_model.dart';
-import 'package:finder_matcher_generator/src/models/constructor_field_model.dart';
-import 'package:finder_matcher_generator/src/utils/utils_export.dart';
+import 'package:finder_matcher_annotation/finder_matcher_annotation.dart';
+import 'package:finder_matcher_gen/src/builders/builders_export.dart';
+import 'package:finder_matcher_gen/src/generators/base_annotation_generator.dart';
+import 'package:finder_matcher_gen/src/models/models_export.dart';
+import 'package:finder_matcher_gen/src/utils/utils_export.dart';
 import 'package:source_gen/source_gen.dart';
 
 /// A generator for generating Matcher classes
@@ -25,11 +24,10 @@ class MatcherGenerator extends BaseAnnotaionGenerator {
       final fieldTypeName =
           element.getField('_type')!.toTypeValue().toString().replaceAsterisk;
 
-      final specificationValue = element
+      final MatchSpecification specificationValue = element
           .getField('_specification')!
           .variable!
-          .displayName
-          .specificationValue;
+          .displayName.specificationValue;
 
       _typeToSpecification[fieldTypeName] = specificationValue;
 

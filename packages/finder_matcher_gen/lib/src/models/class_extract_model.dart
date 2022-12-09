@@ -4,7 +4,7 @@ import 'package:analyzer/dart/constant/value.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:equatable/equatable.dart';
-import 'package:finder_matcher_generator/src/models/constructor_field_model.dart';
+import 'package:finder_matcher_gen/src/models/constructor_field_model.dart';
 
 class ClassElementExtract extends Equatable {
   const ClassElementExtract({
@@ -54,7 +54,7 @@ class ClassElementExtract extends Equatable {
     return copyWith(constructorFields: fieldList);
   }
 
-   ClassElementExtract copyWithConstructorFields({
+  ClassElementExtract copyWithConstructorFields({
     required Set<ConstructorFieldModel> fieldModels,
   }) {
     final fieldList = (constructorFields ?? {})..addAll(fieldModels);

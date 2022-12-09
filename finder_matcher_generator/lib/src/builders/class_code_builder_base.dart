@@ -1,7 +1,6 @@
 import 'package:finder_matcher_generator/src/builders/override_methods_builder.dart';
 import 'package:finder_matcher_generator/src/class_visitor.dart';
 import 'package:finder_matcher_generator/src/models/class_extract_model.dart';
-import 'package:finder_matcher_generator/src/models/constructor_field_model.dart';
 import 'package:finder_matcher_generator/src/utils/utils_export.dart';
 import 'package:meta/meta.dart';
 
@@ -24,9 +23,6 @@ abstract class ClassCodeBuilder with OverrideMethodsBuiilder {
   String get classCode =>
       _classHeaderBuffer.toString() + _classBodyBuffer.toString();
 
-  /// Defines the generated constructor fields and parameters
-  Iterable<ConstructorFieldModel> get constructorFields;
-
   /// The name to attach to existing class name, e.g HomePageMatchFinder
   /// where MatchFinder is the suffix and HomePage is the class name
   String get suffix;
@@ -34,7 +30,7 @@ abstract class ClassCodeBuilder with OverrideMethodsBuiilder {
   /// Indicates if this class should be marked const or not
   bool get isClassConst => false;
 
-  ///Writes class header and body into a [StringBuffer] 
+  ///Writes class header and body into a [StringBuffer]
   void buildClassCode() {
     // Constructors and methods writes to different buffers.
     // Constructor parameters may sometimes depend on the generated methods.
@@ -56,7 +52,7 @@ abstract class ClassCodeBuilder with OverrideMethodsBuiilder {
       return;
     }
     _classHeaderBuffer.writeln(
-      'class ${classExtract.className!}$suffix extends $suffix {',
+      'class ${classExtract.generatedClassName!}$suffix extends $suffix {',
     );
   }
 
@@ -77,7 +73,7 @@ abstract class ClassCodeBuilder with OverrideMethodsBuiilder {
 
     _classHeaderBuffer
       ..write(
-        '${isClassConst ? 'const' : ''} ${classExtract.className!}$suffix(',
+        '''${isClassConst ? 'const' : ''} ${classExtract.generatedClassName!}$suffix(''',
       )
       ..write(constructorParamsCodeList[0])
       ..write(')${constructorParamsCodeList[1]}')
@@ -86,6 +82,8 @@ abstract class ClassCodeBuilder with OverrideMethodsBuiilder {
   }
 
   List<String> _getConstructorParamFields() {
+    final constructorFields = classExtract.constructorFields ?? {};
+
     final paramBuffer = StringBuffer(constructorFields.isEmpty ? '' : '{');
     final initialisationBuffer =
         StringBuffer(constructorFields.isEmpty ? '' : ':');

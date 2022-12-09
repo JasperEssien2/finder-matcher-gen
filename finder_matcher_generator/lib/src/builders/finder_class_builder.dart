@@ -1,5 +1,4 @@
 import 'package:finder_matcher_generator/src/builders/class_code_builder_base.dart';
-import 'package:finder_matcher_generator/src/models/constructor_field_model.dart';
 import 'package:finder_matcher_generator/src/models/models_export.dart';
 import 'package:finder_matcher_generator/src/utils/utils_export.dart';
 
@@ -8,8 +7,6 @@ class FinderClassBuilder extends ClassCodeBuilder {
   /// [FinderClassBuilder] uses the information gotten from
   /// [ClassElementExtract] to write the Finder class
   FinderClassBuilder(super.classExtract);
-
-  final _constructorFields = <ConstructorFieldModel>{};
 
   @override
   List<OverrideMethodModel> get methodsToOverride => [
@@ -60,7 +57,7 @@ class FinderClassBuilder extends ClassCodeBuilder {
       return;
     } else if (_isFirstCheckWrite(extracts)) {
       final declarationExtract = newExtracts.removeAt(0);
-      _checkAndGenerateValidationField(declarationExtract);
+
       codeBuffer
         ..writeln(
           '''if ($overridenMethodParamName.widget is ${classExtract.className}) {''',
@@ -73,7 +70,7 @@ class FinderClassBuilder extends ClassCodeBuilder {
         );
     } else {
       final declarationExtract = newExtracts.removeAt(0);
-      _checkAndGenerateValidationField(declarationExtract);
+
       codeBuffer.write(getConditionCodeFromExtract(declarationExtract));
     }
 
@@ -90,22 +87,6 @@ class FinderClassBuilder extends ClassCodeBuilder {
         classExtract.declarations!.length == extracts.length;
   }
 
-  void _checkAndGenerateValidationField(DeclarationExtract extract) {
-    if (extract.defaultValue == null) {
-      _constructorFields.add(
-        ConstructorFieldModel(
-          name:
-              getConstructorNameInPlaceOfDefaultValue(extract),
-          type: extract.type!.dartTypeStr,
-        ),
-      );
-    }
-  }
-
   @override
   String get suffix => 'MatchFinder';
-
-  @override
-  Iterable<ConstructorFieldModel> get constructorFields =>
-      Set.unmodifiable(_constructorFields);
 }

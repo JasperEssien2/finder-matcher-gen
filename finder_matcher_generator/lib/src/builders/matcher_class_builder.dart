@@ -2,7 +2,6 @@ import 'package:analyzer/dart/element/element.dart';
 import 'package:finder_matcher_gen/finder_matcher_gen.dart';
 import 'package:finder_matcher_generator/src/builders/builders_export.dart';
 import 'package:finder_matcher_generator/src/models/class_extract_model.dart';
-import 'package:finder_matcher_generator/src/models/constructor_field_model.dart';
 import 'package:finder_matcher_generator/src/models/override_method_model.dart';
 import 'package:finder_matcher_generator/src/utils/utils_export.dart';
 import 'package:meta/meta.dart';
@@ -18,12 +17,6 @@ class WidgetMatcherClassBuilder extends ClassCodeBuilder {
   ) : _specification = specification;
 
   final MatchSpecification _specification;
-
-  final _constructorFields = <ConstructorFieldModel>{};
-
-  @override
-  Iterable<ConstructorFieldModel> get constructorFields =>
-      List.unmodifiable(_constructorFields);
 
   @override
   List<OverrideMethodModel> get methodsToOverride => [
@@ -64,20 +57,14 @@ class WidgetMatcherClassBuilder extends ClassCodeBuilder {
   BaseMatcherMethodsCodeBuilder get _getSpecificationCodeBuilder {
     switch (_specification) {
       case MatchSpecification.matchesNoWidget:
-        return MatchNoWidgetMethodsBuilder(classExtract, _constructorFields);
+        return MatchNoWidgetMethodsBuilder(classExtract);
       case MatchSpecification.matchesAtleastOneWidget:
-        return MatchAtleastOneWidgetMethodsBuilder(
-          classExtract,
-          _constructorFields,
-        );
+        return MatchAtleastOneWidgetMethodsBuilder(classExtract);
       case MatchSpecification.matchesNWidgets:
-        _constructorFields
-            .add(const ConstructorFieldModel(name: 'n', type: 'int'));
-
-        return MatchNWidgetMethodsBuilder(classExtract, _constructorFields);
+        return MatchNWidgetMethodsBuilder(classExtract);
 
       case MatchSpecification.matchesOneWidget:
-        return MatchOneWidgetMethodsBuilder(classExtract, _constructorFields);
+        return MatchOneWidgetMethodsBuilder(classExtract);
     }
   }
 
@@ -90,15 +77,10 @@ abstract class BaseMatcherMethodsCodeBuilder {
   /// Mandatory [ClassElementExtract]
   BaseMatcherMethodsCodeBuilder(
     this.extract,
-    this.mutableConstructorFields,
   );
 
   /// [ClassElementExtract] contains extracted information from [ClassElement]
   final ClassElementExtract extract;
-
-  /// A mutable set of constructor fields data that will be generated alonside
-  /// constructor.
-  final Set<ConstructorFieldModel> mutableConstructorFields;
 
   /// Responsible for writing all required methods into the [StringBuffer]
   void write(StringBuffer stringBuffer) {
@@ -207,7 +189,7 @@ abstract class BaseMatcherMethodsCodeBuilder {
 /// Builds matcher method that ensures only one widget is matched
 class MatchOneWidgetMethodsBuilder extends BaseMatcherMethodsCodeBuilder {
   /// Mandatory [ClassElementExtract]
-  MatchOneWidgetMethodsBuilder(super.extract, super.mutableConstructorFields);
+  MatchOneWidgetMethodsBuilder(super.extract);
 
   @override
   String get className => extract.className!;
@@ -256,10 +238,7 @@ class MatchOneWidgetMethodsBuilder extends BaseMatcherMethodsCodeBuilder {
       ..writeln('}\n')
       ..write(_getWidgetInitializationCode(extract.declarations ?? []))
       ..writeAll(
-        getMatchOneDeclarationsMismatchCheckCode(
-          extract.declarations ?? [],
-          mutableConstructorFields,
-        ),
+        getMatchOneDeclarationsMismatchCheckCode(extract.declarations ?? []),
         '\n',
       )
       ..writeln('return mismatchDescription;');
@@ -270,10 +249,7 @@ class MatchOneWidgetMethodsBuilder extends BaseMatcherMethodsCodeBuilder {
 class MatchAtleastOneWidgetMethodsBuilder
     extends BaseMatcherMethodsCodeBuilder {
   /// Mandatory [ClassElementExtract]
-  MatchAtleastOneWidgetMethodsBuilder(
-    super.extract,
-    super.mutableConstructorFields,
-  );
+  MatchAtleastOneWidgetMethodsBuilder(super.extract);
 
   @override
   String get className => extract.className!;
@@ -296,10 +272,7 @@ class MatchAtleastOneWidgetMethodsBuilder
       ..writeln('}\n')
       ..write(_getWidgetInitializationCode(extract.declarations ?? []))
       ..writeAll(
-        getMatchOneDeclarationsMismatchCheckCode(
-          extract.declarations ?? [],
-          mutableConstructorFields,
-        ),
+        getMatchOneDeclarationsMismatchCheckCode(extract.declarations ?? []),
         '\n',
       )
       ..writeln('return mismatchDescription;');
@@ -309,7 +282,7 @@ class MatchAtleastOneWidgetMethodsBuilder
 /// Builds matcher method that ensures exact N number of widgets is matched
 class MatchNWidgetMethodsBuilder extends BaseMatcherMethodsCodeBuilder {
   /// Mandatory [ClassElementExtract]
-  MatchNWidgetMethodsBuilder(super.extract, super.mutableConstructorFields);
+  MatchNWidgetMethodsBuilder(super.extract);
 
   @override
   String get className => extract.className!;
@@ -332,10 +305,7 @@ class MatchNWidgetMethodsBuilder extends BaseMatcherMethodsCodeBuilder {
       ..writeln('}\n')
       ..write(_getWidgetInitializationCode(extract.declarations ?? []))
       ..writeAll(
-        getMatchOneDeclarationsMismatchCheckCode(
-          extract.declarations ?? [],
-          mutableConstructorFields,
-        ),
+        getMatchOneDeclarationsMismatchCheckCode(extract.declarations ?? []),
         '\n',
       )
       ..writeln('return mismatchDescription;');
@@ -345,7 +315,7 @@ class MatchNWidgetMethodsBuilder extends BaseMatcherMethodsCodeBuilder {
 /// Builds matcher method that ensures no widget is matched
 class MatchNoWidgetMethodsBuilder extends BaseMatcherMethodsCodeBuilder {
   /// Mandatory [ClassElementExtract]
-  MatchNoWidgetMethodsBuilder(super.extract, super.mutableConstructorFields);
+  MatchNoWidgetMethodsBuilder(super.extract);
 
   @override
   String get className => extract.className!;
@@ -374,7 +344,7 @@ class MatchNoWidgetMethodsBuilder extends BaseMatcherMethodsCodeBuilder {
 // ignore: public_member_api_docs
 Iterable<String> getMatchOneDeclarationsMismatchCheckCode(
   List<DeclarationExtract> declarations,
-  Set<ConstructorFieldModel> mutableConstructorFields,
+  // Set<ConstructorFieldModel> mutableConstructorFields,
 ) {
   return declarations.map(
     (e) {
@@ -383,14 +353,6 @@ Iterable<String> getMatchOneDeclarationsMismatchCheckCode(
       final conditionValue = e.defaultValue ??
           getConstructorNameInPlaceOfDefaultValue(e, isPrivate: true);
 
-      if (e.defaultValue == null) {
-        mutableConstructorFields.add(
-          ConstructorFieldModel(
-            name: getConstructorNameInPlaceOfDefaultValue(e),
-            type: e.type!.dartTypeStr,
-          ),
-        );
-      }
       final entityCode = '''widget.${e.name}${e.isMethod ? '()' : ''}''';
 
       var code = '';

@@ -8,7 +8,9 @@ import 'package:build/build.dart';
 import 'package:finder_matcher_gen/finder_matcher_gen.dart';
 import 'package:finder_matcher_generator/src/class_visitor.dart';
 import 'package:finder_matcher_generator/src/models/class_extract_model.dart';
+import 'package:finder_matcher_generator/src/models/constructor_field_model.dart';
 import 'package:finder_matcher_generator/src/utils/utils_export.dart';
+import 'package:meta/meta.dart';
 import 'package:source_gen/source_gen.dart';
 
 /// Extends this class to create a generate a class code that conforms to
@@ -21,11 +23,20 @@ import 'package:source_gen/source_gen.dart';
 /// It depends on [ClassVisitor] which visit classes specified via the match
 /// annotation, performs checks and extract neccessary information need to
 /// generate a class code.
-///
-///
 abstract class BaseAnnotaionGenerator extends GeneratorForAnnotation<Match> {
   final _importsStringBuffer = StringBuffer();
+  final _globalVariablesStringBuffer = StringBuffer();
   final _classesStringBuffer = StringBuffer();
+
+  /// Default constructor fields are fields that is needed by the generated
+  /// Finder or Matcher. For instance, to generate a Matcher with specification
+  /// `matchNWidget`, this will mean that a variable `n` will need to be
+  /// generated in the constructor.
+  ///
+  /// [defaultConstructorFields] is map that maps a `className` to
+  /// [Set<ConstructorFieldModel>], where [ConstructorFieldModel] is a data
+  /// class containing
+  Map<String, Set<ConstructorFieldModel>> get defaultConstructorFields;
 
   @override
   FutureOr<String> generateForAnnotatedElement(
@@ -60,24 +71,10 @@ abstract class BaseAnnotaionGenerator extends GeneratorForAnnotation<Match> {
           ..addAll(classElement.fields)
           ..addAll(classElement.methods);
 
-        if (elements.hasAtleastOneMatchFieldAnnotation) {
-          final classVisitor = ClassVisitor();
-
-          classElement.visitChildren(classVisitor);
-
-          writeImports(
-            _importsStringBuffer,
-            classUri: classVisitor.classExtract.classUri,
-          );
-          writeClassToBuffer(classVisitor.classExtract, _classesStringBuffer);
+        if (elements.hasAtleastOneMatchDeclarationAnnotation) {
+          _buildClassWithDeclarationValidation(classElement);
         } else {
-          final classUri = classElement.librarySource.uri;
-
-          writeImports(_importsStringBuffer, classUri: classUri);
-          writeClassToBuffer(
-            ClassElementExtract(className: className, classUri: classUri),
-            _classesStringBuffer,
-          );
+          _buildClassWithTypeValidation(classElement, className);
         }
       } else {
         writeClassToBuffer(
@@ -87,22 +84,54 @@ abstract class BaseAnnotaionGenerator extends GeneratorForAnnotation<Match> {
       }
     }
 
-    // return (importsStringBuffer
-    //       ..write('\n')
-    //       ..writeln(classesStringBuffer.toString()))
-    //     .toString();
+    _importsStringBuffer
+      ..writeln('\n')
+      ..writeln(_globalVariablesStringBuffer.toString())
+      ..writeln('\n')
+      ..writeln(_classesStringBuffer.toString());
 
-    return '''
-      ${_importsStringBuffer
-          ..write('\n')
-          ..writeln(_classesStringBuffer.toString())}
-  ''';
+    return _importsStringBuffer.toString();
+  }
+
+  void _buildClassWithDeclarationValidation(ClassElement classElement) {
+    final classVisitor = ClassVisitor();
+
+    classElement.visitChildren(classVisitor);
+
+    final classExtract = classVisitor.classExtract.copyWithConstructorFields(
+      fieldModels:
+          defaultConstructorFields[classVisitor.classExtract.className] ?? {},
+    );
+
+    writeImports(
+      _importsStringBuffer,
+      classUri: classVisitor.classExtract.classUri,
+    );
+    writeClassToBuffer(classExtract, _classesStringBuffer);
+  }
+
+  void _buildClassWithTypeValidation(
+    ClassElement classElement,
+    String className,
+  ) {
+    final classUri = classElement.librarySource.uri;
+
+    writeImports(_importsStringBuffer, classUri: classUri);
+
+    final extract = ClassElementExtract(
+      className: className,
+      classUri: classUri,
+      constructorFields: defaultConstructorFields[className],
+    );
+
+    writeClassToBuffer(extract, _classesStringBuffer);
   }
 
   /// A getter specifying the annotation field name to generate for
   List<DartObject> generateFor(ConstantReader annotation);
 
   /// Responsible for writing the required imports for the generated class
+  @mustCallSuper
   void writeImports(StringBuffer importBuffer, {Uri? classUri}) {
     if (_importsStringBuffer.isEmpty) {
       /// Write the Flutter imports first
@@ -129,8 +158,50 @@ abstract class BaseAnnotaionGenerator extends GeneratorForAnnotation<Match> {
   ///  from [ClassElement].
   ///
   /// The [StringBuffer] is where you write the code to
+
+  @mustCallSuper
   void writeClassToBuffer(
     ClassElementExtract extract,
     StringBuffer classStringBuffer,
-  );
+  ) {
+    writeGlobalVariables(extract);
+  }
+
+  /// Writes global instantiation of generated classes
+  void writeGlobalVariables(ClassElementExtract extract) {
+    final generatedClassName = '${extract.generatedClassName}$suffix';
+
+    final constructorFields = extract.constructorFields ?? {};
+
+    if (constructorFields.isNotEmpty) {
+      _globalVariablesStringBuffer
+        ..write('${prefix(extract)}${extract.className}({')
+        ..write(
+          constructorFields
+              .map((e) => 'required ${e.type} ${e.name}')
+              .toList()
+              .join(', '),
+        )
+        ..write('}) => $generatedClassName(')
+        ..write(
+          constructorFields
+              .map((e) => '${e.name}: ${e.name}')
+              .toList()
+              .join(', '),
+        )
+        ..write('); \n\n');
+    } else {
+      _globalVariablesStringBuffer.writeln(
+        '''final ${prefix(extract)}${extract.className} = $generatedClassName(); \n''',
+      );
+    }
+  }
+
+  /// Used to prefix global variables names
+  ///
+  /// [ClassElementExtract] get neccessary class information
+  String prefix(ClassElementExtract extract);
+
+  /// A name that is appended to generated class
+  String get suffix;
 }

@@ -10,8 +10,17 @@ import 'package:example/main.dart';
 
 import 'package:stack_trace/stack_trace.dart' show Chain;
 
-class MyHomePageMatcher extends Matcher {
-  MyHomePageMatcher({
+matchesAtleastOneMyHomePage({required List<DataRow> incrementCounterValue}) =>
+    _MyHomePageMatcher(incrementCounterValue: incrementCounterValue);
+
+final matchesOneMyApp = _MyAppMatcher();
+
+final matchesNoFileImage = _FileImageMatcher();
+
+matchesNMyWorldWidget({required int n}) => _MyWorldWidgetMatcher(n: n);
+
+class _MyHomePageMatcher extends Matcher {
+  _MyHomePageMatcher({
     required List<DataRow> incrementCounterValue,
   }) : _incrementCounterValue = incrementCounterValue;
 
@@ -94,8 +103,8 @@ class MyHomePageMatcher extends Matcher {
   }
 }
 
-class MyAppMatcher extends Matcher {
-  MyAppMatcher();
+class _MyAppMatcher extends Matcher {
+  _MyAppMatcher();
 
   @override
   Description describe(Description description) {
@@ -157,8 +166,8 @@ class MyAppMatcher extends Matcher {
   }
 }
 
-class FileImageMatcher extends Matcher {
-  FileImageMatcher();
+class _FileImageMatcher extends Matcher {
+  _FileImageMatcher();
 
   @override
   Description describe(Description description) {
@@ -218,8 +227,8 @@ class FileImageMatcher extends Matcher {
   }
 }
 
-class MyWorldWidgetMatcher extends Matcher {
-  MyWorldWidgetMatcher({
+class _MyWorldWidgetMatcher extends Matcher {
+  _MyWorldWidgetMatcher({
     required int n,
   }) : _n = n;
 

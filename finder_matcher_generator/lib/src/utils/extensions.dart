@@ -38,7 +38,7 @@ extension ElementExt on Element {
 extension ElementListExt on List<Element> {
   /// Checks all element, Return true if annotated with [MatchDeclaration]
   /// otherwise return false
-  bool get hasAtleastOneMatchFieldAnnotation {
+  bool get hasAtleastOneMatchDeclarationAnnotation {
     for (final element in this) {
       if (element.hasMatchFieldAnnotation) {
         /// Ensures that annotation kind is supported

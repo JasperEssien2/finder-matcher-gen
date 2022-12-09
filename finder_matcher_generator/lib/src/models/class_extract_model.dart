@@ -4,44 +4,67 @@ import 'package:analyzer/dart/constant/value.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:equatable/equatable.dart';
+import 'package:finder_matcher_generator/src/models/constructor_field_model.dart';
 
 class ClassElementExtract extends Equatable {
   const ClassElementExtract({
     this.className,
     this.classUri,
     this.declarations,
+    this.constructorFields,
   });
 
   final String? className;
   final Uri? classUri;
 
   final List<DeclarationExtract>? declarations;
+  final Set<ConstructorFieldModel>? constructorFields;
+
+  String? get generatedClassName => className == null ? null : '_$className';
 
   ClassElementExtract copyWith({
     String? className,
     Uri? classUri,
     List<DeclarationExtract>? declarations,
+    Set<ConstructorFieldModel>? constructorFields,
   }) {
     return ClassElementExtract(
       className: className ?? this.className,
       classUri: classUri ?? this.classUri,
       declarations: declarations ?? this.declarations,
+      constructorFields: constructorFields ?? this.constructorFields,
     );
   }
 
-  ClassElementExtract addFieldOrMethodExtract({
+  ClassElementExtract copyWithDeclarationExtract({
     required DeclarationExtract extract,
   }) {
     final newDeclarations = (declarations ?? [])..add(extract);
 
     return copyWith(
-      declarations: declarations ?? newDeclarations,
+      declarations: newDeclarations,
     );
+  }
+
+  ClassElementExtract copyWithConstructorField({
+    required ConstructorFieldModel fieldModel,
+  }) {
+    final fieldList = (constructorFields ?? {})..add(fieldModel);
+
+    return copyWith(constructorFields: fieldList);
+  }
+
+   ClassElementExtract copyWithConstructorFields({
+    required Set<ConstructorFieldModel> fieldModels,
+  }) {
+    final fieldList = (constructorFields ?? {})..addAll(fieldModels);
+
+    return copyWith(constructorFields: fieldList);
   }
 
   @override
   String toString() {
-    return '''ClassElementExtract(className: $className, classUri: $classUri, methods: $declarations)''';
+    return '''ClassElementExtract(className: $className, classUri: $classUri, methods: $declarations, constructorFields: $constructorFields)''';
   }
 
   @override

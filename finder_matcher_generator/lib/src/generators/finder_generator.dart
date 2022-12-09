@@ -4,6 +4,7 @@ import 'package:analyzer/dart/constant/value.dart';
 import 'package:finder_matcher_generator/src/builders/builders_export.dart';
 import 'package:finder_matcher_generator/src/generators/base_annotation_generator.dart';
 import 'package:finder_matcher_generator/src/models/class_extract_model.dart';
+import 'package:finder_matcher_generator/src/models/constructor_field_model.dart';
 import 'package:source_gen/source_gen.dart';
 
 /// A generator for generating Finder classes
@@ -22,5 +23,16 @@ class FinderGenerator extends BaseAnnotaionGenerator {
     classStringBuffer
       ..write(finderGenerator.classCode)
       ..writeln('\n\n');
+
+    super.writeClassToBuffer(extract, classStringBuffer);
   }
+
+  @override
+  String prefix(ClassElementExtract extract) => 'find';
+
+  @override
+  String get suffix => 'MatchFinder';
+
+  @override
+  Map<String, Set<ConstructorFieldModel>> get defaultConstructorFields => {};
 }

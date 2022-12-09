@@ -10,6 +10,7 @@ Builder generateFinder(BuilderOptions options) => LibraryBuilder(
       generatedExtension: '.finders.dart',
     );
 
+/// An entry point for build_runner to generate Matcher classes
 Builder generateMatcher(BuilderOptions options) => LibraryBuilder(
       MatcherGenerator(),
       options: options,

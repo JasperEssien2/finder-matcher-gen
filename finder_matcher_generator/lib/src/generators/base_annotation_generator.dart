@@ -171,8 +171,6 @@ abstract class BaseAnnotaionGenerator extends GeneratorForAnnotation<Match> {
   void writeGlobalVariables(ClassElementExtract extract) {
     final generatedClassName = '${extract.generatedClassName}$suffix';
 
-    print('GENErATED CLASS NAME ----------------- $generatedClassName');
-
     final constructorFields = extract.constructorFields ?? {};
 
     if (constructorFields.isNotEmpty) {

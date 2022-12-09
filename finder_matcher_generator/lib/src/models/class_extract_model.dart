@@ -17,6 +17,8 @@ class ClassElementExtract extends Equatable {
 
   final List<DeclarationExtract>? declarations;
 
+  String? get generatedClassName => className == null ? null : '_$className';
+
   ClassElementExtract copyWith({
     String? className,
     Uri? classUri,

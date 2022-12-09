@@ -164,14 +164,14 @@ abstract class BaseAnnotaionGenerator extends GeneratorForAnnotation<Match> {
 
   /// Writes global instantiation of generated classes
   void writeGlobalVariables(ClassElementExtract extract) {
-    final generatedClassName = '${extract.className}$suffix';
+    final generatedClassName = '${extract.generatedClassName}$suffix';
 
     final declarationsWithNoDefaultValue =
         _declarationsWithNoDefaultValue(extract);
 
     if (declarationsWithNoDefaultValue.isNotEmpty) {
       _globalVariablesStringBuffer
-        ..write('$generatedClassName ${prefix(extract)}${extract.className}({')
+        ..write('${prefix(extract)}${extract.className}({')
         ..write(
           declarationsWithNoDefaultValue
               .map((e) => 'required ${e.type!.dartTypeStr} ${e.name}Value')

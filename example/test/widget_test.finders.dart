@@ -8,14 +8,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:example/main.dart';
 
-MyHomePageMatchFinder findMyHomePage(
-        {required List<DataRow> incrementCounterValue}) =>
-    MyHomePageMatchFinder(incrementCounterValue: incrementCounterValue);
+findMyHomePage({required List<DataRow> incrementCounterValue}) =>
+    _MyHomePageMatchFinder(incrementCounterValue: incrementCounterValue);
 
-final findMyApp = MyAppMatchFinder();
+final findMyApp = _MyAppMatchFinder();
 
-class MyHomePageMatchFinder extends MatchFinder {
-  MyHomePageMatchFinder({
+class _MyHomePageMatchFinder extends MatchFinder {
+  _MyHomePageMatchFinder({
     required List<DataRow> incrementCounterValue,
   }) : _incrementCounterValue = incrementCounterValue;
 
@@ -36,8 +35,8 @@ class MyHomePageMatchFinder extends MatchFinder {
   }
 }
 
-class MyAppMatchFinder extends MatchFinder {
-  MyAppMatchFinder();
+class _MyAppMatchFinder extends MatchFinder {
+  _MyAppMatchFinder();
 
   @override
   String get description => 'Finds MyApp widget';

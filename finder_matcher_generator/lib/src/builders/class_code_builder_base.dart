@@ -34,7 +34,7 @@ abstract class ClassCodeBuilder with OverrideMethodsBuiilder {
   /// Indicates if this class should be marked const or not
   bool get isClassConst => false;
 
-  ///Writes class header and body into a [StringBuffer] 
+  ///Writes class header and body into a [StringBuffer]
   void buildClassCode() {
     // Constructors and methods writes to different buffers.
     // Constructor parameters may sometimes depend on the generated methods.
@@ -56,7 +56,7 @@ abstract class ClassCodeBuilder with OverrideMethodsBuiilder {
       return;
     }
     _classHeaderBuffer.writeln(
-      'class ${classExtract.className!}$suffix extends $suffix {',
+      'class ${classExtract.generatedClassName!}$suffix extends $suffix {',
     );
   }
 
@@ -77,7 +77,7 @@ abstract class ClassCodeBuilder with OverrideMethodsBuiilder {
 
     _classHeaderBuffer
       ..write(
-        '${isClassConst ? 'const' : ''} ${classExtract.className!}$suffix(',
+        '''${isClassConst ? 'const' : ''} ${classExtract.generatedClassName!}$suffix(''',
       )
       ..write(constructorParamsCodeList[0])
       ..write(')${constructorParamsCodeList[1]}')

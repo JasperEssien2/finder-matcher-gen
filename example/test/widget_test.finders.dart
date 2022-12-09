@@ -8,6 +8,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:example/main.dart';
 
+MyHomePageMatchFinder findMyHomePage(
+        {required List<DataRow> incrementCounterValue}) =>
+    MyHomePageMatchFinder(incrementCounterValue: incrementCounterValue);
+
+final findMyApp = MyAppMatchFinder();
+
 class MyHomePageMatchFinder extends MatchFinder {
   MyHomePageMatchFinder({
     required List<DataRow> incrementCounterValue,

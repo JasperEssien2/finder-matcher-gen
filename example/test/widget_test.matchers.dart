@@ -10,6 +10,14 @@ import 'package:example/main.dart';
 
 import 'package:stack_trace/stack_trace.dart' show Chain;
 
+MyHomePageMatcher matchesMyHomePage(
+        {required List<DataRow> incrementCounterValue}) =>
+    MyHomePageMatcher(incrementCounterValue: incrementCounterValue);
+
+final matchesMyApp = MyAppMatcher();
+
+final matchesMyWorldWidget = MyWorldWidgetMatcher();
+
 class MyHomePageMatcher extends Matcher {
   MyHomePageMatcher({
     required List<DataRow> incrementCounterValue,

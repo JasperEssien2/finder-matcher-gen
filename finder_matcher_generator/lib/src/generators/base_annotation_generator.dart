@@ -9,6 +9,7 @@ import 'package:finder_matcher_gen/finder_matcher_gen.dart';
 import 'package:finder_matcher_generator/src/class_visitor.dart';
 import 'package:finder_matcher_generator/src/models/class_extract_model.dart';
 import 'package:finder_matcher_generator/src/utils/utils_export.dart';
+import 'package:meta/meta.dart';
 import 'package:source_gen/source_gen.dart';
 
 /// Extends this class to create a generate a class code that conforms to
@@ -25,6 +26,7 @@ import 'package:source_gen/source_gen.dart';
 ///
 abstract class BaseAnnotaionGenerator extends GeneratorForAnnotation<Match> {
   final _importsStringBuffer = StringBuffer();
+  final _globalVariablesStringBuffer = StringBuffer();
   final _classesStringBuffer = StringBuffer();
 
   @override
@@ -60,24 +62,10 @@ abstract class BaseAnnotaionGenerator extends GeneratorForAnnotation<Match> {
           ..addAll(classElement.fields)
           ..addAll(classElement.methods);
 
-        if (elements.hasAtleastOneMatchFieldAnnotation) {
-          final classVisitor = ClassVisitor();
-
-          classElement.visitChildren(classVisitor);
-
-          writeImports(
-            _importsStringBuffer,
-            classUri: classVisitor.classExtract.classUri,
-          );
-          writeClassToBuffer(classVisitor.classExtract, _classesStringBuffer);
+        if (elements.hasAtleastOneMatchDeclarationAnnotation) {
+          _buildClassWithDeclarationValidation(classElement);
         } else {
-          final classUri = classElement.librarySource.uri;
-
-          writeImports(_importsStringBuffer, classUri: classUri);
-          writeClassToBuffer(
-            ClassElementExtract(className: className, classUri: classUri),
-            _classesStringBuffer,
-          );
+          _buildClassWithTypeValidation(classElement, className);
         }
       } else {
         writeClassToBuffer(
@@ -94,15 +82,47 @@ abstract class BaseAnnotaionGenerator extends GeneratorForAnnotation<Match> {
 
     return '''
       ${_importsStringBuffer
-          ..write('\n')
+          ..writeln('\n')
+          ..writeln(_globalVariablesStringBuffer.toString())
+          ..writeln('\n')
           ..writeln(_classesStringBuffer.toString())}
   ''';
+  }
+
+  void _buildClassWithDeclarationValidation(ClassElement classElement) {
+    final classVisitor = ClassVisitor();
+
+    classElement.visitChildren(classVisitor);
+
+    writeImports(
+      _importsStringBuffer,
+      classUri: classVisitor.classExtract.classUri,
+    );
+    writeClassToBuffer(classVisitor.classExtract, _classesStringBuffer);
+    writeGlobalVariables(classVisitor.classExtract);
+  }
+
+  void _buildClassWithTypeValidation(
+    ClassElement classElement,
+    String className,
+  ) {
+    final classUri = classElement.librarySource.uri;
+
+    writeImports(_importsStringBuffer, classUri: classUri);
+
+    final extract =
+        ClassElementExtract(className: className, classUri: classUri);
+
+    writeClassToBuffer(extract, _classesStringBuffer);
+
+    writeGlobalVariables(extract);
   }
 
   /// A getter specifying the annotation field name to generate for
   List<DartObject> generateFor(ConstantReader annotation);
 
   /// Responsible for writing the required imports for the generated class
+  @mustCallSuper
   void writeImports(StringBuffer importBuffer, {Uri? classUri}) {
     if (_importsStringBuffer.isEmpty) {
       /// Write the Flutter imports first
@@ -133,4 +153,49 @@ abstract class BaseAnnotaionGenerator extends GeneratorForAnnotation<Match> {
     ClassElementExtract extract,
     StringBuffer classStringBuffer,
   );
+
+  /// Used to prefix global variables names
+  String get prefix;
+
+  /// A name that is appended to generated class
+  String get suffix;
+
+  /// Writes global instantiation of generated classes
+  void writeGlobalVariables(ClassElementExtract extract) {
+    final generatedClassName = '${extract.className}$suffix';
+
+    final declarationsWithNoDefaultValue =
+        _declarationsWithNoDefaultValue(extract);
+
+    if (declarationsWithNoDefaultValue.isNotEmpty) {
+      _globalVariablesStringBuffer
+        ..write('$generatedClassName $prefix${extract.className}({')
+        ..write(
+          declarationsWithNoDefaultValue
+              .map((e) => 'required ${e.type!.dartTypeStr} ${e.name}Value')
+              .toList()
+              .join(', '),
+        )
+        ..write('}) => $generatedClassName(')
+        ..write(
+          declarationsWithNoDefaultValue
+              .map((e) => '${e.name}Value: ${e.name}Value')
+              .toList()
+              .join(', '),
+        )
+        ..write('); \n\n');
+    } else {
+      _globalVariablesStringBuffer.writeln(
+        'final $prefix${extract.className} = $generatedClassName(); \n',
+      );
+    }
+  }
+
+  List<DeclarationExtract> _declarationsWithNoDefaultValue(
+    ClassElementExtract element,
+  ) =>
+      element.declarations
+          ?.where((element) => element.defaultValue == null)
+          .toList() ??
+      [];
 }

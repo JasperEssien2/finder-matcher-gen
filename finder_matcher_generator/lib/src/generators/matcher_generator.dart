@@ -57,4 +57,10 @@ class MatcherGenerator extends BaseAnnotaionGenerator {
       ..write(matcherGenerator.classCode)
       ..writeln('\n\n');
   }
+
+  @override
+  String get prefix => 'matches';
+
+  @override
+  String get suffix => 'Matcher';
 }

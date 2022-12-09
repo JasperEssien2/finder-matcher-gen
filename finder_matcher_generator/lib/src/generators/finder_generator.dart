@@ -23,4 +23,10 @@ class FinderGenerator extends BaseAnnotaionGenerator {
       ..write(finderGenerator.classCode)
       ..writeln('\n\n');
   }
+
+  @override
+  String get prefix => 'find';
+
+  @override
+  String get suffix => 'MatchFinder';
 }

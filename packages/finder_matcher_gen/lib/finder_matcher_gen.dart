@@ -1,2 +1,3 @@
-export 'src/annotations.dart';
-export 'src/extensions.dart';
+library finder_matcher_generator;
+
+export 'src/generators/finder_generator.dart';

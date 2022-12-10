@@ -13,8 +13,44 @@ extension StringExt on String {
 
 /// An extension of [DartType]
 extension DartTypeExt on DartType {
-  /// Utilises String extension to get the string [DartType] without asterisks
-  String get dartTypeStr => toString().replaceAsterisk;
+  /// Replaces all asterisks and generic from the [DartType] string
+  String get dartTypeStr =>
+      toString().replaceAsterisk.replaceAll(typeGenericParamStr ?? '', '');
+
+  /// If this [DartType] has an associated param, it returns it.
+  ///
+  /// For example: a [HomePage<T, R>] returns <T, R>
+  String? get typeGenericParamStr {
+    if (element == null) return null;
+
+    var className = '';
+
+    if (element is ClassElement) {
+      className = (element! as ClassElement)
+          .thisType
+          .getDisplayString(withNullability: false);
+    }
+
+    final start = className.indexOf('<');
+    final end = className.indexOf('>') + 1;
+
+    if (start == -1 || end == -1) return null;
+
+    final generic = className.substring(start, end);
+    return generic;
+  }
+
+  ///
+  String get removeGenericParamSOrReturntr {
+    final string = toString();
+
+    final start = string.indexOf('<');
+    final end = string.indexOf('>') + 1;
+
+    if (start == -1 || end == -1) return toString().replaceAsterisk;
+
+    return string.replaceRange(start, end, '').replaceAsterisk;
+  }
 }
 
 /// An extension of [Element]

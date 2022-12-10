@@ -22,16 +22,19 @@ class MatcherGenerator extends BaseAnnotaionGenerator {
     for (final element in annotationFields) {
       types.add(element.getField('_type')!);
 
-      final fieldTypeName =
-          element.getField('_type')!.toTypeValue().toString().replaceAsterisk;
+      final fieldTypeName = element
+          .getField('_type')
+          ?.toTypeValue()!
+          .removeGenericParamSOrReturntr;
 
+   
       final specificationValue = element
           .getField('_specification')!
           .variable!
           .displayName
           .specificationValue;
 
-      _typeToSpecification[fieldTypeName] = specificationValue;
+      _typeToSpecification[fieldTypeName!] = specificationValue;
 
       if (specificationValue == MatchSpecification.matchesNWidgets) {
         if (!_defaultConstructorFields.containsKey(fieldTypeName)) {

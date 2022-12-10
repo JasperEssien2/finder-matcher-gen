@@ -46,41 +46,30 @@ abstract class BaseAnnotaionGenerator extends GeneratorForAnnotation<Match> {
   ) async {
     final matchersObjects = generateFor(annotation);
 
-    for (final matcher in matchersObjects) {
-      final className = matcher.toTypeValue()!.dartTypeStr;
+    for (final objects in matchersObjects) {
+      final type = objects.toTypeValue()!;
 
-      final classLibraryElements = element.library!.importedLibraries
-          .map((e) => e.getClass(className))
-          .where((element) => element != null);
+      assert(
+        type.element != null && type.element is ClassElement,
+        'Element should be a class',
+      );
 
-      ///Ideally you should only get one class element (widget) matching this
-      ///class name from any of the imported library
-      if (classLibraryElements.isNotEmpty) {
-        if (classLibraryElements.length > 1) {
-          throwException(
-            'Found multiple classes with name $className. '
-            'Consider changing the name of one class to avoid name conflict',
-            element: element,
-          );
-        }
-        final classElement = classLibraryElements.first;
+      final classElement = type.element! as ClassElement;
 
-        checkBadTypeByClassElement(classElement!);
+      final generic = classElement.thisType.typeGenericParamStr;
 
-        final elements = List<Element>.from([])
-          ..addAll(classElement.fields)
-          ..addAll(classElement.methods);
+      final className = classElement.thisType.dartTypeStr;
 
-        if (elements.hasAtleastOneMatchDeclarationAnnotation) {
-          _buildClassWithDeclarationValidation(classElement);
-        } else {
-          _buildClassWithTypeValidation(classElement, className);
-        }
+      checkBadTypeByClassElement(classElement);
+
+      final elements = List<Element>.from([])
+        ..addAll(classElement.fields)
+        ..addAll(classElement.methods);
+
+      if (elements.hasAtleastOneMatchDeclarationAnnotation) {
+        _buildClassWithDeclarationValidation(classElement, generic);
       } else {
-        writeClassToBuffer(
-          ClassElementExtract(className: className),
-          _classesStringBuffer,
-        );
+        _buildClassWithTypeValidation(classElement, className, generic);
       }
     }
 
@@ -93,15 +82,21 @@ abstract class BaseAnnotaionGenerator extends GeneratorForAnnotation<Match> {
     return _importsStringBuffer.toString();
   }
 
-  void _buildClassWithDeclarationValidation(ClassElement classElement) {
+  void _buildClassWithDeclarationValidation(
+    ClassElement classElement,
+    String? genericParam,
+  ) {
     final classVisitor = ClassVisitor();
 
     classElement.visitChildren(classVisitor);
 
-    final classExtract = classVisitor.classExtract.copyWithConstructorFields(
-      fieldModels:
-          defaultConstructorFields[classVisitor.classExtract.className] ?? {},
-    );
+    final classExtract = classVisitor.classExtract
+        .copyWithConstructorFields(
+          fieldModels:
+              defaultConstructorFields[classVisitor.classExtract.className] ??
+                  {},
+        )
+        .copyWith(genericParam: genericParam);
 
     writeImports(
       _importsStringBuffer,
@@ -113,6 +108,7 @@ abstract class BaseAnnotaionGenerator extends GeneratorForAnnotation<Match> {
   void _buildClassWithTypeValidation(
     ClassElement classElement,
     String className,
+    String? genericParams,
   ) {
     final classUri = classElement.librarySource.uri;
 
@@ -122,6 +118,7 @@ abstract class BaseAnnotaionGenerator extends GeneratorForAnnotation<Match> {
       className: className,
       classUri: classUri,
       constructorFields: defaultConstructorFields[className],
+      genericParam: genericParams ?? '',
     );
 
     writeClassToBuffer(extract, _classesStringBuffer);
@@ -169,13 +166,16 @@ abstract class BaseAnnotaionGenerator extends GeneratorForAnnotation<Match> {
 
   /// Writes global instantiation of generated classes
   void writeGlobalVariables(ClassElementExtract extract) {
-    final generatedClassName = '${extract.generatedClassName}$suffix';
+    final generatedClassName =
+        '${extract.generatedClassName}$suffix${extract.genericParam}';
 
     final constructorFields = extract.constructorFields ?? {};
 
     if (constructorFields.isNotEmpty) {
       _globalVariablesStringBuffer
-        ..write('${prefix(extract)}${extract.className}({')
+        ..write(
+          '${prefix(extract)}${extract.className}${extract.genericParam}({',
+        )
         ..write(
           constructorFields
               .map((e) => 'required ${e.type} ${e.name}')

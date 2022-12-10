@@ -9,17 +9,19 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:example/main.dart';
 
 import 'package:stack_trace/stack_trace.dart' show Chain;
+import 'package:flutter/src/material/circle_avatar.dart';
 
-matchesAtleastOneMyHomePage({required List<DataRow> incrementCounterValue}) =>
-    _MyHomePageMatcher(incrementCounterValue: incrementCounterValue);
+matchesAtleastOneMyHomePage<T, R>(
+        {required List<DataRow> incrementCounterValue}) =>
+    _MyHomePageMatcher<T, R>(incrementCounterValue: incrementCounterValue);
 
 final matchesOneMyApp = _MyAppMatcher();
 
-final matchesNoFileImage = _FileImageMatcher();
+final matchesNoCircleAvatar = _CircleAvatarMatcher();
 
 matchesNMyWorldWidget({required int n}) => _MyWorldWidgetMatcher(n: n);
 
-class _MyHomePageMatcher extends Matcher {
+class _MyHomePageMatcher<T, R> extends Matcher {
   _MyHomePageMatcher({
     required List<DataRow> incrementCounterValue,
   }) : _incrementCounterValue = incrementCounterValue;
@@ -166,13 +168,13 @@ class _MyAppMatcher extends Matcher {
   }
 }
 
-class _FileImageMatcher extends Matcher {
-  _FileImageMatcher();
+class _CircleAvatarMatcher extends Matcher {
+  _CircleAvatarMatcher();
 
   @override
   Description describe(Description description) {
     return description
-        .add('matches no FileImage widget')
+        .add('matches no CircleAvatar widget')
         .addDescriptionOf(this);
   }
 
@@ -186,7 +188,7 @@ class _FileImageMatcher extends Matcher {
       final elements = finder.evaluate();
 
       for (final element in elements) {
-        if (element.widget is FileImage) {
+        if (element.widget is CircleAvatar) {
           matchedCount++;
         }
       }
@@ -221,7 +223,7 @@ class _FileImageMatcher extends Matcher {
 
     if (matchState['custom.count'] >= 1) {
       mismatchDescription.add(
-          'zero FileImage widgets expected but found ${matchState['custom.count'] ?? 0}');
+          'zero CircleAvatar widgets expected but found ${matchState['custom.count'] ?? 0}');
     }
     return mismatchDescription;
   }

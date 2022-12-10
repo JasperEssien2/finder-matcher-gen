@@ -52,7 +52,7 @@ abstract class ClassCodeBuilder with OverrideMethodsBuiilder {
       return;
     }
     _classHeaderBuffer.writeln(
-      'class ${classExtract.generatedClassName!}$suffix extends $suffix {',
+      '''class ${classExtract.generatedClassName!}$suffix${classExtract.genericParam} extends $suffix {''',
     );
   }
 

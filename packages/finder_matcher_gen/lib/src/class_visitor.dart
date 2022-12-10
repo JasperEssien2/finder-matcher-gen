@@ -13,8 +13,9 @@ class ClassVisitor extends SimpleElementVisitor<void> {
 
   @override
   void visitConstructorElement(ConstructorElement element) {
+
     _classExtract = _classExtract.copyWith(
-      className: element.type.returnType.toString(),
+      className: element.type.returnType.dartTypeStr,
       classUri: element.librarySource.uri,
     );
   }

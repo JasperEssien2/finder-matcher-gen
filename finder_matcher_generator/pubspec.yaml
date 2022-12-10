@@ -10,8 +10,8 @@ dependencies:
   analyzer: 
   build:
   equatable: ^2.0.5
-  finder_matcher_gen: 
-    path: ../finder_matcher_gen/
+  finder_matcher_annotation: 
+    path: ../finder_matcher_annotation/
   meta: ^1.8.0
   path: ^1.8.2
   source_gen:   

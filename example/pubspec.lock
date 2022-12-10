@@ -176,10 +176,10 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "6.1.4"
-  finder_matcher_gen:
+  finder_matcher_annotation:
     dependency: "direct main"
     description:
-      path: "../finder_matcher_gen"
+      path: "../finder_matcher_annotation"
       relative: true
     source: path
     version: "0.1.0+1"

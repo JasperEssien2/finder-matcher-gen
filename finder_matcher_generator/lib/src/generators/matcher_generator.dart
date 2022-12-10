@@ -1,7 +1,7 @@
 // ignore_for_file: type_annotate_public_apis
 
 import 'package:analyzer/dart/constant/value.dart';
-import 'package:finder_matcher_gen/finder_matcher_gen.dart';
+import 'package:finder_matcher_annotation/finder_matcher_annotation.dart';
 import 'package:finder_matcher_generator/src/builders/builders_export.dart';
 import 'package:finder_matcher_generator/src/generators/base_annotation_generator.dart';
 import 'package:finder_matcher_generator/src/models/class_extract_model.dart';

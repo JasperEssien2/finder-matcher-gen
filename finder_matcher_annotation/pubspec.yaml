@@ -1,5 +1,5 @@
-name: finder_matcher_gen
-description: A Flutter package for generating custom Finders and Matchers for widget tests.
+name: finder_matcher_annotation
+description: A Flutter package containing annotations to mark widgets for Finder and Matcher generation.
 version: 0.1.0+1
 publish_to: none
 

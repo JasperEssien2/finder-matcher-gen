@@ -1,5 +1,5 @@
 import 'package:analyzer/dart/element/element.dart';
-import 'package:finder_matcher_gen/finder_matcher_gen.dart';
+import 'package:finder_matcher_annotation/finder_matcher_annotation.dart';
 import 'package:finder_matcher_generator/src/builders/builders_export.dart';
 import 'package:finder_matcher_generator/src/models/class_extract_model.dart';
 import 'package:finder_matcher_generator/src/models/override_method_model.dart';

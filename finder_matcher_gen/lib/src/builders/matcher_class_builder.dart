@@ -1,9 +1,9 @@
 import 'package:analyzer/dart/element/element.dart';
 import 'package:finder_matcher_annotation/finder_matcher_annotation.dart';
-import 'package:finder_matcher_generator/src/builders/builders_export.dart';
-import 'package:finder_matcher_generator/src/models/class_extract_model.dart';
-import 'package:finder_matcher_generator/src/models/override_method_model.dart';
-import 'package:finder_matcher_generator/src/utils/utils_export.dart';
+import 'package:finder_matcher_gen/src/builders/builders_export.dart';
+import 'package:finder_matcher_gen/src/models/class_extract_model.dart';
+import 'package:finder_matcher_gen/src/models/override_method_model.dart';
+import 'package:finder_matcher_gen/src/utils/utils_export.dart';
 import 'package:meta/meta.dart';
 
 ///Builds Matcher classes string code for widgets

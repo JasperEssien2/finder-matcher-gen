@@ -183,10 +183,10 @@ packages:
       relative: true
     source: path
     version: "0.1.0+1"
-  finder_matcher_generator:
+  finder_matcher_gen:
     dependency: "direct dev"
     description:
-      path: "../finder_matcher_generator"
+      path: "../finder_matcher_gen"
       relative: true
     source: path
     version: "0.1.0+1"

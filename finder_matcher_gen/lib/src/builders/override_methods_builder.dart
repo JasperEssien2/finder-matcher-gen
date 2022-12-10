@@ -1,4 +1,4 @@
-import 'package:finder_matcher_generator/src/models/override_method_model.dart';
+import 'package:finder_matcher_gen/src/models/override_method_model.dart';
 import 'package:meta/meta.dart';
 
 /// An abstraction responsible for writing methods to override

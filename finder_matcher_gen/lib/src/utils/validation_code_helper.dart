@@ -1,5 +1,5 @@
 import 'package:analyzer/dart/constant/value.dart';
-import 'package:finder_matcher_generator/src/models/class_extract_model.dart';
+import 'package:finder_matcher_gen/src/models/class_extract_model.dart';
 
 /// Writes the code that validates if widget matches pattern
 String getConditionCodeFromExtract(

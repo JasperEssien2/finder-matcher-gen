@@ -1,6 +1,6 @@
-import 'package:finder_matcher_generator/src/builders/class_code_builder_base.dart';
-import 'package:finder_matcher_generator/src/models/models_export.dart';
-import 'package:finder_matcher_generator/src/utils/utils_export.dart';
+import 'package:finder_matcher_gen/src/builders/class_code_builder_base.dart';
+import 'package:finder_matcher_gen/src/models/models_export.dart';
+import 'package:finder_matcher_gen/src/utils/utils_export.dart';
 
 /// Builds a Finder class. Extends [ClassCodeBuilder] class
 class FinderClassBuilder extends ClassCodeBuilder {

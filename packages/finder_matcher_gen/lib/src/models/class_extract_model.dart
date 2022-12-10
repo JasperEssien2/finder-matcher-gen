@@ -11,12 +11,13 @@ class ClassElementExtract extends Equatable {
     this.className,
     this.classUri,
     this.declarations,
+    this.genericParam = '',
     this.constructorFields,
   });
 
   final String? className;
   final Uri? classUri;
-
+  final String genericParam;
   final List<DeclarationExtract>? declarations;
   final Set<ConstructorFieldModel>? constructorFields;
 
@@ -25,12 +26,14 @@ class ClassElementExtract extends Equatable {
   ClassElementExtract copyWith({
     String? className,
     Uri? classUri,
+    String? genericParam,
     List<DeclarationExtract>? declarations,
     Set<ConstructorFieldModel>? constructorFields,
   }) {
     return ClassElementExtract(
       className: className ?? this.className,
       classUri: classUri ?? this.classUri,
+      genericParam: genericParam ?? this.genericParam,
       declarations: declarations ?? this.declarations,
       constructorFields: constructorFields ?? this.constructorFields,
     );
@@ -54,7 +57,7 @@ class ClassElementExtract extends Equatable {
     return copyWith(constructorFields: fieldList);
   }
 
-   ClassElementExtract copyWithConstructorFields({
+  ClassElementExtract copyWithConstructorFields({
     required Set<ConstructorFieldModel> fieldModels,
   }) {
     final fieldList = (constructorFields ?? {})..addAll(fieldModels);
@@ -64,11 +67,12 @@ class ClassElementExtract extends Equatable {
 
   @override
   String toString() {
-    return '''ClassElementExtract(className: $className, classUri: $classUri, methods: $declarations, constructorFields: $constructorFields)''';
+    return '''ClassElementExtract(className: $className, classUri: $classUri, isGeneric: $genericParam methods: $declarations, constructorFields: $constructorFields)''';
   }
 
   @override
-  List<Object?> get props => [className, classUri, declarations];
+  List<Object?> get props =>
+      [className, classUri, genericParam, declarations, constructorFields];
 }
 
 class DeclarationExtract extends Equatable {

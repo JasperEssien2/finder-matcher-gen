@@ -1,5 +1,5 @@
 import 'package:example/main.dart';
-import 'package:finder_matcher_gen/finder_matcher_gen.dart';
+import 'package:finder_matcher_annotation/finder_matcher_annotation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 

@@ -1,4 +1,4 @@
-import 'package:finder_matcher_gen/finder_matcher_gen.dart';
+import 'package:finder_matcher_annotation/src/annotations.dart';
 
 /// Extension on [MatchSpecification]
 extension MatchSpecificationExt on MatchSpecification {

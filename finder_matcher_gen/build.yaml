@@ -11,7 +11,7 @@ targets:
 
 builders:
   finder_matcher_generator:
-    import: "package:finder_matcher_generator/builder.dart"
+    import: "package:finder_matcher_gen/builder.dart"
     builder_factories: ["generateFinder", "generateMatcher"]
     build_extensions: {"{{file}.dart": ["finders/{{file}}.finder.dart"]}
     auto_apply: dependents

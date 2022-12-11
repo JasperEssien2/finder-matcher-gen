@@ -64,6 +64,7 @@ void checkElementNotPrivate(Element element) {
 
 /// Checks if the [DartType] is supported, else throws an unsupported exception
 void checkBadTypeByDartType(DartType dartType, {required Element element}) {
+  
   if (!_supportedDartType(dartType)) {
     throwException(
       'Unsupported return type: $dartType',
@@ -80,6 +81,7 @@ bool _supportedDartType(DartType dartType) =>
     dartType.isDartCoreBool ||
     dartType.isDartCoreMap ||
     dartType.isDartCoreSet ||
+    dartType.element?.kind == ElementKind.TYPE_PARAMETER ||
     dartType.isDartCoreString;
 
 /// Throws an exception if the [Element] provided is not a field, getter,

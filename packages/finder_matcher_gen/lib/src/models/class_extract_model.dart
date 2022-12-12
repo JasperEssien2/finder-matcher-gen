@@ -82,6 +82,7 @@ class DeclarationExtract extends Equatable {
     required this.isMethod,
     this.parameters,
     this.defaultValue,
+    this.fieldEquality,
   });
 
   final String? name;
@@ -89,6 +90,7 @@ class DeclarationExtract extends Equatable {
   final List<ParameterElement>? parameters;
   final bool isMethod;
   final dynamic defaultValue;
+  final FieldEquality? fieldEquality;
 
   DeclarationExtract copyWith({
     String? name,
@@ -96,6 +98,7 @@ class DeclarationExtract extends Equatable {
     List<ParameterElement>? parameters,
     bool? isMethod,
     DartObject? defaultValue,
+    FieldEquality? fieldEquality,
   }) {
     return DeclarationExtract(
       name: name ?? this.name,
@@ -103,13 +106,21 @@ class DeclarationExtract extends Equatable {
       isMethod: isMethod ?? this.isMethod,
       parameters: parameters ?? this.parameters,
       defaultValue: defaultValue ?? this.defaultValue,
+      fieldEquality: fieldEquality ?? this.fieldEquality,
     );
   }
 
   @override
   String toString() =>
-      '''DeclarationExtract(name: $name, parameters: $parameters, isMethod: $isMethod, defaultValue: $defaultValue)''';
+      '''DeclarationExtract(name: $name, parameters: $parameters, isMethod: $isMethod, defaultValue: $defaultValue, fieldEquality: $fieldEquality)''';
 
   @override
-  List<Object?> get props => [name, type, parameters, isMethod, defaultValue];
+  List<Object?> get props =>
+      [name, type, parameters, isMethod, defaultValue, fieldEquality];
+}
+
+enum FieldEquality {
+  map,
+  list,
+  set,
 }

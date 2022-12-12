@@ -1,13 +1,13 @@
-import 'package:finder_matcher_gen/src/builders/override_methods_builder.dart';
 import 'package:finder_matcher_gen/src/class_visitor.dart';
 import 'package:finder_matcher_gen/src/models/class_extract_model.dart';
 import 'package:finder_matcher_gen/src/utils/utils_export.dart';
+import 'package:finder_matcher_gen/src/writers/override_methods_writer.dart';
 import 'package:meta/meta.dart';
 
 /// The base class for class generator
-abstract class ClassCodeBuilder with OverrideMethodsBuiilder {
+abstract class ClassCodeWriter with OverrideMethodsWriter {
   /// Pass in class element extract model
-  ClassCodeBuilder(this.classExtract);
+  ClassCodeWriter(this.classExtract);
 
   /// Information extract of annotated class. Extractef by [ClassVisitor]
   final ClassElementExtract classExtract;

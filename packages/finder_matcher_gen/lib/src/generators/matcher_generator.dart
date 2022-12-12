@@ -2,11 +2,11 @@
 
 import 'package:analyzer/dart/constant/value.dart';
 import 'package:finder_matcher_annotation/finder_matcher_annotation.dart';
-import 'package:finder_matcher_gen/src/builders/builders_export.dart';
 import 'package:finder_matcher_gen/src/generators/base_annotation_generator.dart';
 import 'package:finder_matcher_gen/src/models/class_extract_model.dart';
 import 'package:finder_matcher_gen/src/models/constructor_field_model.dart';
 import 'package:finder_matcher_gen/src/utils/utils_export.dart';
+import 'package:finder_matcher_gen/src/writers/writers_export.dart';
 import 'package:source_gen/source_gen.dart';
 
 /// A generator for generating Matcher classes
@@ -65,7 +65,7 @@ class MatcherGenerator extends BaseAnnotaionGenerator {
     ClassElementExtract extract,
     StringBuffer classStringBuffer,
   ) {
-    final matcherGenerator = WidgetMatcherClassBuilder(
+    final matcherGenerator = WidgetMatcherClassWriter(
       extract,
       _getClassSpecification(extract)!,
     )..buildClassCode();

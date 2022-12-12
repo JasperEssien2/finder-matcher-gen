@@ -1,5 +1,4 @@
 import 'package:analyzer/dart/element/element.dart';
-import 'package:analyzer/dart/element/type.dart';
 import 'package:source_gen/source_gen.dart';
 
 /// Throws an exception when class element does not comform to generation
@@ -41,15 +40,12 @@ void checkBadTypeByMethodElement(MethodElement element) {
     );
   }
   checkElementNotPrivate(element);
-
-  checkBadTypeByDartType(element.returnType, element: element);
 }
 
 /// Throws an exception when [FieldElement] type does not conform to
 /// field generation specification
 void checkBadTypeByFieldElement(FieldElement element) {
   checkElementNotPrivate(element);
-  checkBadTypeByDartType(element.type, element: element);
 }
 
 /// Throws an exception when [Element] is private
@@ -61,28 +57,6 @@ void checkElementNotPrivate(Element element) {
     );
   }
 }
-
-/// Checks if the [DartType] is supported, else throws an unsupported exception
-void checkBadTypeByDartType(DartType dartType, {required Element element}) {
-  
-  if (!_supportedDartType(dartType)) {
-    throwException(
-      'Unsupported return type: $dartType',
-      element: element,
-    );
-  }
-}
-
-bool _supportedDartType(DartType dartType) =>
-    dartType.isDartCoreDouble ||
-    dartType.isDartCoreNum ||
-    dartType.isDartCoreInt ||
-    dartType.isDartCoreList ||
-    dartType.isDartCoreBool ||
-    dartType.isDartCoreMap ||
-    dartType.isDartCoreSet ||
-    dartType.element?.kind == ElementKind.TYPE_PARAMETER ||
-    dartType.isDartCoreString;
 
 /// Throws an exception if the [Element] provided is not a field, getter,
 /// or method

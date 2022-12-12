@@ -1,12 +1,12 @@
-import 'package:finder_matcher_gen/src/builders/class_code_builder_base.dart';
 import 'package:finder_matcher_gen/src/models/models_export.dart';
 import 'package:finder_matcher_gen/src/utils/utils_export.dart';
+import 'package:finder_matcher_gen/src/writers/class_code_writer_base.dart';
 
-/// Builds a Finder class. Extends [ClassCodeBuilder] class
-class FinderClassBuilder extends ClassCodeBuilder {
-  /// [FinderClassBuilder] uses the information gotten from
+/// Builds a Finder class. Extends [ClassCodeWriter] class
+class FinderClassWriter extends ClassCodeWriter {
+  /// [FinderClassWriter] uses the information gotten from
   /// [ClassElementExtract] to write the Finder class
-  FinderClassBuilder(super.classExtract);
+  FinderClassWriter(super.classExtract);
 
   @override
   List<OverrideMethodModel> get methodsToOverride => [
@@ -123,21 +123,14 @@ class FinderClassBuilder extends ClassCodeBuilder {
       validateCodeBuffer.write('&& ');
     }
 
-    _writeValidation(
+    final extractValue = extract.defaultValue ??
+        getConstructorNameInPlaceOfDefaultValue(extract, isPrivate: true);
+
+    writeValidation(
       validateCodeBuffer: validateCodeBuffer,
       extract: extract,
-      equals:
-          '''== ${extract.defaultValue ?? getConstructorNameInPlaceOfDefaultValue(extract, isPrivate: true)}''',
-    );
-  }
-
-  void _writeValidation({
-    required StringBuffer validateCodeBuffer,
-    required DeclarationExtract extract,
-    required String equals,
-  }) {
-    validateCodeBuffer.write(
-      'widget.${extract.name}${extract.isMethod ? '()' : ''} $equals',
+      equals: '''$extractValue''',
+      closeWithCurlyBrace: false,
     );
   }
 }

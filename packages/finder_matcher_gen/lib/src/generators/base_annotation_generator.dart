@@ -100,7 +100,7 @@ abstract class BaseAnnotaionGenerator extends GeneratorForAnnotation<Match> {
 
     writeImports(
       _importsStringBuffer,
-      classUri: classVisitor.classExtract.classUri,
+      classExtract: classVisitor.classExtract,
     );
     writeClassToBuffer(classExtract, _classesStringBuffer);
   }
@@ -111,15 +111,14 @@ abstract class BaseAnnotaionGenerator extends GeneratorForAnnotation<Match> {
     String? genericParams,
   ) {
     final classUri = classElement.librarySource.uri;
-
-    writeImports(_importsStringBuffer, classUri: classUri);
-
     final extract = ClassElementExtract(
       className: className,
       classUri: classUri,
       constructorFields: defaultConstructorFields[className],
       genericParam: genericParams ?? '',
     );
+
+    writeImports(_importsStringBuffer, classExtract: extract);
 
     writeClassToBuffer(extract, _classesStringBuffer);
   }
@@ -129,19 +128,33 @@ abstract class BaseAnnotaionGenerator extends GeneratorForAnnotation<Match> {
 
   /// Responsible for writing the required imports for the generated class
   @mustCallSuper
-  void writeImports(StringBuffer importBuffer, {Uri? classUri}) {
+  void writeImports(
+    StringBuffer importBuffer, {
+    required ClassElementExtract classExtract,
+  }) {
     if (_importsStringBuffer.isEmpty) {
       /// Write the Flutter imports first
       _importsStringBuffer
         ..writeln("import 'package:flutter/material.dart';")
         ..writeln("import 'package:flutter_test/flutter_test.dart';");
     }
-    if (classUri == null) return;
-    final uriImport = "import '${classUri.toString()}';";
+    if (classExtract.classUri == null) return;
+    final uriImport = "import '${classExtract.classUri.toString()}';";
 
     if (doesNotContainImport(uriImport)) {
       _importsStringBuffer.writeln('$uriImport\n\n');
     }
+
+    if (_requiresFoundation(classExtract)) {
+      _importsStringBuffer.writeln("import 'package:flutter/foundation.dart';");
+    }
+  }
+
+  bool _requiresFoundation(ClassElementExtract classExtract) {
+    return classExtract.declarations
+            ?.where((element) => element.fieldEquality != null)
+            .isNotEmpty ??
+        false;
   }
 
   /// Return true if [importToWrite] does not exist in import string buffer

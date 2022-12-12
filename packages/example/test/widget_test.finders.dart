@@ -8,6 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:example/main.dart';
 
+import 'package:flutter/foundation.dart';
+
 findMyHomePage<T, R>(
         {required T? genericValue,
         required List<DataRow> incrementCounterValue}) =>
@@ -38,7 +40,7 @@ class _MyHomePageMatchFinder<T, R> extends MatchFinder {
 
       return widget.title == 'love-title' &&
           widget.generic == _genericValue &&
-          widget.incrementCounter() == _incrementCounterValue;
+          listEquals(widget.incrementCounter(), _incrementCounterValue);
     }
     return false;
   }

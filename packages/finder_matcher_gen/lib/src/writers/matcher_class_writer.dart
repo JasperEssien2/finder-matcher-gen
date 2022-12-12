@@ -1,17 +1,17 @@
 import 'package:analyzer/dart/element/element.dart';
 import 'package:finder_matcher_annotation/finder_matcher_annotation.dart';
-import 'package:finder_matcher_gen/src/builders/builders_export.dart';
 import 'package:finder_matcher_gen/src/models/class_extract_model.dart';
 import 'package:finder_matcher_gen/src/models/override_method_model.dart';
 import 'package:finder_matcher_gen/src/utils/utils_export.dart';
+import 'package:finder_matcher_gen/src/writers/writers_export.dart';
 import 'package:meta/meta.dart';
 
 ///Builds Matcher classes string code for widgets
-class WidgetMatcherClassBuilder extends ClassCodeBuilder {
+class WidgetMatcherClassWriter extends ClassCodeWriter {
   /// Accepts a [ClassElementExtract] and [MatchSpecification]
   /// The [MatchSpecification] an enum specifies the count the generated Matcher
   /// should validate as "matched"
-  WidgetMatcherClassBuilder(
+  WidgetMatcherClassWriter(
     super.classExtract,
     MatchSpecification specification,
   ) : _specification = specification;

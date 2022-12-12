@@ -12,8 +12,11 @@ import 'package:stack_trace/stack_trace.dart' show Chain;
 import 'package:flutter/src/material/circle_avatar.dart';
 
 matchesAtleastOneMyHomePage<T, R>(
-        {required List<DataRow> incrementCounterValue}) =>
-    _MyHomePageMatcher<T, R>(incrementCounterValue: incrementCounterValue);
+        {required T? genericValue,
+        required List<DataRow> incrementCounterValue}) =>
+    _MyHomePageMatcher<T, R>(
+        genericValue: genericValue,
+        incrementCounterValue: incrementCounterValue);
 
 final matchesOneMyApp = _MyAppMatcher();
 
@@ -23,8 +26,12 @@ matchesNMyWorldWidget({required int n}) => _MyWorldWidgetMatcher(n: n);
 
 class _MyHomePageMatcher<T, R> extends Matcher {
   _MyHomePageMatcher({
+    required T? genericValue,
     required List<DataRow> incrementCounterValue,
-  }) : _incrementCounterValue = incrementCounterValue;
+  })  : _genericValue = genericValue,
+        _incrementCounterValue = incrementCounterValue;
+
+  final T? _genericValue;
 
   final List<DataRow> _incrementCounterValue;
 
@@ -49,6 +56,7 @@ class _MyHomePageMatcher<T, R> extends Matcher {
           final widget = element.widget as MyHomePage;
 
           if (widget.title == 'love-title' &&
+              widget.generic == _genericValue &&
               widget.incrementCounter() == _incrementCounterValue) {
             matchedCount++;
           }
@@ -94,6 +102,11 @@ class _MyHomePageMatcher<T, R> extends Matcher {
     if (widget.title != 'love-title') {
       mismatchDescription
           .add("title is ${widget.title} but 'love-title' was expected");
+    }
+
+    if (widget.generic != _genericValue) {
+      mismatchDescription
+          .add("generic is ${widget.generic} but _genericValue was expected");
     }
 
     if (widget.incrementCounter() != _incrementCounterValue) {

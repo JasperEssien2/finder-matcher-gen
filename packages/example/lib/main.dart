@@ -34,10 +34,14 @@ class MyHomePage<T, R> extends StatefulWidget {
   const MyHomePage({
     super.key,
     required this.title,
+    this.generic,
   });
 
   @MatchDeclaration(defaultValue: 'love-title')
   final String title;
+
+  @MatchDeclaration()
+  final T? generic;
 
   @MatchDeclaration()
   List<DataRow> incrementCounter() => [];

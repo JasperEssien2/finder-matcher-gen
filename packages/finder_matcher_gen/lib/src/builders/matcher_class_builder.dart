@@ -354,7 +354,7 @@ Iterable<String> getMatchOneDeclarationsMismatchCheckCode(
           ''' if(matchState['$entityCode-found'] != null && matchState['$entityCode-expected'] != null){''';
 
       code +=
-          """\n\nmismatchDescription.add("${e.name} is \${matchState['$entityCode-found']} but \${matchState['$entityCode-expected']} was expected").addDescriptionOf('${e.name}');\n""";
+          """mismatchDescription.add("${e.name} is \${matchState['$entityCode-found']} but \${matchState['$entityCode-expected']} was expected \\n\\n");\n""";
 
       return code += '}\n\n';
     },

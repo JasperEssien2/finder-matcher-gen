@@ -123,21 +123,14 @@ class FinderClassBuilder extends ClassCodeBuilder {
       validateCodeBuffer.write('&& ');
     }
 
-    _writeValidation(
+    final extractValue = extract.defaultValue ??
+        getConstructorNameInPlaceOfDefaultValue(extract, isPrivate: true);
+
+    writeValidation(
       validateCodeBuffer: validateCodeBuffer,
       extract: extract,
-      equals:
-          '''== ${extract.defaultValue ?? getConstructorNameInPlaceOfDefaultValue(extract, isPrivate: true)}''',
-    );
-  }
-
-  void _writeValidation({
-    required StringBuffer validateCodeBuffer,
-    required DeclarationExtract extract,
-    required String equals,
-  }) {
-    validateCodeBuffer.write(
-      'widget.${extract.name}${extract.isMethod ? '()' : ''} $equals',
+      equals: '''$extractValue''',
+      closeWithCurlyBrace: false,
     );
   }
 }

@@ -12,10 +12,10 @@ String getMatcherConditionCodeFromExtract(
   final extractValue = extract.defaultValue ??
       getConstructorNameInPlaceOfDefaultValue(extract, isPrivate: true);
 
-  _writeValidation(
+  writeValidation(
     validateCodeBuffer: validateCodeBuffer,
     extract: extract,
-    equals: '''== $extractValue){''',
+    equals: '''$extractValue''',
   );
 
   validateCodeBuffer
@@ -41,14 +41,40 @@ String getMatcherConditionCodeFromExtract(
   return validateCodeBuffer.toString();
 }
 
-void _writeValidation({
+///
+void writeValidation({
   required StringBuffer validateCodeBuffer,
   required DeclarationExtract extract,
   required String equals,
+  bool closeWithCurlyBrace = true,
 }) {
-  validateCodeBuffer.write(
-    '${extractCode(extract)} $equals',
-  );
+  final close = closeWithCurlyBrace ? '){' : '';
+
+  if (extract.fieldEquality != null) {
+    validateCodeBuffer
+        .write('${collectionEqualityCode(extract, equals)}$close');
+  } else {
+    validateCodeBuffer.write(
+      '${extractCode(extract)} == $equals$close',
+    );
+  }
+}
+
+/// Returns the equivalent check for for collection data types.
+///
+/// Using `==` for collection data types gives incorrect result. This method
+/// addressed it.
+///
+/// Example: [List] data type returns a `listEquals(a, b)`
+String collectionEqualityCode(DeclarationExtract extract, String equals) {
+  switch (extract.fieldEquality!) {
+    case FieldEquality.map:
+      return 'mapEquals(${extractCode(extract)}, $equals)';
+    case FieldEquality.list:
+      return 'listEquals(${extractCode(extract)}, $equals)';
+    case FieldEquality.set:
+      return 'setEquals(${extractCode(extract)}, $equals)';
+  }
 }
 
 ///
@@ -57,7 +83,7 @@ String extractCode(DeclarationExtract extract) =>
 
 /// Gets the field actual value from a [DartObject]
 ///
-/// Throws an Unsupported exception when the field type is not supported
+/// Returns null when the field type is not supported
 dynamic getDartObjectValue(DartObject dartObject) {
   final type = dartObject.type!;
 

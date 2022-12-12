@@ -27,7 +27,6 @@ class MatcherGenerator extends BaseAnnotaionGenerator {
           ?.toTypeValue()!
           .removeGenericParamSOrReturntr;
 
-   
       final specificationValue = element
           .getField('_specification')!
           .variable!
@@ -48,8 +47,11 @@ class MatcherGenerator extends BaseAnnotaionGenerator {
   }
 
   @override
-  void writeImports(StringBuffer importBuffer, {Uri? classUri}) {
-    super.writeImports(importBuffer, classUri: classUri);
+  void writeImports(
+    StringBuffer importBuffer, {
+    required ClassElementExtract classExtract,
+  }) {
+    super.writeImports(importBuffer, classExtract: classExtract);
     const stackTraceImport =
         "import 'package:stack_trace/stack_trace.dart' show Chain;";
 

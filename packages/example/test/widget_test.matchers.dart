@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:example/main.dart';
 
+import 'package:flutter/foundation.dart';
 import 'package:stack_trace/stack_trace.dart' show Chain;
 import 'package:flutter/src/material/circle_avatar.dart';
 
@@ -79,7 +80,7 @@ class _MyHomePageMatcher<T, R> extends Matcher {
             matchState['widget.generic-found'].add(widget.generic);
           }
 
-          if (widget.incrementCounter() == _incrementCounterValue) {
+          if (listEquals(widget.incrementCounter(), _incrementCounterValue)) {
             expectedDeclarationCount++;
           } else {
             matchState['widget.incrementCounter()-expected'] =

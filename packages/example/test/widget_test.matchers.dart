@@ -134,26 +134,20 @@ class _MyHomePageMatcher<T, R> extends Matcher {
 
     if (matchState['widget.title-found'] != null &&
         matchState['widget.title-expected'] != null) {
-      mismatchDescription
-          .add(
-              "title is ${matchState['widget.title-found']} but ${matchState['widget.title-expected']} was expected")
-          .addDescriptionOf('title');
+      mismatchDescription.add(
+          "title is ${matchState['widget.title-found']} but ${matchState['widget.title-expected']} was expected \n\n");
     }
 
     if (matchState['widget.generic-found'] != null &&
         matchState['widget.generic-expected'] != null) {
-      mismatchDescription
-          .add(
-              "generic is ${matchState['widget.generic-found']} but ${matchState['widget.generic-expected']} was expected")
-          .addDescriptionOf('generic');
+      mismatchDescription.add(
+          "generic is ${matchState['widget.generic-found']} but ${matchState['widget.generic-expected']} was expected \n\n");
     }
 
     if (matchState['widget.incrementCounter()-found'] != null &&
         matchState['widget.incrementCounter()-expected'] != null) {
-      mismatchDescription
-          .add(
-              "incrementCounter is ${matchState['widget.incrementCounter()-found']} but ${matchState['widget.incrementCounter()-expected']} was expected")
-          .addDescriptionOf('incrementCounter');
+      mismatchDescription.add(
+          "incrementCounter is ${matchState['widget.incrementCounter()-found']} but ${matchState['widget.incrementCounter()-expected']} was expected \n\n");
     }
 
     return mismatchDescription;

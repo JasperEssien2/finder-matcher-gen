@@ -37,9 +37,7 @@ class _MyHomePageMatcher<T, R> extends Matcher {
 
   @override
   Description describe(Description description) {
-    return description
-        .add('matches atleast one MyHomePage widget')
-        .addDescriptionOf(this);
+    return description.add('matches atleast one MyHomePage widget');
   }
 
   @override
@@ -63,7 +61,7 @@ class _MyHomePageMatcher<T, R> extends Matcher {
             matchState['widget.title-expected'] = 'love-title';
 
             if (matchState['widget.title-found'] == null) {
-              matchState['widget.title-found'] = {};
+              matchState['widget.title-found'] = <dynamic>{};
             }
 
             matchState['widget.title-found'].add(widget.title);
@@ -75,7 +73,7 @@ class _MyHomePageMatcher<T, R> extends Matcher {
             matchState['widget.generic-expected'] = _genericValue;
 
             if (matchState['widget.generic-found'] == null) {
-              matchState['widget.generic-found'] = {};
+              matchState['widget.generic-found'] = <dynamic>{};
             }
 
             matchState['widget.generic-found'].add(widget.generic);
@@ -88,7 +86,7 @@ class _MyHomePageMatcher<T, R> extends Matcher {
                 _incrementCounterValue;
 
             if (matchState['widget.incrementCounter()-found'] == null) {
-              matchState['widget.incrementCounter()-found'] = {};
+              matchState['widget.incrementCounter()-found'] = <dynamic>{};
             }
 
             matchState['widget.incrementCounter()-found']
@@ -136,20 +134,26 @@ class _MyHomePageMatcher<T, R> extends Matcher {
 
     if (matchState['widget.title-found'] != null &&
         matchState['widget.title-expected'] != null) {
-      mismatchDescription.add(
-          "title is ${matchState['widget.title-found']} but ${matchState['widget.title-expected']} was expected");
+      mismatchDescription
+          .add(
+              "title is ${matchState['widget.title-found']} but ${matchState['widget.title-expected']} was expected")
+          .addDescriptionOf('title');
     }
 
     if (matchState['widget.generic-found'] != null &&
         matchState['widget.generic-expected'] != null) {
-      mismatchDescription.add(
-          "generic is ${matchState['widget.generic-found']} but ${matchState['widget.generic-expected']} was expected");
+      mismatchDescription
+          .add(
+              "generic is ${matchState['widget.generic-found']} but ${matchState['widget.generic-expected']} was expected")
+          .addDescriptionOf('generic');
     }
 
     if (matchState['widget.incrementCounter()-found'] != null &&
         matchState['widget.incrementCounter()-expected'] != null) {
-      mismatchDescription.add(
-          "incrementCounter is ${matchState['widget.incrementCounter()-found']} but ${matchState['widget.incrementCounter()-expected']} was expected");
+      mismatchDescription
+          .add(
+              "incrementCounter is ${matchState['widget.incrementCounter()-found']} but ${matchState['widget.incrementCounter()-expected']} was expected")
+          .addDescriptionOf('incrementCounter');
     }
 
     return mismatchDescription;
@@ -161,7 +165,7 @@ class _MyAppMatcher extends Matcher {
 
   @override
   Description describe(Description description) {
-    return description.add('matches one MyApp widget').addDescriptionOf(this);
+    return description.add('matches one MyApp widget');
   }
 
   @override
@@ -224,9 +228,7 @@ class _CircleAvatarMatcher extends Matcher {
 
   @override
   Description describe(Description description) {
-    return description
-        .add('matches no CircleAvatar widget')
-        .addDescriptionOf(this);
+    return description.add('matches no CircleAvatar widget');
   }
 
   @override
@@ -289,9 +291,7 @@ class _MyWorldWidgetMatcher extends Matcher {
 
   @override
   Description describe(Description description) {
-    return description
-        .add('matches $_n MyWorldWidget widget')
-        .addDescriptionOf(this);
+    return description.add('matches $_n MyWorldWidget widget');
   }
 
   @override

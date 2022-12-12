@@ -2,44 +2,43 @@ import 'package:analyzer/dart/constant/value.dart';
 import 'package:finder_matcher_gen/src/models/class_extract_model.dart';
 
 /// Writes the code that validates if widget matches pattern
-String getConditionCodeFromExtract(
+String getMatcherConditionCodeFromExtract(
   DeclarationExtract extract, {
-  bool first = false,
-  String? writeFirstKeyword,
+  bool last = false,
+  required int declarationCount,
 }) {
-  final validateCodeBuffer = StringBuffer();
+  final validateCodeBuffer = StringBuffer()..writeln('if(');
 
-  if (first) {
-    validateCodeBuffer.write(
-      writeFirstKeyword ?? 'return ',
-    );
-
-    _codeFromDartType(
-      extract,
-      validateCodeBuffer,
-      appendAnd: false,
-    );
-  } else {
-    _codeFromDartType(extract, validateCodeBuffer);
-  }
-  return validateCodeBuffer.toString();
-}
-
-void _codeFromDartType(
-  DeclarationExtract extract,
-  StringBuffer validateCodeBuffer, {
-  bool appendAnd = true,
-}) {
-  if (appendAnd) {
-    validateCodeBuffer.write('&& ');
-  }
+  final extractValue = extract.defaultValue ??
+      getConstructorNameInPlaceOfDefaultValue(extract, isPrivate: true);
 
   _writeValidation(
     validateCodeBuffer: validateCodeBuffer,
     extract: extract,
-    equals:
-        '''== ${extract.defaultValue ?? getConstructorNameInPlaceOfDefaultValue(extract, isPrivate: true)}''',
+    equals: '''== $extractValue){''',
   );
+
+  validateCodeBuffer
+    ..writeln('expectedDeclarationCount++;')
+    ..writeln('} else {')
+    ..writeln(
+      '''matchState['${extractCode(extract)}-expected'] = ${extract.defaultValue == null ? '$extractValue' : '${extract.defaultValue}'};\n''',
+    )
+    ..writeln('''if(matchState['${extractCode(extract)}-found'] == null) {''')
+    ..writeln('''matchState['${extractCode(extract)}-found'] = {};''')
+    ..writeln('}\n')
+    ..writeln(
+      '''matchState['${extractCode(extract)}-found'].add(${extractCode(extract)});''',
+    )
+    ..writeln('}\n');
+
+  if (last) {
+    validateCodeBuffer
+      ..writeln('if(expectedDeclarationCount == $declarationCount){')
+      ..writeln(' matchedCount++;')
+      ..writeln('}\n');
+  }
+  return validateCodeBuffer.toString();
 }
 
 void _writeValidation({
@@ -48,9 +47,13 @@ void _writeValidation({
   required String equals,
 }) {
   validateCodeBuffer.write(
-    'widget.${extract.name}${extract.isMethod ? '()' : ''} $equals',
+    '${extractCode(extract)} $equals',
   );
 }
+
+///
+String extractCode(DeclarationExtract extract) =>
+    'widget.${extract.name}${extract.isMethod ? '()' : ''}';
 
 /// Gets the field actual value from a [DartObject]
 ///

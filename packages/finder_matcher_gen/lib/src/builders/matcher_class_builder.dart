@@ -136,20 +136,17 @@ abstract class BaseMatcherMethodsCodeBuilder {
     } else {
       buffer
         ..writeln('final widget = element.widget as ${extract.className};\n')
-        ..write('if (');
+        ..writeln('var expectedDeclarationCount = 0;\n');
+
       for (var i = 0; i < fields!.length; i++) {
         buffer.write(
-          getConditionCodeFromExtract(
+          getMatcherConditionCodeFromExtract(
             fields[i],
-            first: i == 0,
-            writeFirstKeyword: '',
+            last: i == fields.length - 1,
+            declarationCount: fields.length,
           ),
         );
       }
-      buffer
-        ..write(') {\n')
-        ..writeln('matchedCount++;')
-        ..writeln('}');
     }
 
     return buffer.toString();
@@ -212,9 +209,13 @@ class MatchOneWidgetMethodsBuilder extends BaseMatcherMethodsCodeBuilder {
         ..writeln('break;');
     } else {
       for (var i = 0; i < fields!.length; i++) {
-        buffer
-          ..writeln('matchedCount++;')
-          ..write(getConditionCodeFromExtract(fields[i], first: i == 0));
+        buffer.write(
+          getMatcherConditionCodeFromExtract(
+            fields[i],
+            last: i == fields.length - 1,
+            declarationCount: fields.length,
+          ),
+        );
       }
     }
 
@@ -236,7 +237,6 @@ class MatchOneWidgetMethodsBuilder extends BaseMatcherMethodsCodeBuilder {
         """mismatchDescription.add('found multiple ${extract.className} widgets but one was expected');""",
       )
       ..writeln('}\n')
-      ..write(_getWidgetInitializationCode(extract.declarations ?? []))
       ..writeAll(
         getMatchOneDeclarationsMismatchCheckCode(extract.declarations ?? []),
         '\n',
@@ -270,7 +270,6 @@ class MatchAtleastOneWidgetMethodsBuilder
         """mismatchDescription.add('found zero ${extract.className} widgets but at least one was expected');""",
       )
       ..writeln('}\n')
-      ..write(_getWidgetInitializationCode(extract.declarations ?? []))
       ..writeAll(
         getMatchOneDeclarationsMismatchCheckCode(extract.declarations ?? []),
         '\n',
@@ -303,7 +302,6 @@ class MatchNWidgetMethodsBuilder extends BaseMatcherMethodsCodeBuilder {
         """mismatchDescription.add('found \${matchState['custom.matchedCount']} ${extract.className} widgets \$_n was expected');""",
       )
       ..writeln('}\n')
-      ..write(_getWidgetInitializationCode(extract.declarations ?? []))
       ..writeAll(
         getMatchOneDeclarationsMismatchCheckCode(extract.declarations ?? []),
         '\n',
@@ -348,34 +346,17 @@ Iterable<String> getMatchOneDeclarationsMismatchCheckCode(
 ) {
   return declarations.map(
     (e) {
-      final isBool = e.type!.isDartCoreBool;
-
-      final conditionValue = e.defaultValue ??
-          getConstructorNameInPlaceOfDefaultValue(e, isPrivate: true);
-
       final entityCode = '''widget.${e.name}${e.isMethod ? '()' : ''}''';
 
       var code = '';
 
-      // TODO(jasperessien2): There's likely to be an issue here, when default value selected for booleans declaration
       code +=
-          '''if(${isBool ? '!' : ''}$entityCode${!isBool ? '!= $conditionValue' : ''}) {\n''';
+          ''' if(matchState['$entityCode-found'] != null && matchState['$entityCode-expected'] != null){''';
 
-      if (e.defaultValue != null) {
-        code +=
-            """mismatchDescription.add("${e.name} is \${${isBool ? 'false' : entityCode}} but ${isBool ? true : conditionValue} was expected");\n""";
-      } else {
-        code +=
-            '''mismatchDescription.add("${e.name} is \${$entityCode} but ${getConstructorNameInPlaceOfDefaultValue(e, isPrivate: true)} was expected");\n''';
-      }
+      code +=
+          """mismatchDescription.add("${e.name} is \${matchState['$entityCode-found']} but \${matchState['$entityCode-expected']} was expected");\n""";
 
       return code += '}\n\n';
     },
   );
-}
-
-String _getWidgetInitializationCode(List<DeclarationExtract> declarations) {
-  return declarations.isNotEmpty
-      ? """final finder = matchState['custom.finder'];\nfinal widget = finder.evaluate().first.widget;\n\n"""
-      : '';
 }

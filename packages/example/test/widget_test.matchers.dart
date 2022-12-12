@@ -55,9 +55,47 @@ class _MyHomePageMatcher<T, R> extends Matcher {
         if (element.widget is MyHomePage) {
           final widget = element.widget as MyHomePage;
 
-          if (widget.title == 'love-title' &&
-              widget.generic == _genericValue &&
-              widget.incrementCounter() == _incrementCounterValue) {
+          var expectedDeclarationCount = 0;
+
+          if (widget.title == 'love-title') {
+            expectedDeclarationCount++;
+          } else {
+            matchState['widget.title-expected'] = 'love-title';
+
+            if (matchState['widget.title-found'] == null) {
+              matchState['widget.title-found'] = {};
+            }
+
+            matchState['widget.title-found'].add(widget.title);
+          }
+
+          if (widget.generic == _genericValue) {
+            expectedDeclarationCount++;
+          } else {
+            matchState['widget.generic-expected'] = _genericValue;
+
+            if (matchState['widget.generic-found'] == null) {
+              matchState['widget.generic-found'] = {};
+            }
+
+            matchState['widget.generic-found'].add(widget.generic);
+          }
+
+          if (widget.incrementCounter() == _incrementCounterValue) {
+            expectedDeclarationCount++;
+          } else {
+            matchState['widget.incrementCounter()-expected'] =
+                _incrementCounterValue;
+
+            if (matchState['widget.incrementCounter()-found'] == null) {
+              matchState['widget.incrementCounter()-found'] = {};
+            }
+
+            matchState['widget.incrementCounter()-found']
+                .add(widget.incrementCounter());
+          }
+
+          if (expectedDeclarationCount == 3) {
             matchedCount++;
           }
         }
@@ -96,22 +134,22 @@ class _MyHomePageMatcher<T, R> extends Matcher {
           .add('found zero MyHomePage widgets but at least one was expected');
     }
 
-    final finder = matchState['custom.finder'];
-    final widget = finder.evaluate().first.widget;
-
-    if (widget.title != 'love-title') {
-      mismatchDescription
-          .add("title is ${widget.title} but 'love-title' was expected");
-    }
-
-    if (widget.generic != _genericValue) {
-      mismatchDescription
-          .add("generic is ${widget.generic} but _genericValue was expected");
-    }
-
-    if (widget.incrementCounter() != _incrementCounterValue) {
+    if (matchState['widget.title-found'] != null &&
+        matchState['widget.title-expected'] != null) {
       mismatchDescription.add(
-          "incrementCounter is ${widget.incrementCounter()} but _incrementCounterValue was expected");
+          "title is ${matchState['widget.title-found']} but ${matchState['widget.title-expected']} was expected");
+    }
+
+    if (matchState['widget.generic-found'] != null &&
+        matchState['widget.generic-expected'] != null) {
+      mismatchDescription.add(
+          "generic is ${matchState['widget.generic-found']} but ${matchState['widget.generic-expected']} was expected");
+    }
+
+    if (matchState['widget.incrementCounter()-found'] != null &&
+        matchState['widget.incrementCounter()-expected'] != null) {
+      mismatchDescription.add(
+          "incrementCounter is ${matchState['widget.incrementCounter()-found']} but ${matchState['widget.incrementCounter()-expected']} was expected");
     }
 
     return mismatchDescription;

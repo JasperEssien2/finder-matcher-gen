@@ -66,12 +66,12 @@ class FinderClassBuilder extends ClassCodeBuilder {
           '''final widget = $overridenMethodParamName.widget as ${classExtract.className};\n''',
         )
         ..writeln(
-          getConditionCodeFromExtract(declarationExtract, first: true),
+          _getConditionCodeFromExtract(declarationExtract, first: true),
         );
     } else {
       final declarationExtract = newExtracts.removeAt(0);
 
-      codeBuffer.write(getConditionCodeFromExtract(declarationExtract));
+      codeBuffer.write(_getConditionCodeFromExtract(declarationExtract));
     }
 
     /// Recursively write method check, pop method extract in the process
@@ -89,4 +89,55 @@ class FinderClassBuilder extends ClassCodeBuilder {
 
   @override
   String get suffix => 'MatchFinder';
+
+  /// Writes the code that validates if widget matches pattern
+  String _getConditionCodeFromExtract(
+    DeclarationExtract extract, {
+    bool first = false,
+    String? writeFirstKeyword,
+  }) {
+    final validateCodeBuffer = StringBuffer();
+
+    if (first) {
+      validateCodeBuffer.write(
+        writeFirstKeyword ?? 'return ',
+      );
+
+      _codeFromDartType(
+        extract,
+        validateCodeBuffer,
+        appendAnd: false,
+      );
+    } else {
+      _codeFromDartType(extract, validateCodeBuffer);
+    }
+    return validateCodeBuffer.toString();
+  }
+
+  void _codeFromDartType(
+    DeclarationExtract extract,
+    StringBuffer validateCodeBuffer, {
+    bool appendAnd = true,
+  }) {
+    if (appendAnd) {
+      validateCodeBuffer.write('&& ');
+    }
+
+    _writeValidation(
+      validateCodeBuffer: validateCodeBuffer,
+      extract: extract,
+      equals:
+          '''== ${extract.defaultValue ?? getConstructorNameInPlaceOfDefaultValue(extract, isPrivate: true)}''',
+    );
+  }
+
+  void _writeValidation({
+    required StringBuffer validateCodeBuffer,
+    required DeclarationExtract extract,
+    required String equals,
+  }) {
+    validateCodeBuffer.write(
+      'widget.${extract.name}${extract.isMethod ? '()' : ''} $equals',
+    );
+  }
 }

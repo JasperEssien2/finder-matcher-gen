@@ -25,7 +25,7 @@ String getMatcherConditionCodeFromExtract(
       '''matchState['${extractCode(extract)}-expected'] = ${extract.defaultValue == null ? '$extractValue' : '${extract.defaultValue}'};\n''',
     )
     ..writeln('''if(matchState['${extractCode(extract)}-found'] == null) {''')
-    ..writeln('''matchState['${extractCode(extract)}-found'] = {};''')
+    ..writeln('''matchState['${extractCode(extract)}-found'] = <dynamic>{};''')
     ..writeln('}\n')
     ..writeln(
       '''matchState['${extractCode(extract)}-found'].add(${extractCode(extract)});''',

@@ -100,7 +100,7 @@ abstract class BaseMatcherMethodsCodeBuilder {
   /// Responsible for writing describe() into [StringBuffer]
   void writeDescribeMethod(StringBuffer stringBuffer) {
     stringBuffer.writeln(
-      """return description.add('matches $expectCount $className widget').addDescriptionOf(this);""",
+      """return description.add('matches $expectCount $className widget');""",
     );
   }
 

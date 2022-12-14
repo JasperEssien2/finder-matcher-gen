@@ -37,7 +37,7 @@ class MyHomePage<T, R> extends StatefulWidget {
     this.generic,
   });
 
-  @MatchDeclaration(defaultValue: 'love-title')
+  @MatchDeclaration(defaultValue: 'love-leads')
   final String title;
 
   @MatchDeclaration()

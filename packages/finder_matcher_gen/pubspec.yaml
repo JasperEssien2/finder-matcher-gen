@@ -8,7 +8,9 @@ environment:
 
 dependencies: 
   analyzer: 
+  analyzer_plugin:
   build:
+  custom_lint_builder: ^0.0.16
   equatable: ^2.0.5
   finder_matcher_annotation:
     git:

@@ -34,8 +34,12 @@ dev_dependencies:
     #   ref: develop
     #   path: packages/finder_matcher_gen
     path: ../finder_matcher_gen/
-    
+  
+  custom_lint: ^0.0.16
   flutter_lints: ^2.0.0
+
+dependency_overrides:
+  collection: ^1.17.0
 
 flutter:
 

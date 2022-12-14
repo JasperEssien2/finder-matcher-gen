@@ -4,12 +4,11 @@ import 'package:custom_lint_builder/custom_lint_builder.dart';
 import 'package:finder_matcher_annotation/finder_matcher_annotation.dart';
 import 'package:source_gen/source_gen.dart';
 
+import 'util/extensions.dart';
 import 'util/lints.dart';
 
 class AnalysisClassVisitor extends SimpleElementVisitor<void> {
-  AnalysisClassVisitor(this.printCallback);
-
-  final void Function(String text) printCallback;
+  AnalysisClassVisitor();
 
   List<Lint> lintErrors = [];
 
@@ -22,8 +21,6 @@ class AnalysisClassVisitor extends SimpleElementVisitor<void> {
   void visitMethodElement(MethodElement element) => _checkAndAddLint(element);
 
   void _checkAndAddLint(Element element) {
-    printCallback(
-        'CHECK AND ADD LINT ============= $element ==== META: ${element.metadata}');
     if (_annotatedWithMatchDeclaration(element)) {
       final lint = getAnalysisError(element)?.lint;
 
@@ -47,14 +44,10 @@ class AnalysisClassVisitor extends SimpleElementVisitor<void> {
     if (matchDeclarationsElements.length > 1) {
       return DuplicateDeclarationAnnotation(element: element);
     } else {
-      final check = element.checkDefaultValue;
+      final check = element.checkAnnotationDefaultValue;
 
       if (!check.correctType) {
-        return UnexpectedDefaultTypeLint(
-          element: element,
-          expected: check.expected ?? '',
-          given: check.given ?? '',
-        );
+        return UnexpectedDefaultTypeLint(element: element);
       }
     }
     return null;

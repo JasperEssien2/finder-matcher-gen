@@ -16,12 +16,10 @@ class _FinderMatcherAnnotationLint extends PluginBase {
     final library = unit.libraryElement;
 
     for (final element in library.topLevelElements.whereType<ClassElement>()) {
-      print('ELEMENT ------------------- $element');
-      final visitor = AnalysisClassVisitor(print);
+      final visitor = AnalysisClassVisitor();
       element.visitChildren(visitor);
 
       for (final lint in visitor.lintErrors) {
-        print('ELEMENT: $element to yield lint: ${lint.code}');
         yield lint;
       }
     }

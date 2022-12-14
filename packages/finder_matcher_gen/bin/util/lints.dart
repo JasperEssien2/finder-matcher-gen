@@ -1,11 +1,7 @@
-import 'package:analyzer/dart/constant/value.dart';
 import 'package:analyzer/dart/element/element.dart';
-import 'package:analyzer/dart/element/type.dart';
 import 'package:custom_lint_builder/custom_lint_builder.dart';
-import 'package:finder_matcher_annotation/finder_matcher_annotation.dart';
-import 'package:source_gen/source_gen.dart';
 
-import 'model.dart';
+import 'extensions.dart';
 
 class AnaylsisCode {
   AnaylsisCode._();
@@ -22,13 +18,31 @@ abstract class AnalysisErrorLint {
 
   final Element element;
 
-  Lint get lint => Lint(
-        code: code,
-        message: message,
-        correction: correction,
-        location: element.nameLintLocation!,
-        severity: LintSeverity.error,
-      );
+  Lint get lint {
+    final annotationDefault = element.checkAnnotationDefaultValue;
+    final elementLintLocation = element.nameLintLocation!;
+
+    final completeDeclarationString =
+        '@MatchDeclaration(defaultValue: ${annotationDefault.defaultValue})';
+
+    final declarationLength = completeDeclarationString.length;
+
+    return Lint(
+      code: code,
+      message: message,
+      correction: correction,
+      location: LintLocation(
+        startLine: elementLintLocation.startLine - 1,
+        startColumn: 2,
+        endLine: elementLintLocation.startLine - 1,
+        endColumn: 2 + declarationLength,
+        filePath: elementLintLocation.filePath,
+        offset: elementLintLocation.offset,
+        length: declarationLength,
+      ),
+      severity: LintSeverity.error,
+    );
+  }
 
   String get code;
 
@@ -38,14 +52,7 @@ abstract class AnalysisErrorLint {
 }
 
 class UnexpectedDefaultTypeLint extends AnalysisErrorLint {
-  UnexpectedDefaultTypeLint({
-    required super.element,
-    required this.expected,
-    required this.given,
-  });
-
-  final String expected;
-  final String given;
+  UnexpectedDefaultTypeLint({required super.element});
 
   @override
   String get code => AnaylsisCode.unexpectedDefaultValue;
@@ -66,11 +73,15 @@ class InvalidMatchDeclaration extends AnalysisErrorLint {
 
   @override
   String get correction =>
-      '''Change declaration to public and annotate  with @visibleForTesting to only use in test environment''';
+      '''Change declaration to public and annotate  with @visibleForTesting''';
 
   @override
   String get message =>
       '@MatchDeclaration cannot be used on a private declaration';
+}
+
+enum InvalidType{
+  
 }
 
 class DuplicateDeclarationAnnotation extends AnalysisErrorLint {
@@ -83,60 +94,13 @@ class DuplicateDeclarationAnnotation extends AnalysisErrorLint {
   String get correction => '''You can only annotate this declaration once''';
 
   @override
-  String get message => 'Dupplicate @MatchDeclaration on field';
-}
+  String get message => 'Dupplicate @MatchDeclaration on $declarationType';
 
-extension ElementAnnotationExt on ElementAnnotation {
-  bool get isMatchDeclaration {
-    return this is PropertyAccessorElement &&
-        element!.name == 'MatchDeclaration';
-    //  && element.library.name == libraryName;
+  String get declarationType {
+    if (element.kind == ElementKind.GETTER) return 'getter';
+    if (element.kind == ElementKind.FIELD) return 'field';
+    if (element.kind == ElementKind.METHOD) return 'method';
+
+    return 'declaration';
   }
-}
-
-/// An extension of [Element]
-extension ElementExt on Element {
-  /// Returns a list of annotated declaration object
-  Iterable<DartObject> get getAnnotationObjects {
-    const checker = TypeChecker.fromRuntime(MatchDeclaration);
-
-    return checker.annotationsOf(this);
-  }
-
-  String? get declarationType {
-    if (kind == ElementKind.GETTER || kind == ElementKind.METHOD) {
-      return (this as MethodElement).returnType.toString();
-    } else if (kind == ElementKind.FIELD) {
-      return (this as FieldElement).type.toString();
-    }
-    return null;
-  }
-
-  AnnotationDefaultValueCheckModel get checkDefaultValue {
-    final annotationObjects = getAnnotationObjects;
-
-    var correctType = true;
-
-    final defaultValueObject = annotationObjects.isEmpty
-        ? null
-        : annotationObjects.first.getField('_defaultValue');
-
-    if (defaultValueObject == null) {
-      correctType = true;
-    } else {
-      correctType = defaultValueObject.type!.dartTypeStr == declarationType;
-    }
-
-    return AnnotationDefaultValueCheckModel(
-      correctType: correctType,
-      expected: declarationType,
-      given: defaultValueObject?.type!.dartTypeStr,
-    );
-  }
-}
-
-/// An extension of [DartType]
-extension DartTypeExt on DartType {
-  /// Replaces all asterisks from the [DartType] string
-  String get dartTypeStr => toString().replaceAll('*', '');
 }

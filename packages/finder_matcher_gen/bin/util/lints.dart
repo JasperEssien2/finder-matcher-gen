@@ -18,7 +18,9 @@ abstract class AnalysisErrorLint {
 
   final Element element;
 
-  Lint get lint {
+  Lint? get lint {
+    if (!lintError) return null;
+
     final annotationDefault = element.checkAnnotationDefaultValue;
     final elementLintLocation = element.nameLintLocation!;
 
@@ -49,6 +51,8 @@ abstract class AnalysisErrorLint {
   String get message;
 
   String get correction;
+
+  bool get lintError;
 }
 
 class UnexpectedDefaultTypeLint extends AnalysisErrorLint {
@@ -63,6 +67,9 @@ class UnexpectedDefaultTypeLint extends AnalysisErrorLint {
 
   @override
   String get message => 'The defaultValue type is invalid';
+
+  @override
+  bool get lintError => !element.checkAnnotationDefaultValue.correctType;
 }
 
 class InvalidMatchDeclaration extends AnalysisErrorLint {
@@ -72,16 +79,81 @@ class InvalidMatchDeclaration extends AnalysisErrorLint {
   String get code => AnaylsisCode.invalidMatchDeclaration;
 
   @override
-  String get correction =>
-      '''Change declaration to public and annotate  with @visibleForTesting''';
+  String get correction {
+    switch (getInvalidType) {
+      case InvalidType.private:
+        return '''Change declaration to public and annotate  with @visibleForTesting''';
+      case InvalidType.setter:
+        return '''Move declaration to a getter''';
+      case InvalidType.classType:
+        return '''Annotate class fields, methods, or getters instead''';
+      case InvalidType.static:
+        return 'Remove static declaration';
+
+      case null:
+        return '';
+      case InvalidType.voidReturnType:
+        return 'Remove @MatchDeclaration on void method';
+    }
+  }
 
   @override
-  String get message =>
-      '@MatchDeclaration cannot be used on a private declaration';
+  String get message {
+    var message = '@MatchDeclaration cannot be used on a ';
+
+    switch (getInvalidType) {
+      case InvalidType.private:
+        message += 'private declaration';
+        break;
+      case InvalidType.setter:
+        message += 'setter';
+        break;
+      case InvalidType.classType:
+        message += 'class';
+        break;
+      case InvalidType.static:
+        message += 'static declaration';
+        break;
+
+      case null:
+        message += 'declaration';
+        break;
+      case InvalidType.voidReturnType:
+        message += 'void declaration';
+        break;
+    }
+    return message;
+  }
+
+  @override
+  bool get lintError => getInvalidType != null;
+
+  InvalidType? get getInvalidType {
+    if (element.isPrivate) return InvalidType.private;
+
+    if (element.kind == ElementKind.SETTER) return InvalidType.setter;
+    if (element.kind == ElementKind.CLASS) return InvalidType.classType;
+
+    if ((element.kind == ElementKind.FIELD) &&
+        (element as FieldElement).isStatic) return InvalidType.static;
+    if (element.kind == ElementKind.METHOD ||
+        element.kind == ElementKind.GETTER) {
+      final methodElement = element as MethodElement;
+
+      if (methodElement.isStatic) return InvalidType.static;
+
+      if (methodElement.returnType.isVoid) return InvalidType.voidReturnType;
+    }
+    return null;
+  }
 }
 
-enum InvalidType{
-  
+enum InvalidType {
+  private,
+  setter,
+  classType,
+  static,
+  voidReturnType,
 }
 
 class DuplicateDeclarationAnnotation extends AnalysisErrorLint {
@@ -103,4 +175,15 @@ class DuplicateDeclarationAnnotation extends AnalysisErrorLint {
 
     return 'declaration';
   }
+
+  @override
+  bool get lintError => element.getAnnotationObjects.length > 1;
+}
+
+List<AnalysisErrorLint> analysisErrorLintList(Element element) {
+  return [
+    UnexpectedDefaultTypeLint(element: element),
+    InvalidMatchDeclaration(element: element),
+    DuplicateDeclarationAnnotation(element: element),
+  ];
 }

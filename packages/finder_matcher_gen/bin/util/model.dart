@@ -1,5 +1,3 @@
-import 'package:analyzer/dart/element/element.dart';
-import 'package:custom_lint_builder/custom_lint_builder.dart';
 import 'package:equatable/equatable.dart';
 
 class AnnotationDefaultValueCheckModel extends Equatable {
@@ -18,12 +16,3 @@ class AnnotationDefaultValueCheckModel extends Equatable {
   @override
   List<Object?> get props => [correctType, expected, given, defaultValue];
 }
-
-// class AnnotationElementInfo {
-
-//   final Element element;
-
-//   LintLocation get lintLocation{
-
-//   }
-// }

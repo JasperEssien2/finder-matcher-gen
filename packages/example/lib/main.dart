@@ -46,11 +46,6 @@ class MyHomePage<T, R> extends StatefulWidget {
   @MatchDeclaration()
   List<DataRow> incrementCounter() => [];
 
-  @MatchDeclaration()
-  set setField(String set){
-    
-  }
-
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }

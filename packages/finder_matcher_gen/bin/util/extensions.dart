@@ -23,6 +23,9 @@ extension ElementExt on Element {
     return checker.annotationsOf(this);
   }
 
+  bool get isMatchDeclaration => const TypeChecker.fromRuntime(MatchDeclaration)
+      .hasAnnotationOf(this, throwOnUnresolved: false);
+
   String? get declarationType {
     if (kind == ElementKind.GETTER || kind == ElementKind.METHOD) {
       return (this as MethodElement).returnType.toString();

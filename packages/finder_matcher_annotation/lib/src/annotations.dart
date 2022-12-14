@@ -3,7 +3,7 @@
 /// Annotation for marking widgets to generate Finder or Matcher classes
 class Match {
   ///Accepts two parametera
-  ///* A list of [MatchWidget] that specifies widgets to generate 
+  ///* A list of [MatchWidget] that specifies widgets to generate
   ///a corresponding matcher
   ///* A list [Type] widgets to generate corresponsing finder classes
   const Match({

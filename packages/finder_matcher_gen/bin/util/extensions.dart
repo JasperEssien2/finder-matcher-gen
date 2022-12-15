@@ -27,8 +27,10 @@ extension ElementExt on Element {
       .hasAnnotationOf(this, throwOnUnresolved: false);
 
   String? get declarationType {
-    if (kind == ElementKind.GETTER || kind == ElementKind.METHOD) {
+    if (kind == ElementKind.METHOD) {
       return (this as MethodElement).returnType.toString();
+    } else if (kind == ElementKind.GETTER) {
+      return (this as PropertyAccessorElement).returnType.toString();
     } else if (kind == ElementKind.FIELD) {
       return (this as FieldElement).type.toString();
     }

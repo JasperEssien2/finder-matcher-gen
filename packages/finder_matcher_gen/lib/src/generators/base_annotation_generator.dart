@@ -64,7 +64,8 @@ abstract class BaseAnnotaionGenerator extends GeneratorForAnnotation<Match> {
 
       final elements = List<Element>.from([])
         ..addAll(classElement.fields)
-        ..addAll(classElement.methods);
+        ..addAll(classElement.methods)
+        ..addAll(classElement.accessors);
 
       if (elements.hasAtleastOneMatchDeclarationAnnotation) {
         _buildClassWithDeclarationValidation(classElement, generic);

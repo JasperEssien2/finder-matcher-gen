@@ -136,8 +136,15 @@ class InvalidMatchDeclaration extends AnalysisErrorLint {
 
     if ((element.kind == ElementKind.FIELD) &&
         (element as FieldElement).isStatic) return InvalidType.static;
-    if (element.kind == ElementKind.METHOD ||
-        element.kind == ElementKind.GETTER) {
+    if (element.kind == ElementKind.GETTER) {
+      final accessorElement = element as PropertyAccessorElement;
+
+      if (accessorElement.isStatic) return InvalidType.static;
+
+      if (accessorElement.returnType.isVoid) return InvalidType.voidReturnType;
+    }
+
+    if (element.kind == ElementKind.METHOD) {
       final methodElement = element as MethodElement;
 
       if (methodElement.isStatic) return InvalidType.static;

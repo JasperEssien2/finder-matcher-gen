@@ -1,4 +1,4 @@
-import 'package:finder_matcher_annotation/finder_matcher_annotation.dart';
+import 'package:example/item_stats.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -30,69 +30,230 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class MyHomePage<T, R> extends StatefulWidget {
-  const MyHomePage({
+class PokemonDetailScreen extends StatefulWidget {
+  static String pageName = 'PokemonDetailScreen';
+
+  const PokemonDetailScreen({
     super.key,
-    required this.title,
-    this.generic,
+    this.pokemon,
   });
 
-  @MatchDeclaration(defaultValue: 'love-leads')
-  final String title;
-
-  @MatchDeclaration()
-  final T? generic;
-
-  @MatchDeclaration()
-  List<DataRow> incrementCounter() => [];
+  final PokemonEntity? pokemon;
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<PokemonDetailScreen> createState() => _PokemonDetailScreenState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+class _PokemonDetailScreenState extends State<PokemonDetailScreen> {
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
 
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
+    return Scaffold(
+      backgroundColor: const Color(0xffE8E8E8),
+      body: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            expandedHeight: 300,
+            backgroundColor: pokemon.backgroundColor,
+            pinned: false,
+            flexibleSpace: DetailAppBar(
+              
+            ),
+          ),
+          const SliverToBoxAdapter(
+            child: PokemonAtrribute(),
+          ),
+          SliverToBoxAdapter(
+            child: Container(
+              color: Colors.white,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Text(
+                      'Base stats',
+                      style: textTheme.bodyLarge!.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                  Container(
+                    width: double.infinity,
+                    height: 1,
+                    color: Colors.grey[300],
+                  ),
+                ],
+              ),
+            ),
+          ),
+          SliverToBoxAdapter(
+            child: Container(
+              color: Colors.white,
+              child: Column(
+                children: pokemon.stats
+                    .map((e) => ItemStats(
+                          key: ValueKey(e),
+                          stat: e,
+                          index: pokemon.stats.indexOf(e),
+                        ))
+                    .toList(),
+              ),
+            ),
+          ),
+          const SliverToBoxAdapter(child: SizedBox(height: 120)),
+        ],
+      ),
+      floatingActionButton: AnimatedBuilder(
+        animation: _dataController,
+        builder: (context, _) {
+          return const AppFloatingActionButton();
+        },
+      ),
+    );
   }
 
   @override
+  void dispose() {
+    super.dispose();
+  }
+}
+
+class AppFloatingActionButton extends StatelessWidget {
+  const AppFloatingActionButton({Key? key}) : super(key: key);
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
-            ),
-          ],
+    final primaryColor = Theme.of(context).primaryColor;
+
+    return FloatingActionButton.extended(
+      key: const ValueKey('favourite-fab'),
+      backgroundColor: primaryColor.withOpacity(.2),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(36)),
+      label: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        child: Text(
+          'Mark as favourite',
+          style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                color: primaryColor,
+                fontWeight: FontWeight.w700,
+              ),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      onPressed: () {},
     );
   }
 }
 
-class MyWorldWidget extends StatelessWidget {
-  const MyWorldWidget({super.key});
+class DetailAppBar extends StatelessWidget {
+  const DetailAppBar({
+    Key? key,
+    required this.pokemonName,
+    required this.pokemonId,
+    required this.pokemonImage,
+    required this.pokemonType,
+  }) : super(key: key);
+
+  final String pokemonName;
+  final String pokemonId;
+  final String pokemonImage;
+  final String pokemonType;
 
   @override
   Widget build(BuildContext context) {
-    return Container();
+    final textTheme = Theme.of(context).textTheme;
+
+    return FlexibleSpaceBar(
+      background: Padding(
+        padding: const EdgeInsets.all(16.0).copyWith(top: 140),
+        child: Row(
+          children: [
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    pokemonName,
+                    style: textTheme.headlineLarge!.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
+                  ),
+                  const SizedBox(height: 3),
+                  Text(
+                    pokemonType,
+                    style: textTheme.headlineMedium,
+                  ),
+                  const Expanded(child: SizedBox.shrink()),
+                  Text(
+                    pokemonId,
+                    style: textTheme.headlineMedium,
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: Align(
+                alignment: Alignment.bottomRight,
+                child: Image.network(
+                  pokemonImage,
+                  width: 130,
+                  height: 125,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class PokemonAtrribute extends StatelessWidget {
+  const PokemonAtrribute({super.key});
+
+  double get height => 120.0;
+  double get weight => 60.0;
+  double get speed => 120.0;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+      color: Colors.white,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _buildWidget(context, 'Height', height),
+          _buildWidget(context, 'Weight', weight),
+          _buildWidget(context, 'Speed km/h', speed),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildWidget(BuildContext context, String caption, num value) {
+    final textStyle = Theme.of(context).textTheme;
+
+    return Padding(
+      padding: const EdgeInsets.only(right: 32),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            caption,
+            style: textStyle.bodySmall,
+          ),
+          const SizedBox(height: 2),
+          Text('$value', style: textStyle.bodyMedium),
+        ],
+      ),
+    );
   }
 }

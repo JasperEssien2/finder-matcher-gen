@@ -22,6 +22,7 @@ dependencies:
     path: ../finder_matcher_annotation/
 
   cupertino_icons: ^1.0.2
+  equatable: ^2.0.5
   
 dev_dependencies:
   flutter_test:

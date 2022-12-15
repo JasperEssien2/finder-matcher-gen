@@ -38,7 +38,7 @@ class _MyHomePageMatchFinder<T, R> extends MatchFinder {
     if (candidiate.widget is MyHomePage) {
       final widget = candidiate.widget as MyHomePage;
 
-      return widget.title == 'love-title' &&
+      return widget.title == 'love-leads' &&
           widget.generic == _genericValue &&
           listEquals(widget.incrementCounter(), _incrementCounterValue);
     }

@@ -56,10 +56,10 @@ class _MyHomePageMatcher<T, R> extends Matcher {
 
           var expectedDeclarationCount = 0;
 
-          if (widget.title == 'love-title') {
+          if (widget.title == 'love-leads') {
             expectedDeclarationCount++;
           } else {
-            matchState['widget.title-expected'] = 'love-title';
+            matchState['widget.title-expected'] = 'love-leads';
 
             if (matchState['widget.title-found'] == null) {
               matchState['widget.title-found'] = <dynamic>{};

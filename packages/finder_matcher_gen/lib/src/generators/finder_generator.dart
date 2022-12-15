@@ -27,6 +27,7 @@ class FinderGenerator extends BaseAnnotaionGenerator {
     super.writeClassToBuffer(extract, classStringBuffer);
   }
 
+
   @override
   String prefix(ClassElementExtract extract) => 'find';
 

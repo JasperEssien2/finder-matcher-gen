@@ -148,6 +148,10 @@ abstract class BaseAnnotaionGenerator extends GeneratorForAnnotation<Match> {
     if (_requiresFoundation(classExtract)) {
       _importsStringBuffer.writeln("import 'package:flutter/foundation.dart';");
     }
+
+    for (final import in classExtract.imports ?? {}) {
+      _writeImport("import '$import';");
+    }
   }
 
   bool _requiresFoundation(ClassElementExtract classExtract) {
@@ -155,6 +159,12 @@ abstract class BaseAnnotaionGenerator extends GeneratorForAnnotation<Match> {
             ?.where((element) => element.fieldEquality != null)
             .isNotEmpty ??
         false;
+  }
+
+  void _writeImport(String import) {
+    if (doesNotContainImport(import)) {
+      _importsStringBuffer.writeln(import);
+    }
   }
 
   /// Return true if [importToWrite] does not exist in import string buffer

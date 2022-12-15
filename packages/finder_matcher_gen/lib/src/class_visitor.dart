@@ -40,6 +40,15 @@ class ClassVisitor extends SimpleElementVisitor<void> {
       ///to this package standard
       checkBadTypeByFieldElement(element);
 
+      final importUri = isNotPartOfDartCore(element.type)
+          ? element.type.element?.source?.uri
+          : null;
+
+      if (importUri != null) {
+        _classExtract = _classExtract.copyWithImport(
+          import: importUri.toString(),
+        );
+      }
       _classExtract = _classExtract.copyWithDeclarationExtract(
         extract: DeclarationExtract(
           name: element.name,
@@ -78,6 +87,16 @@ class ClassVisitor extends SimpleElementVisitor<void> {
             name: '${element.name}Value',
             type: element.returnType.dartTypeStr,
           ),
+        );
+      }
+
+      final importUri = isNotPartOfDartCore(element.type)
+          ? element.returnType.element?.source?.uri
+          : null;
+
+      if (importUri != null) {
+        _classExtract = _classExtract.copyWithImport(
+          import: importUri.toString(),
         );
       }
 

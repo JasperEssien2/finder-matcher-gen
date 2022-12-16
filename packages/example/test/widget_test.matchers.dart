@@ -15,18 +15,20 @@ import 'package:flutter/src/material/circle_avatar.dart';
 matchesAtleastOneMyHomePage<T, R>(
         {required T? genericValue,
         required List<DataRow> incrementCounterValue}) =>
-    _MyHomePageMatcher<T, R>(
+    _MyHomePageAtleastOneMatcher<T, R>(
         genericValue: genericValue,
         incrementCounterValue: incrementCounterValue);
 
-final matchesOneMyApp = _MyAppMatcher();
+final matchesAtleastOneMyApp = _MyAppAtleastOneMatcher();
 
-final matchesNoCircleAvatar = _CircleAvatarMatcher();
+final matchesAtleastOneMyApp = _MyAppAtleastOneMatcher();
 
-matchesNMyWorldWidget({required int n}) => _MyWorldWidgetMatcher(n: n);
+final matchesNoCircleAvatar = _CircleAvatarNoneMatcher();
 
-class _MyHomePageMatcher<T, R> extends Matcher {
-  _MyHomePageMatcher({
+matchesNMyWorldWidget({required int n}) => _MyWorldWidgetNMatcher(n: n);
+
+class _MyHomePageAtleastOneMatcher<T, R> extends Matcher {
+  _MyHomePageAtleastOneMatcher({
     required T? genericValue,
     required List<DataRow> incrementCounterValue,
   })  : _genericValue = genericValue,
@@ -155,12 +157,12 @@ class _MyHomePageMatcher<T, R> extends Matcher {
   }
 }
 
-class _MyAppMatcher extends Matcher {
-  _MyAppMatcher();
+class _MyAppAtleastOneMatcher extends Matcher {
+  _MyAppAtleastOneMatcher();
 
   @override
   Description describe(Description description) {
-    return description.add('matches one MyApp widget');
+    return description.add('matches atleast one MyApp widget');
   }
 
   @override
@@ -175,13 +177,12 @@ class _MyAppMatcher extends Matcher {
       for (final element in elements) {
         if (element.widget is MyApp) {
           matchedCount++;
-          break;
         }
       }
 
       matchState['custom.matchedCount'] = matchedCount;
 
-      return matchedCount == 1;
+      return matchedCount >= 1;
     } catch (exception, stack) {
       matchState['custom.exception'] = exception.toString();
       matchState['custom.stack'] = Chain.forTrace(stack)
@@ -207,19 +208,77 @@ class _MyAppMatcher extends Matcher {
           .add(matchState['custom.stack'].toString());
     }
 
-    if (matchState['custom.count'] <= 0) {
-      mismatchDescription.add('zero MyApp widgets found but one was expected');
-    } else if (matchState['custom.count'] > 1) {
+    if (matchState['custom.matchedCount'] <= 0) {
       mismatchDescription
-          .add('found multiple MyApp widgets but one was expected');
+          .add('found zero MyApp widgets but at least one was expected');
     }
 
     return mismatchDescription;
   }
 }
 
-class _CircleAvatarMatcher extends Matcher {
-  _CircleAvatarMatcher();
+class _MyAppAtleastOneMatcher extends Matcher {
+  _MyAppAtleastOneMatcher();
+
+  @override
+  Description describe(Description description) {
+    return description.add('matches atleast one MyApp widget');
+  }
+
+  @override
+  bool matches(covariant Finder finder, Map matchState) {
+    matchState['custom.finder'] = finder;
+
+    try {
+      var matchedCount = 0;
+
+      final elements = finder.evaluate();
+
+      for (final element in elements) {
+        if (element.widget is MyApp) {
+          matchedCount++;
+        }
+      }
+
+      matchState['custom.matchedCount'] = matchedCount;
+
+      return matchedCount >= 1;
+    } catch (exception, stack) {
+      matchState['custom.exception'] = exception.toString();
+      matchState['custom.stack'] = Chain.forTrace(stack)
+          .foldFrames(
+              (frame) =>
+                  frame.package == 'test' ||
+                  frame.package == 'stream_channel' ||
+                  frame.package == 'matcher',
+              terse: true)
+          .toString();
+    }
+
+    return false;
+  }
+
+  @override
+  Description describeMismatch(covariant Finder finder,
+      Description mismatchDescription, Map matchState, bool verbose) {
+    if (matchState['custom.exception'] != null) {
+      mismatchDescription
+          .add('threw')
+          .addDescriptionOf(matchState['custom.exception'])
+          .add(matchState['custom.stack'].toString());
+    }
+
+    if (matchState['custom.matchedCount'] <= 0) {
+      mismatchDescription
+          .add('found zero MyApp widgets but at least one was expected');
+    }
+
+    return mismatchDescription;
+  }
+}
+
+class _CircleAvatarNoneMatcher extends Matcher {
+  _CircleAvatarNoneMatcher();
 
   @override
   Description describe(Description description) {
@@ -277,8 +336,8 @@ class _CircleAvatarMatcher extends Matcher {
   }
 }
 
-class _MyWorldWidgetMatcher extends Matcher {
-  _MyWorldWidgetMatcher({
+class _MyWorldWidgetNMatcher extends Matcher {
+  _MyWorldWidgetNMatcher({
     required int n,
   }) : _n = n;
 

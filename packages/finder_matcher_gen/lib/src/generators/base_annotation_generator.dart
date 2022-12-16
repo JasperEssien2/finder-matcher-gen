@@ -191,7 +191,7 @@ abstract class BaseAnnotaionGenerator extends GeneratorForAnnotation<Match> {
   /// Writes global instantiation of generated classes
   void writeGlobalVariables(ClassElementExtract extract) {
     final generatedClassName =
-        '${extract.generatedClassName}$suffix${extract.genericParam}';
+        '''${extract.generatedClassName}${classSuffix(extract)}${extract.genericParam}''';
 
     final constructorFields = extract.constructorFields ?? {};
 
@@ -227,5 +227,5 @@ abstract class BaseAnnotaionGenerator extends GeneratorForAnnotation<Match> {
   String prefix(ClassElementExtract extract);
 
   /// A name that is appended to generated class
-  String get suffix;
+  String classSuffix(ClassElementExtract extract);
 }

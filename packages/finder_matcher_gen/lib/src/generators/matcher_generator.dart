@@ -94,7 +94,8 @@ class MatcherGenerator extends BaseAnnotaionGenerator {
   }
 
   @override
-  String get suffix => 'Matcher';
+  String classSuffix(ClassElementExtract extract) =>
+      _getClassSpecification(extract)!.matcherSuffix;
 
   MatchSpecification? _getClassSpecification(ClassElementExtract extract) =>
       _typeToSpecification[extract.className];

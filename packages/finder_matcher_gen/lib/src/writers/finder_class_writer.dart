@@ -88,7 +88,10 @@ class FinderClassWriter extends ClassCodeWriter {
   }
 
   @override
-  String get suffix => 'MatchFinder';
+  String get classNameSuffix => 'MatchFinder';
+
+  @override
+  String get extendsName => classNameSuffix;
 
   /// Writes the code that validates if widget matches pattern
   String _getConditionCodeFromExtract(

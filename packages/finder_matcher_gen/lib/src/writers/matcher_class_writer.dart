@@ -69,7 +69,10 @@ class WidgetMatcherClassWriter extends ClassCodeWriter {
   }
 
   @override
-  String get suffix => 'Matcher';
+  String get extendsName => 'Matcher';
+
+  @override
+  String get classNameSuffix => _specification.matcherSuffix;
 }
 
 /// A base class for writing Matcher method code to [StringBuffer]

@@ -27,12 +27,11 @@ class FinderGenerator extends BaseAnnotaionGenerator {
     super.writeClassToBuffer(extract, classStringBuffer);
   }
 
-
   @override
   String prefix(ClassElementExtract extract) => 'find';
 
   @override
-  String get suffix => 'MatchFinder';
+  String classSuffix(ClassElementExtract extract) => 'MatchFinder';
 
   @override
   Map<String, Set<ConstructorFieldModel>> get defaultConstructorFields => {};

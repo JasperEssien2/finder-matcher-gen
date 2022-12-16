@@ -7,6 +7,7 @@ import 'package:flutter_test/flutter_test.dart';
   matchers: [
     MatchWidget(MyHomePage, MatchSpecification.matchesAtleastOneWidget),
     MatchWidget(MyApp, MatchSpecification.matchesOneWidget),
+    MatchWidget(MyApp, MatchSpecification.matchesAtleastOneWidget),
     MatchWidget(CircleAvatar, MatchSpecification.matchesNoWidget),
     MatchWidget(MyWorldWidget, MatchSpecification.matchesNWidgets),
   ],

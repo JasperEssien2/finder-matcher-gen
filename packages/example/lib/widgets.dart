@@ -1,3 +1,4 @@
+
 import 'package:example/models.dart';
 import 'package:finder_matcher_annotation/finder_matcher_annotation.dart';
 import 'package:flutter/material.dart';
@@ -8,6 +9,7 @@ class ItemTask extends StatelessWidget {
     required this.taskModel,
   });
 
+  @MatchDeclaration()
   final TaskModel taskModel;
 
   @override

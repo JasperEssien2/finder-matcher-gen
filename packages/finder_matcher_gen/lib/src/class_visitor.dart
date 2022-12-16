@@ -40,15 +40,8 @@ class ClassVisitor extends SimpleElementVisitor<void> {
       ///to this package standard
       checkBadTypeByFieldElement(element);
 
-      final importUri = isNotPartOfDartCore(element.type)
-          ? element.type.element?.source?.uri
-          : null;
+      _addImportToExtract(element.type);
 
-      if (importUri != null) {
-        _classExtract = _classExtract.copyWithImport(
-          import: importUri.toString(),
-        );
-      }
       _classExtract = _classExtract.copyWithDeclarationExtract(
         extract: DeclarationExtract(
           name: element.name,
@@ -111,15 +104,7 @@ class ClassVisitor extends SimpleElementVisitor<void> {
         );
       }
 
-      final importUri = isNotPartOfDartCore(element.returnType)
-          ? element.returnType.element?.source?.uri
-          : null;
-
-      if (importUri != null) {
-        _classExtract = _classExtract.copyWithImport(
-          import: importUri.toString(),
-        );
-      }
+      _addImportToExtract(element.returnType);
 
       _classExtract = _classExtract.copyWithDeclarationExtract(
         extract: DeclarationExtract(
@@ -130,6 +115,17 @@ class ClassVisitor extends SimpleElementVisitor<void> {
           defaultValue: defaultValue,
           fieldEquality: getEqualityType(element.returnType),
         ),
+      );
+    }
+  }
+
+  void _addImportToExtract(DartType type) {
+    final importUri =
+        isNotPartOfDartCore(type) ? type.element?.source?.uri : null;
+
+    if (importUri != null) {
+      _classExtract = _classExtract.copyWithImport(
+        import: importUri.toString(),
       );
     }
   }

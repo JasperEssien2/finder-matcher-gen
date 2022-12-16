@@ -1,34 +1,36 @@
 import 'package:example/main.dart';
-import 'package:example/widget.dart';
 import 'package:example/widgets.dart';
 import 'package:finder_matcher_annotation/finder_matcher_annotation.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+import 'app_test.matchers.dart';
 
 @Match(
   matchers: [
     MatchWidget(HomeScreen, MatchSpecification.matchesOneWidget),
-    MatchWidget(ItemStat, MatchSpecification.matchesNWidgets),
-    MatchWidget(ItemStat, MatchSpecification.m),
- 
+    MatchWidget(ItemTask, MatchSpecification.matchesNWidgets),
   ],
-  finders: [AddTargetBottomSheet],
+  finders: [AddTargetBottomSheet, AppFloatingActionButton],
 )
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
+  testWidgets('Ensure HomeScreen exists when App running',
+      (WidgetTester tester) async {
     // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+    await _pumpApp(tester);
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
-
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
-
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    expect(find.byType(HomeScreen), matchesOneHomeScreen);
   });
+
+  testWidgets('Ensure addTaskBottomSheet is pushed when FAB pressed',
+      (WidgetTester tester) async {
+    // Build our app and trigger a frame.
+    await _pumpApp(tester);
+
+    tester.tap();
+    expect(find.byType(HomeScreen), matchesOneHomeScreen);
+  });
+}
+
+Future<void> _pumpApp(WidgetTester tester) async {
+  await tester.pumpWidget(const MyApp());
 }

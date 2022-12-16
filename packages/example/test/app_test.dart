@@ -1,16 +1,18 @@
 import 'package:example/main.dart';
+import 'package:example/widget.dart';
+import 'package:example/widgets.dart';
 import 'package:finder_matcher_annotation/finder_matcher_annotation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 @Match(
   matchers: [
-    MatchWidget(MyHomePage, MatchSpecification.matchesAtleastOneWidget),
-    MatchWidget(MyApp, MatchSpecification.matchesOneWidget),
-    MatchWidget(CircleAvatar, MatchSpecification.matchesNoWidget),
-    MatchWidget(MyWorldWidget, MatchSpecification.matchesNWidgets),
+    MatchWidget(HomeScreen, MatchSpecification.matchesOneWidget),
+    MatchWidget(ItemStat, MatchSpecification.matchesNWidgets),
+    MatchWidget(ItemStat, MatchSpecification.m),
+ 
   ],
-  finders: [MyHomePage, MyApp],
+  finders: [AddTargetBottomSheet],
 )
 void main() {
   testWidgets('Counter increments smoke test', (WidgetTester tester) async {

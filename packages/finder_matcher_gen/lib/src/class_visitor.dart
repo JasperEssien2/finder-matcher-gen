@@ -61,15 +61,6 @@ class ClassVisitor extends SimpleElementVisitor<void> {
     }
   }
 
-  /// Returns the [FieldEquality] to use when [type] falls under any of these
-  /// [List], [Map], [Set]
-  FieldEquality? getEqualityType(DartType type) {
-    if (type.isDartCoreList) return FieldEquality.list;
-    if (type.isDartCoreMap) return FieldEquality.map;
-    if (type.isDartCoreSet) return FieldEquality.set;
-    return null;
-  }
-
   @override
   void visitPropertyAccessorElement(PropertyAccessorElement element) {
     _visitMethodElement(
@@ -157,6 +148,15 @@ class ClassVisitor extends SimpleElementVisitor<void> {
     }
 
     return defaultValue;
+  }
+
+  /// Returns the [FieldEquality] to use when [type] falls under any of these
+  /// [List], [Map], [Set]
+  FieldEquality? getEqualityType(DartType type) {
+    if (type.isDartCoreList) return FieldEquality.list;
+    if (type.isDartCoreMap) return FieldEquality.map;
+    if (type.isDartCoreSet) return FieldEquality.set;
+    return null;
   }
 }
 

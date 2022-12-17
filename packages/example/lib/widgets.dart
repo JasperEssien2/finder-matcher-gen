@@ -147,7 +147,7 @@ class _AddTargetBottomSheetState extends State<AddTargetBottomSheet> {
           const SizedBox(height: 24),
           Slider(
             min: 0,
-            max: 7,
+            max: 5,
             activeColor: sliderColor,
             inactiveColor: Colors.grey[200],
             value: selectedPriority,

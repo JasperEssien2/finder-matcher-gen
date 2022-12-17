@@ -47,20 +47,6 @@ class MatcherGenerator extends BaseAnnotaionGenerator {
   }
 
   @override
-  void writeImports(
-    StringBuffer importBuffer, {
-    required ClassElementExtract classExtract,
-  }) {
-    super.writeImports(importBuffer, classExtract: classExtract);
-    const stackTraceImport =
-        "import 'package:stack_trace/stack_trace.dart' show Chain;";
-
-    if (doesNotContainImport(stackTraceImport)) {
-      importBuffer.writeln(stackTraceImport);
-    }
-  }
-
-  @override
   void writeClassToBuffer(
     ClassElementExtract extract,
     StringBuffer classStringBuffer,

@@ -73,7 +73,7 @@ class ItemTask extends StatelessWidget {
       case 5:
         return Colors.red;
     }
-    return Colors.red;
+    throw Exception('Unsupported priority: ${taskModel.priority}');
   }
 }
 
@@ -147,7 +147,7 @@ class _AddTargetBottomSheetState extends State<AddTargetBottomSheet> {
           const SizedBox(height: 24),
           Slider(
             min: 0,
-            max: 5,
+            max: 7,
             activeColor: sliderColor,
             inactiveColor: Colors.grey[200],
             value: selectedPriority,

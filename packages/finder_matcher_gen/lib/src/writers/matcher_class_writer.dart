@@ -108,7 +108,6 @@ abstract class BaseMatcherMethodsCodeBuilder {
   void writeMatchesMethod(StringBuffer stringBuffer) {
     stringBuffer
       ..writeln("matchState['custom.finder'] = finder;\n")
-      ..writeln('try {')
       ..writeln('var matchedCount = 0;\n')
       ..writeln('final elements = finder.evaluate();\n')
       ..writeln('for(final element in elements) {')
@@ -119,11 +118,7 @@ abstract class BaseMatcherMethodsCodeBuilder {
       ..writeln('}')
       ..writeln('}\n')
       ..writeln("matchState['custom.matchedCount'] = matchedCount;\n")
-      ..writeln(matchReturnStatement)
-      ..writeln('} catch (exception, stack) {')
-      ..writeln(exceptionHandlerCode)
-      ..writeln('}\n')
-      ..writeln('return false;');
+      ..writeln(matchReturnStatement);
   }
 
   String _writeValidationCode() {
@@ -151,19 +146,6 @@ abstract class BaseMatcherMethodsCodeBuilder {
 
     return buffer.toString();
   }
-
-  /// Code string to handle exceptions
-  String get exceptionHandlerCode => '''
-      matchState['custom.exception'] = exception.toString();
-      matchState['custom.stack'] = Chain.forTrace(stack)
-            .foldFrames(
-                (frame) =>
-                    frame.package == 'test' ||
-                    frame.package == 'stream_channel' ||
-                    frame.package == 'matcher',
-                terse: true)
-            .toString();
-''';
 
   /// Returns the string code that uses the match count to validate if
   /// this widget (and it's pr) was found

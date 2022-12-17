@@ -131,10 +131,7 @@ abstract class BaseMatcherMethodsCodeBuilder {
 
     final fields = extract.declarations;
 
-    print(
-        '${extract.className} FIELDS IS EMPTY ----------- ${fields?.isEmpty ?? true}');
     if (fields?.isEmpty ?? true) {
-      print('Ignore initialising widget');
       buffer.writeln('matchedCount++;');
     } else {
       buffer
@@ -205,7 +202,7 @@ class MatchOneWidgetMethodsBuilder extends BaseMatcherMethodsCodeBuilder {
     super.writeDescribeMismatchMethod(stringBuffer);
 
     stringBuffer
-      ..writeln("if(matchState['custom.count'] <= 0) {")
+      ..writeln("if((matchState['custom.count'] ?? 0) <= 0) {")
       ..writeln(
         """mismatchDescription.add('zero ${extract.className} widgets found but one was expected');""",
       )

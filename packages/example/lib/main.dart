@@ -35,7 +35,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final tasks = [];
+  final tasks = <TaskModel>[];
 
   @override
   Widget build(BuildContext context) {

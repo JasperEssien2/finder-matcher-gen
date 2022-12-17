@@ -48,7 +48,6 @@ class _HomeScreenMatcher extends Matcher {
       for (final element in elements) {
         if (element.widget is HomeScreen) {
           matchedCount++;
-          break;
         }
       }
 
@@ -229,6 +228,10 @@ class _TaskListViewMatcher extends Matcher {
 
       for (final element in elements) {
         if (element.widget is TaskListView) {
+          final widget = element.widget as TaskListView;
+
+          var expectedDeclarationCount = 0;
+
           if (listEquals(widget.tasks, _tasksValue)) {
             expectedDeclarationCount++;
           } else {

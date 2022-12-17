@@ -131,7 +131,10 @@ abstract class BaseMatcherMethodsCodeBuilder {
 
     final fields = extract.declarations;
 
+    print(
+        '${extract.className} FIELDS IS EMPTY ----------- ${fields?.isEmpty ?? true}');
     if (fields?.isEmpty ?? true) {
+      print('Ignore initialising widget');
       buffer.writeln('matchedCount++;');
     } else {
       buffer
@@ -196,31 +199,6 @@ class MatchOneWidgetMethodsBuilder extends BaseMatcherMethodsCodeBuilder {
 
   @override
   String get matchReturnStatement => 'return matchedCount == 1;';
-
-  @override
-  String _writeValidationCode() {
-    final buffer = StringBuffer();
-
-    final fields = extract.declarations;
-
-    if (fields?.isEmpty ?? true) {
-      buffer
-        ..writeln('matchedCount++;')
-        ..writeln('break;');
-    } else {
-      for (var i = 0; i < fields!.length; i++) {
-        buffer.write(
-          getMatcherConditionCodeFromExtract(
-            fields[i],
-            last: i == fields.length - 1,
-            declarationCount: fields.length,
-          ),
-        );
-      }
-    }
-
-    return buffer.toString();
-  }
 
   @override
   void writeDescribeMismatchMethod(StringBuffer stringBuffer) {

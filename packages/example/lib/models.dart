@@ -15,4 +15,7 @@ class TaskModel {
 
   @override
   int get hashCode => task.hashCode ^ priority.hashCode;
+
+  @override
+  String toString() => 'TaskModel(task: $task, priority: $priority)';
 }

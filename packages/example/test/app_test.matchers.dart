@@ -59,10 +59,10 @@ class _HomeScreenMatcher extends Matcher {
       Description mismatchDescription, Map matchState, bool verbose) {
     if ((matchState['custom.count'] ?? 0) <= 0) {
       mismatchDescription
-          .add('zero HomeScreen widgets found but one was expected');
+          .add('---  zero HomeScreen widgets found but one was expected\n\n');
     } else if (matchState['custom.count'] > 1) {
-      mismatchDescription
-          .add('found multiple HomeScreen widgets but one was expected');
+      mismatchDescription.add(
+          '---  found multiple HomeScreen widgets but one was expected\n\n');
     }
 
     return mismatchDescription;
@@ -143,19 +143,19 @@ class _ItemTaskMatcher extends Matcher {
       Description mismatchDescription, Map matchState, bool verbose) {
     if (matchState['custom.matchedCount'] != _n) {
       mismatchDescription.add(
-          'found ${matchState['custom.matchedCount']} ItemTask widgets $_n was expected');
+          '---  found ${matchState['custom.matchedCount']} ItemTask widgets $_n was expected\n\n');
     }
 
     if (matchState['widget.priorityColor-found'] != null &&
         matchState['widget.priorityColor-expected'] != null) {
       mismatchDescription.add(
-          "priorityColor is ${matchState['widget.priorityColor-found']} but ${matchState['widget.priorityColor-expected']} was expected \n\n");
+          "--- priorityColor is ${matchState['widget.priorityColor-found']} but ${matchState['widget.priorityColor-expected']} was expected \n\n");
     }
 
     if (matchState['widget.taskModel-found'] != null &&
         matchState['widget.taskModel-expected'] != null) {
       mismatchDescription.add(
-          "taskModel is ${matchState['widget.taskModel-found']} but ${matchState['widget.taskModel-expected']} was expected \n\n");
+          "--- taskModel is ${matchState['widget.taskModel-found']} but ${matchState['widget.taskModel-expected']} was expected \n\n");
     }
 
     return mismatchDescription;
@@ -216,16 +216,16 @@ class _TaskListViewMatcher extends Matcher {
       Description mismatchDescription, Map matchState, bool verbose) {
     if ((matchState['custom.count'] ?? 0) <= 0) {
       mismatchDescription
-          .add('zero TaskListView widgets found but one was expected');
+          .add('---  zero TaskListView widgets found but one was expected\n\n');
     } else if (matchState['custom.count'] > 1) {
-      mismatchDescription
-          .add('found multiple TaskListView widgets but one was expected');
+      mismatchDescription.add(
+          '---  found multiple TaskListView widgets but one was expected\n\n');
     }
 
     if (matchState['widget.tasks-found'] != null &&
         matchState['widget.tasks-expected'] != null) {
       mismatchDescription.add(
-          "tasks is ${matchState['widget.tasks-found']} but ${matchState['widget.tasks-expected']} was expected \n\n");
+          "--- tasks is ${matchState['widget.tasks-found']} but ${matchState['widget.tasks-expected']} was expected \n\n");
     }
 
     return mismatchDescription;

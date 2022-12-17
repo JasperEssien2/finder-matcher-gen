@@ -8,7 +8,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:example/main.dart';
 
-import 'package:stack_trace/stack_trace.dart' show Chain;
 import 'package:example/widgets.dart';
 
 import 'package:example/models.dart';
@@ -58,13 +57,6 @@ class _HomeScreenMatcher extends Matcher {
   @override
   Description describeMismatch(covariant Finder finder,
       Description mismatchDescription, Map matchState, bool verbose) {
-    if (matchState['custom.exception'] != null) {
-      mismatchDescription
-          .add('threw')
-          .addDescriptionOf(matchState['custom.exception'])
-          .add(matchState['custom.stack'].toString());
-    }
-
     if ((matchState['custom.count'] ?? 0) <= 0) {
       mismatchDescription
           .add('zero HomeScreen widgets found but one was expected');
@@ -149,13 +141,6 @@ class _ItemTaskMatcher extends Matcher {
   @override
   Description describeMismatch(covariant Finder finder,
       Description mismatchDescription, Map matchState, bool verbose) {
-    if (matchState['custom.exception'] != null) {
-      mismatchDescription
-          .add('threw')
-          .addDescriptionOf(matchState['custom.exception'])
-          .add(matchState['custom.stack'].toString());
-    }
-
     if (matchState['custom.matchedCount'] != _n) {
       mismatchDescription.add(
           'found ${matchState['custom.matchedCount']} ItemTask widgets $_n was expected');
@@ -229,13 +214,6 @@ class _TaskListViewMatcher extends Matcher {
   @override
   Description describeMismatch(covariant Finder finder,
       Description mismatchDescription, Map matchState, bool verbose) {
-    if (matchState['custom.exception'] != null) {
-      mismatchDescription
-          .add('threw')
-          .addDescriptionOf(matchState['custom.exception'])
-          .add(matchState['custom.stack'].toString());
-    }
-
     if ((matchState['custom.count'] ?? 0) <= 0) {
       mismatchDescription
           .add('zero TaskListView widgets found but one was expected');

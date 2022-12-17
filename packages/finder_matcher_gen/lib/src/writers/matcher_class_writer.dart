@@ -152,17 +152,7 @@ abstract class BaseMatcherMethodsCodeBuilder {
   String get matchReturnStatement;
 
   /// Responsible for writing describeMismatch() into [StringBuffer]
-  void writeDescribeMismatchMethod(StringBuffer stringBuffer) {
-    stringBuffer
-      ..writeln("if(matchState['custom.exception'] != null) {")
-      ..writeln("mismatchDescription.add('threw')")
-      ..writeln(
-        '''.addDescriptionOf(matchState['custom.exception'])''',
-      )
-      ..writeln()
-      ..writeln(".add(matchState['custom.stack'].toString());")
-      ..writeln('}\n');
-  }
+  void writeDescribeMismatchMethod(StringBuffer stringBuffer);
 }
 
 /// Builds matcher method that ensures only one widget is matched
@@ -181,8 +171,6 @@ class MatchOneWidgetMethodsBuilder extends BaseMatcherMethodsCodeBuilder {
 
   @override
   void writeDescribeMismatchMethod(StringBuffer stringBuffer) {
-    super.writeDescribeMismatchMethod(stringBuffer);
-
     stringBuffer
       ..writeln("if((matchState['custom.count'] ?? 0) <= 0) {")
       ..writeln(
@@ -219,8 +207,6 @@ class MatchAtleastOneWidgetMethodsBuilder
 
   @override
   void writeDescribeMismatchMethod(StringBuffer stringBuffer) {
-    super.writeDescribeMismatchMethod(stringBuffer);
-
     stringBuffer
       ..writeln("if(matchState['custom.matchedCount'] <= 0) {")
       ..writeln(
@@ -251,8 +237,6 @@ class MatchNWidgetMethodsBuilder extends BaseMatcherMethodsCodeBuilder {
 
   @override
   void writeDescribeMismatchMethod(StringBuffer stringBuffer) {
-    super.writeDescribeMismatchMethod(stringBuffer);
-
     stringBuffer
       ..writeln("if(matchState['custom.matchedCount'] != _n) {")
       ..writeln(
@@ -283,8 +267,6 @@ class MatchNoWidgetMethodsBuilder extends BaseMatcherMethodsCodeBuilder {
 
   @override
   void writeDescribeMismatchMethod(StringBuffer stringBuffer) {
-    super.writeDescribeMismatchMethod(stringBuffer);
-
     stringBuffer
       ..writeln("if(matchState['custom.count'] >= 1) {")
       ..writeln(

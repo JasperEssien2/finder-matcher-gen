@@ -8,7 +8,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:example/main.dart';
 
-import 'package:stack_trace/stack_trace.dart' show Chain;
 import 'package:example/widgets.dart';
 
 import 'package:example/models.dart';
@@ -40,45 +39,24 @@ class _HomeScreenMatcher extends Matcher {
   bool matches(covariant Finder finder, Map matchState) {
     matchState['custom.finder'] = finder;
 
-    try {
-      var matchedCount = 0;
+    var matchedCount = 0;
 
-      final elements = finder.evaluate();
+    final elements = finder.evaluate();
 
-      for (final element in elements) {
-        if (element.widget is HomeScreen) {
-          matchedCount++;
-        }
+    for (final element in elements) {
+      if (element.widget is HomeScreen) {
+        matchedCount++;
       }
-
-      matchState['custom.matchedCount'] = matchedCount;
-
-      return matchedCount == 1;
-    } catch (exception, stack) {
-      matchState['custom.exception'] = exception.toString();
-      matchState['custom.stack'] = Chain.forTrace(stack)
-          .foldFrames(
-              (frame) =>
-                  frame.package == 'test' ||
-                  frame.package == 'stream_channel' ||
-                  frame.package == 'matcher',
-              terse: true)
-          .toString();
     }
 
-    return false;
+    matchState['custom.matchedCount'] = matchedCount;
+
+    return matchedCount == 1;
   }
 
   @override
   Description describeMismatch(covariant Finder finder,
       Description mismatchDescription, Map matchState, bool verbose) {
-    if (matchState['custom.exception'] != null) {
-      mismatchDescription
-          .add('threw')
-          .addDescriptionOf(matchState['custom.exception'])
-          .add(matchState['custom.stack'].toString());
-    }
-
     if ((matchState['custom.count'] ?? 0) <= 0) {
       mismatchDescription
           .add('zero HomeScreen widgets found but one was expected');
@@ -115,75 +93,54 @@ class _ItemTaskMatcher extends Matcher {
   bool matches(covariant Finder finder, Map matchState) {
     matchState['custom.finder'] = finder;
 
-    try {
-      var matchedCount = 0;
+    var matchedCount = 0;
 
-      final elements = finder.evaluate();
+    final elements = finder.evaluate();
 
-      for (final element in elements) {
-        if (element.widget is ItemTask) {
-          final widget = element.widget as ItemTask;
+    for (final element in elements) {
+      if (element.widget is ItemTask) {
+        final widget = element.widget as ItemTask;
 
-          var expectedDeclarationCount = 0;
+        var expectedDeclarationCount = 0;
 
-          if (widget.priorityColor == _priorityColorValue) {
-            expectedDeclarationCount++;
-          } else {
-            matchState['widget.priorityColor-expected'] = _priorityColorValue;
+        if (widget.priorityColor == _priorityColorValue) {
+          expectedDeclarationCount++;
+        } else {
+          matchState['widget.priorityColor-expected'] = _priorityColorValue;
 
-            if (matchState['widget.priorityColor-found'] == null) {
-              matchState['widget.priorityColor-found'] = <dynamic>{};
-            }
-
-            matchState['widget.priorityColor-found'].add(widget.priorityColor);
+          if (matchState['widget.priorityColor-found'] == null) {
+            matchState['widget.priorityColor-found'] = <dynamic>{};
           }
 
-          if (widget.taskModel == _taskModelValue) {
-            expectedDeclarationCount++;
-          } else {
-            matchState['widget.taskModel-expected'] = _taskModelValue;
+          matchState['widget.priorityColor-found'].add(widget.priorityColor);
+        }
 
-            if (matchState['widget.taskModel-found'] == null) {
-              matchState['widget.taskModel-found'] = <dynamic>{};
-            }
+        if (widget.taskModel == _taskModelValue) {
+          expectedDeclarationCount++;
+        } else {
+          matchState['widget.taskModel-expected'] = _taskModelValue;
 
-            matchState['widget.taskModel-found'].add(widget.taskModel);
+          if (matchState['widget.taskModel-found'] == null) {
+            matchState['widget.taskModel-found'] = <dynamic>{};
           }
 
-          if (expectedDeclarationCount == 2) {
-            matchedCount++;
-          }
+          matchState['widget.taskModel-found'].add(widget.taskModel);
+        }
+
+        if (expectedDeclarationCount == 2) {
+          matchedCount++;
         }
       }
-
-      matchState['custom.matchedCount'] = matchedCount;
-
-      return matchedCount == _n;
-    } catch (exception, stack) {
-      matchState['custom.exception'] = exception.toString();
-      matchState['custom.stack'] = Chain.forTrace(stack)
-          .foldFrames(
-              (frame) =>
-                  frame.package == 'test' ||
-                  frame.package == 'stream_channel' ||
-                  frame.package == 'matcher',
-              terse: true)
-          .toString();
     }
 
-    return false;
+    matchState['custom.matchedCount'] = matchedCount;
+
+    return matchedCount == _n;
   }
 
   @override
   Description describeMismatch(covariant Finder finder,
       Description mismatchDescription, Map matchState, bool verbose) {
-    if (matchState['custom.exception'] != null) {
-      mismatchDescription
-          .add('threw')
-          .addDescriptionOf(matchState['custom.exception'])
-          .add(matchState['custom.stack'].toString());
-    }
-
     if (matchState['custom.matchedCount'] != _n) {
       mismatchDescription.add(
           'found ${matchState['custom.matchedCount']} ItemTask widgets $_n was expected');
@@ -221,63 +178,42 @@ class _TaskListViewMatcher extends Matcher {
   bool matches(covariant Finder finder, Map matchState) {
     matchState['custom.finder'] = finder;
 
-    try {
-      var matchedCount = 0;
+    var matchedCount = 0;
 
-      final elements = finder.evaluate();
+    final elements = finder.evaluate();
 
-      for (final element in elements) {
-        if (element.widget is TaskListView) {
-          final widget = element.widget as TaskListView;
+    for (final element in elements) {
+      if (element.widget is TaskListView) {
+        final widget = element.widget as TaskListView;
 
-          var expectedDeclarationCount = 0;
+        var expectedDeclarationCount = 0;
 
-          if (listEquals(widget.tasks, _tasksValue)) {
-            expectedDeclarationCount++;
-          } else {
-            matchState['widget.tasks-expected'] = _tasksValue;
+        if (listEquals(widget.tasks, _tasksValue)) {
+          expectedDeclarationCount++;
+        } else {
+          matchState['widget.tasks-expected'] = _tasksValue;
 
-            if (matchState['widget.tasks-found'] == null) {
-              matchState['widget.tasks-found'] = <dynamic>{};
-            }
-
-            matchState['widget.tasks-found'].add(widget.tasks);
+          if (matchState['widget.tasks-found'] == null) {
+            matchState['widget.tasks-found'] = <dynamic>{};
           }
 
-          if (expectedDeclarationCount == 1) {
-            matchedCount++;
-          }
+          matchState['widget.tasks-found'].add(widget.tasks);
+        }
+
+        if (expectedDeclarationCount == 1) {
+          matchedCount++;
         }
       }
-
-      matchState['custom.matchedCount'] = matchedCount;
-
-      return matchedCount == 1;
-    } catch (exception, stack) {
-      matchState['custom.exception'] = exception.toString();
-      matchState['custom.stack'] = Chain.forTrace(stack)
-          .foldFrames(
-              (frame) =>
-                  frame.package == 'test' ||
-                  frame.package == 'stream_channel' ||
-                  frame.package == 'matcher',
-              terse: true)
-          .toString();
     }
 
-    return false;
+    matchState['custom.matchedCount'] = matchedCount;
+
+    return matchedCount == 1;
   }
 
   @override
   Description describeMismatch(covariant Finder finder,
       Description mismatchDescription, Map matchState, bool verbose) {
-    if (matchState['custom.exception'] != null) {
-      mismatchDescription
-          .add('threw')
-          .addDescriptionOf(matchState['custom.exception'])
-          .add(matchState['custom.stack'].toString());
-    }
-
     if ((matchState['custom.count'] ?? 0) <= 0) {
       mismatchDescription
           .add('zero TaskListView widgets found but one was expected');

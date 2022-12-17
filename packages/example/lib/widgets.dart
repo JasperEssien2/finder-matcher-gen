@@ -1,4 +1,3 @@
-
 import 'package:example/models.dart';
 import 'package:finder_matcher_annotation/finder_matcher_annotation.dart';
 import 'package:flutter/material.dart';
@@ -139,8 +138,9 @@ class _AddTargetBottomSheetState extends State<AddTargetBottomSheet> {
           ),
           const SizedBox(height: 24),
           AppTextField(
+            key: const ValueKey('task-field'),
             controller: _taskTextController,
-            label: 'Goal',
+            label: 'Task',
             prefix: const Icon(Icons.task),
             inputType: const TextInputType.numberWithOptions(decimal: true),
           ),

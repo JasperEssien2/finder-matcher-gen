@@ -1,4 +1,6 @@
+import 'package:example/models.dart';
 import 'package:example/widgets.dart';
+import 'package:finder_matcher_annotation/finder_matcher_annotation.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -39,7 +41,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(title: const Text('Goals')),
+      appBar: AppBar(title: const Text('Tasks')),
       body: tasks.isEmpty
           ? Center(
               child: Padding(
@@ -53,12 +55,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
             )
-          : ListView.builder(
-              itemCount: tasks.length,
-              itemBuilder: (context, index) =>
-                  ItemTask(taskModel: tasks[index]),
-              physics: const BouncingScrollPhysics(),
-            ),
+          : TaskListView(tasks: tasks),
       floatingActionButton: AppFloatingActionButton(
         onPress: () async {
           final newTask = await showModalBottomSheet(
@@ -73,6 +70,25 @@ class _HomeScreenState extends State<HomeScreen> {
           }
         },
       ),
+    );
+  }
+}
+
+class TaskListView extends StatelessWidget {
+  const TaskListView({
+    Key? key,
+    required this.tasks,
+  }) : super(key: key);
+
+  @MatchDeclaration()
+  final List<TaskModel> tasks;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.builder(
+      itemCount: tasks.length,
+      itemBuilder: (context, index) => ItemTask(taskModel: tasks[index]),
+      physics: const BouncingScrollPhysics(),
     );
   }
 }

@@ -10,6 +10,8 @@ import 'package:example/widgets.dart';
 
 final findAddTargetBottomSheet = _AddTargetBottomSheetMatchFinder();
 
+final findAppFloatingActionButton = _AppFloatingActionButtonMatchFinder();
+
 class _AddTargetBottomSheetMatchFinder extends MatchFinder {
   _AddTargetBottomSheetMatchFinder();
 
@@ -19,5 +21,22 @@ class _AddTargetBottomSheetMatchFinder extends MatchFinder {
   @override
   bool matches(Element candidiate) {
     return candidiate.widget is AddTargetBottomSheet;
+  }
+}
+
+class _AppFloatingActionButtonMatchFinder extends MatchFinder {
+  _AppFloatingActionButtonMatchFinder();
+
+  @override
+  String get description => 'Finds AppFloatingActionButton widget';
+
+  @override
+  bool matches(Element candidiate) {
+    if (candidiate.widget is AppFloatingActionButton) {
+      final widget = candidiate.widget as AppFloatingActionButton;
+
+      return widget.fabText == 'Add Task';
+    }
+    return false;
   }
 }

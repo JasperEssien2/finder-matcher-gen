@@ -108,7 +108,6 @@ abstract class BaseMatcherMethodsCodeBuilder {
   void writeMatchesMethod(StringBuffer stringBuffer) {
     stringBuffer
       ..writeln("matchState['custom.finder'] = finder;\n")
-      ..writeln('try {')
       ..writeln('var matchedCount = 0;\n')
       ..writeln('final elements = finder.evaluate();\n')
       ..writeln('for(final element in elements) {')
@@ -119,11 +118,7 @@ abstract class BaseMatcherMethodsCodeBuilder {
       ..writeln('}')
       ..writeln('}\n')
       ..writeln("matchState['custom.matchedCount'] = matchedCount;\n")
-      ..writeln(matchReturnStatement)
-      ..writeln('} catch (exception, stack) {')
-      ..writeln(exceptionHandlerCode)
-      ..writeln('}\n')
-      ..writeln('return false;');
+      ..writeln(matchReturnStatement);
   }
 
   String _writeValidationCode() {
@@ -152,35 +147,15 @@ abstract class BaseMatcherMethodsCodeBuilder {
     return buffer.toString();
   }
 
-  /// Code string to handle exceptions
-  String get exceptionHandlerCode => '''
-      matchState['custom.exception'] = exception.toString();
-      matchState['custom.stack'] = Chain.forTrace(stack)
-            .foldFrames(
-                (frame) =>
-                    frame.package == 'test' ||
-                    frame.package == 'stream_channel' ||
-                    frame.package == 'matcher',
-                terse: true)
-            .toString();
-''';
-
   /// Returns the string code that uses the match count to validate if
   /// this widget (and it's pr) was found
   String get matchReturnStatement;
 
   /// Responsible for writing describeMismatch() into [StringBuffer]
-  void writeDescribeMismatchMethod(StringBuffer stringBuffer) {
-    stringBuffer
-      ..writeln("if(matchState['custom.exception'] != null) {")
-      ..writeln("mismatchDescription.add('threw')")
-      ..writeln(
-        '''.addDescriptionOf(matchState['custom.exception'])''',
-      )
-      ..writeln()
-      ..writeln(".add(matchState['custom.stack'].toString());")
-      ..writeln('}\n');
-  }
+  void writeDescribeMismatchMethod(StringBuffer stringBuffer);
+
+  /// Start mismatch description text
+  String get mismatchSymbol => '---';
 }
 
 /// Builds matcher method that ensures only one widget is matched
@@ -198,43 +173,16 @@ class MatchOneWidgetMethodsBuilder extends BaseMatcherMethodsCodeBuilder {
   String get matchReturnStatement => 'return matchedCount == 1;';
 
   @override
-  String _writeValidationCode() {
-    final buffer = StringBuffer();
-
-    final fields = extract.declarations;
-
-    if (fields?.isEmpty ?? true) {
-      buffer
-        ..writeln('matchedCount++;')
-        ..writeln('break;');
-    } else {
-      for (var i = 0; i < fields!.length; i++) {
-        buffer.write(
-          getMatcherConditionCodeFromExtract(
-            fields[i],
-            last: i == fields.length - 1,
-            declarationCount: fields.length,
-          ),
-        );
-      }
-    }
-
-    return buffer.toString();
-  }
-
-  @override
   void writeDescribeMismatchMethod(StringBuffer stringBuffer) {
-    super.writeDescribeMismatchMethod(stringBuffer);
-
     stringBuffer
-      ..writeln("if(matchState['custom.count'] <= 0) {")
+      ..writeln("if((matchState['custom.count'] ?? 0) <= 0) {")
       ..writeln(
-        """mismatchDescription.add('zero ${extract.className} widgets found but one was expected');""",
+        """mismatchDescription.add('$mismatchSymbol zero ${extract.className} widgets found but one was expected\\n\\n');""",
       )
       ..writeln('}\n')
       ..writeln("else if(matchState['custom.count'] > 1) {")
       ..writeln(
-        """mismatchDescription.add('found multiple ${extract.className} widgets but one was expected');""",
+        """mismatchDescription.add('$mismatchSymbol found multiple ${extract.className} widgets but one was expected\\n\\n');""",
       )
       ..writeln('}\n')
       ..writeAll(
@@ -262,12 +210,10 @@ class MatchAtleastOneWidgetMethodsBuilder
 
   @override
   void writeDescribeMismatchMethod(StringBuffer stringBuffer) {
-    super.writeDescribeMismatchMethod(stringBuffer);
-
     stringBuffer
       ..writeln("if(matchState['custom.matchedCount'] <= 0) {")
       ..writeln(
-        """mismatchDescription.add('found zero ${extract.className} widgets but at least one was expected');""",
+        """mismatchDescription.add('$mismatchSymbol found zero ${extract.className} widgets but at least one was expected\\n\\n');""",
       )
       ..writeln('}\n')
       ..writeAll(
@@ -294,12 +240,10 @@ class MatchNWidgetMethodsBuilder extends BaseMatcherMethodsCodeBuilder {
 
   @override
   void writeDescribeMismatchMethod(StringBuffer stringBuffer) {
-    super.writeDescribeMismatchMethod(stringBuffer);
-
     stringBuffer
       ..writeln("if(matchState['custom.matchedCount'] != _n) {")
       ..writeln(
-        """mismatchDescription.add('found \${matchState['custom.matchedCount']} ${extract.className} widgets \$_n was expected');""",
+        """mismatchDescription.add('$mismatchSymbol found \${matchState['custom.matchedCount']} ${extract.className} widgets \$_n was expected\\n\\n');""",
       )
       ..writeln('}\n')
       ..writeAll(
@@ -326,12 +270,10 @@ class MatchNoWidgetMethodsBuilder extends BaseMatcherMethodsCodeBuilder {
 
   @override
   void writeDescribeMismatchMethod(StringBuffer stringBuffer) {
-    super.writeDescribeMismatchMethod(stringBuffer);
-
     stringBuffer
       ..writeln("if(matchState['custom.count'] >= 1) {")
       ..writeln(
-        """mismatchDescription.add('zero ${extract.className} widgets expected but found \${matchState['custom.count'] ?? 0}');""",
+        """mismatchDescription.add('$mismatchSymbol zero ${extract.className} widgets expected but found \${matchState['custom.count'] ?? 0}'\\n\\n);""",
       )
       ..writeln('}')
       ..writeln('return mismatchDescription;');
@@ -342,7 +284,6 @@ class MatchNoWidgetMethodsBuilder extends BaseMatcherMethodsCodeBuilder {
 // ignore: public_member_api_docs
 Iterable<String> getMatchOneDeclarationsMismatchCheckCode(
   List<DeclarationExtract> declarations,
-  // Set<ConstructorFieldModel> mutableConstructorFields,
 ) {
   return declarations.map(
     (e) {
@@ -354,7 +295,7 @@ Iterable<String> getMatchOneDeclarationsMismatchCheckCode(
           ''' if(matchState['$entityCode-found'] != null && matchState['$entityCode-expected'] != null){''';
 
       code +=
-          """mismatchDescription.add("${e.name} is \${matchState['$entityCode-found']} but \${matchState['$entityCode-expected']} was expected \\n\\n");\n""";
+          """mismatchDescription.add("--- ${e.name} is \${matchState['$entityCode-found']} but \${matchState['$entityCode-expected']} was expected \\n\\n");\n""";
 
       return code += '}\n\n';
     },

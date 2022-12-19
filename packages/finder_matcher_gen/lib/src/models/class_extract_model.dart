@@ -13,6 +13,7 @@ class ClassElementExtract extends Equatable {
     this.declarations,
     this.genericParam = '',
     this.constructorFields,
+    this.imports,
   });
 
   final String? className;
@@ -20,6 +21,7 @@ class ClassElementExtract extends Equatable {
   final String genericParam;
   final List<DeclarationExtract>? declarations;
   final Set<ConstructorFieldModel>? constructorFields;
+  final Set<String>? imports;
 
   String? get generatedClassName => className == null ? null : '_$className';
 
@@ -29,6 +31,7 @@ class ClassElementExtract extends Equatable {
     String? genericParam,
     List<DeclarationExtract>? declarations,
     Set<ConstructorFieldModel>? constructorFields,
+    Set<String>? imports,
   }) {
     return ClassElementExtract(
       className: className ?? this.className,
@@ -36,6 +39,7 @@ class ClassElementExtract extends Equatable {
       genericParam: genericParam ?? this.genericParam,
       declarations: declarations ?? this.declarations,
       constructorFields: constructorFields ?? this.constructorFields,
+      imports: imports ?? this.imports,
     );
   }
 
@@ -65,14 +69,28 @@ class ClassElementExtract extends Equatable {
     return copyWith(constructorFields: fieldList);
   }
 
-  @override
-  String toString() {
-    return '''ClassElementExtract(className: $className, classUri: $classUri, isGeneric: $genericParam methods: $declarations, constructorFields: $constructorFields)''';
+  ClassElementExtract copyWithImport({
+    required String import,
+  }) {
+    final importList = (imports ?? {})..add(import);
+
+    return copyWith(imports: importList);
   }
 
   @override
-  List<Object?> get props =>
-      [className, classUri, genericParam, declarations, constructorFields];
+  String toString() {
+    return '''ClassElementExtract(className: $className, classUri: $classUri, isGeneric: $genericParam methods: $declarations, constructorFields: $constructorFields, imports: $imports)''';
+  }
+
+  @override
+  List<Object?> get props => [
+        className,
+        classUri,
+        genericParam,
+        declarations,
+        constructorFields,
+        imports
+      ];
 }
 
 class DeclarationExtract extends Equatable {

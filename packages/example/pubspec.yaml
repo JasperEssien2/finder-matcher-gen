@@ -21,6 +21,7 @@ dependencies:
       path: packages/finder_matcher_annotation
 
   cupertino_icons: ^1.0.2
+  flutter_svg: ^1.1.6
   
 dev_dependencies:
   flutter_test:
@@ -32,10 +33,10 @@ dev_dependencies:
       url: https://github.com/JasperEssien2/finder-matcher-gen.git
       ref: master
       path: packages/finder_matcher_gen
-
-
   custom_lint: ^0.0.16
   flutter_lints: ^2.0.0
+  integration_test:
+    sdk: flutter
 
 dependency_overrides:
   collection: ^1.17.0

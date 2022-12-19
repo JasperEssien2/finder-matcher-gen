@@ -23,7 +23,7 @@ import 'package:source_gen/source_gen.dart';
 /// It depends on [ClassVisitor] which visit classes specified via the match
 /// annotation, performs checks and extract neccessary information need to
 /// generate a class code.
-abstract class BaseAnnotaionGenerator extends GeneratorForAnnotation<Match> {
+abstract class BaseAnnotationGenerator extends GeneratorForAnnotation<Match> {
   final _importsStringBuffer = StringBuffer();
   final _globalVariablesStringBuffer = StringBuffer();
   final _classesStringBuffer = StringBuffer();
@@ -46,8 +46,8 @@ abstract class BaseAnnotaionGenerator extends GeneratorForAnnotation<Match> {
   ) async {
     final matchersObjects = generateFor(annotation);
 
-    for (final objects in matchersObjects) {
-      final type = objects.toTypeValue()!;
+    for (final object in matchersObjects) {
+      final type = object.dartObject.toTypeValue()!;
 
       assert(
         type.element != null && type.element is ClassElement,
@@ -68,9 +68,14 @@ abstract class BaseAnnotaionGenerator extends GeneratorForAnnotation<Match> {
         ..addAll(classElement.accessors);
 
       if (elements.hasAtleastOneMatchDeclarationAnnotation) {
-        _buildClassWithDeclarationValidation(classElement, generic);
+        _buildClassWithDeclarationValidation(classElement, generic, object.id);
       } else {
-        _buildClassWithTypeValidation(classElement, className, generic);
+        _buildClassWithTypeValidation(
+          classElement,
+          className,
+          generic,
+          object.id,
+        );
       }
     }
 
@@ -86,6 +91,7 @@ abstract class BaseAnnotaionGenerator extends GeneratorForAnnotation<Match> {
   void _buildClassWithDeclarationValidation(
     ClassElement classElement,
     String? genericParam,
+    String? id,
   ) {
     final classVisitor = ClassVisitor();
 
@@ -97,7 +103,7 @@ abstract class BaseAnnotaionGenerator extends GeneratorForAnnotation<Match> {
               defaultConstructorFields[classVisitor.classExtract.className] ??
                   {},
         )
-        .copyWith(genericParam: genericParam);
+        .copyWith(genericParam: genericParam, id: id);
 
     writeImports(
       _importsStringBuffer,
@@ -110,6 +116,7 @@ abstract class BaseAnnotaionGenerator extends GeneratorForAnnotation<Match> {
     ClassElement classElement,
     String className,
     String? genericParams,
+    String? id,
   ) {
     final classUri = classElement.librarySource.uri;
     final extract = ClassElementExtract(
@@ -117,6 +124,7 @@ abstract class BaseAnnotaionGenerator extends GeneratorForAnnotation<Match> {
       classUri: classUri,
       constructorFields: defaultConstructorFields[className],
       genericParam: genericParams ?? '',
+      id: id,
     );
 
     writeImports(_importsStringBuffer, classExtract: extract);
@@ -124,8 +132,8 @@ abstract class BaseAnnotaionGenerator extends GeneratorForAnnotation<Match> {
     writeClassToBuffer(extract, _classesStringBuffer);
   }
 
-  /// A getter specifying the annotation field name to generate for
-  List<DartObject> generateFor(ConstantReader annotation);
+  /// Returns a list of [DartObject] to generate Matcher or Finder
+  List<WidgetDartObject> generateFor(ConstantReader annotation);
 
   /// Responsible for writing the required imports for the generated class
   @mustCallSuper
@@ -147,7 +155,7 @@ abstract class BaseAnnotaionGenerator extends GeneratorForAnnotation<Match> {
     }
 
     if (_requiresFoundation(classExtract)) {
-      _importsStringBuffer.writeln("import 'package:flutter/foundation.dart';");
+      _writeImport("import 'package:flutter/foundation.dart';");
     }
 
     for (final import in classExtract.imports ?? {}) {
@@ -191,7 +199,7 @@ abstract class BaseAnnotaionGenerator extends GeneratorForAnnotation<Match> {
   /// Writes global instantiation of generated classes
   void writeGlobalVariables(ClassElementExtract extract) {
     final generatedClassName =
-        '${extract.generatedClassName}$suffix${extract.genericParam}';
+        '''${extract.generatedClassName}${classSuffix(extract)}${extract.genericParam}''';
 
     final constructorFields = extract.constructorFields ?? {};
 
@@ -227,5 +235,17 @@ abstract class BaseAnnotaionGenerator extends GeneratorForAnnotation<Match> {
   String prefix(ClassElementExtract extract);
 
   /// A name that is appended to generated class
-  String get suffix;
+  String classSuffix(ClassElementExtract extract);
+}
+
+// ignore: public_member_api_docs
+class WidgetDartObject {
+  // ignore: public_member_api_docs
+  WidgetDartObject({required this.dartObject, this.id});
+
+  // ignore: public_member_api_docs
+  final DartObject dartObject;
+
+  // ignore: public_member_api_docs
+  final String? id;
 }

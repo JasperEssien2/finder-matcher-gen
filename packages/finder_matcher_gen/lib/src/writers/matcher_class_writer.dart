@@ -69,7 +69,10 @@ class WidgetMatcherClassWriter extends ClassCodeWriter {
   }
 
   @override
-  String get suffix => 'Matcher';
+  String get extendsName => 'Matcher';
+
+  @override
+  String get classNameSuffix => _specification.matcherSuffix;
 }
 
 /// A base class for writing Matcher method code to [StringBuffer]
@@ -273,7 +276,7 @@ class MatchNoWidgetMethodsBuilder extends BaseMatcherMethodsCodeBuilder {
     stringBuffer
       ..writeln("if(matchState['custom.count'] >= 1) {")
       ..writeln(
-        """mismatchDescription.add('$mismatchSymbol zero ${extract.className} widgets expected but found \${matchState['custom.count'] ?? 0}'\\n\\n);""",
+        """mismatchDescription.add('$mismatchSymbol zero ${extract.className} widgets expected but found \${matchState['custom.count'] ?? 0}\\n\\n');""",
       )
       ..writeln('}')
       ..writeln('return mismatchDescription;');

@@ -6,7 +6,24 @@ import 'package:analyzer/dart/element/type.dart';
 import 'package:equatable/equatable.dart';
 import 'package:finder_matcher_gen/src/models/constructor_field_model.dart';
 
+/// A class that contains elements extracted from annotated widget classes.
 class ClassElementExtract extends Equatable {
+  ///Constructor of [ClassElementExtract]
+  ///
+  ///[className]: The string name of the class
+  ///
+  ///[classUri]: The Uri of library housing this class
+  ///
+  ///[genericParam]: A string format of this class generic if any(E.g: <R, T>)
+  ///
+  ///[declarations]: A list of getters, methods, and fields that os annotated
+  ///with @MatchDeclaration
+  ///
+  ///[constructorFields]: A set of fields to initialise in the generated class
+  ///constructor
+  ///
+  ///[imports]: A set of imports that this class depends on, typically fields
+  /// with data type defined in a different library
   const ClassElementExtract({
     this.className,
     this.classUri,
@@ -14,15 +31,33 @@ class ClassElementExtract extends Equatable {
     this.genericParam = '',
     this.constructorFields,
     this.imports,
+    this.id,
   });
 
+  /// Widget class name
   final String? className;
+
+  /// Uri of library housing this class
   final Uri? classUri;
+
+  /// A string format of this class generic if any(E.g: <R, T>)
   final String genericParam;
+
+  /// A list of getters, methods, and fields that os annotated with
+  /// @MatchDeclaration
   final List<DeclarationExtract>? declarations;
+
+  /// A set of fields to initialise in the generated class constructor
   final Set<ConstructorFieldModel>? constructorFields;
+
+  /// A set of imports that this class depends on, typically fields
+  /// with data type defined in a different library
   final Set<String>? imports;
 
+  /// A unique id attached to this [ClassElementExtract]
+  final String? id;
+
+  /// Returns this class name prefixed with '_'
   String? get generatedClassName => className == null ? null : '_$className';
 
   ClassElementExtract copyWith({
@@ -32,6 +67,7 @@ class ClassElementExtract extends Equatable {
     List<DeclarationExtract>? declarations,
     Set<ConstructorFieldModel>? constructorFields,
     Set<String>? imports,
+    String? id,
   }) {
     return ClassElementExtract(
       className: className ?? this.className,
@@ -40,6 +76,7 @@ class ClassElementExtract extends Equatable {
       declarations: declarations ?? this.declarations,
       constructorFields: constructorFields ?? this.constructorFields,
       imports: imports ?? this.imports,
+      id: id ?? this.id,
     );
   }
 
@@ -53,6 +90,7 @@ class ClassElementExtract extends Equatable {
     );
   }
 
+  /// Adds a [fieldModel] to the set of [ConstructorFieldModel]
   ClassElementExtract copyWithConstructorField({
     required ConstructorFieldModel fieldModel,
   }) {
@@ -61,6 +99,7 @@ class ClassElementExtract extends Equatable {
     return copyWith(constructorFields: fieldList);
   }
 
+  /// Adds all [fieldModels] to the set of [ConstructorFieldModel]
   ClassElementExtract copyWithConstructorFields({
     required Set<ConstructorFieldModel> fieldModels,
   }) {
@@ -69,6 +108,7 @@ class ClassElementExtract extends Equatable {
     return copyWith(constructorFields: fieldList);
   }
 
+  /// Adds a [import] to the set of [imports]
   ClassElementExtract copyWithImport({
     required String import,
   }) {
@@ -79,7 +119,7 @@ class ClassElementExtract extends Equatable {
 
   @override
   String toString() {
-    return '''ClassElementExtract(className: $className, classUri: $classUri, isGeneric: $genericParam methods: $declarations, constructorFields: $constructorFields, imports: $imports)''';
+    return '''ClassElementExtract(className: $className, classUri: $classUri, isGeneric: $genericParam methods: $declarations, constructorFields: $constructorFields, imports: $imports, key: $id)''';
   }
 
   @override
@@ -89,7 +129,8 @@ class ClassElementExtract extends Equatable {
         genericParam,
         declarations,
         constructorFields,
-        imports
+        imports,
+        id,
       ];
 }
 

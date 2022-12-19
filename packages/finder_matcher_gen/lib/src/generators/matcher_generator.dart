@@ -1,6 +1,5 @@
 // ignore_for_file: type_annotate_public_apis
 
-import 'package:analyzer/dart/constant/value.dart';
 import 'package:finder_matcher_annotation/finder_matcher_annotation.dart';
 import 'package:finder_matcher_gen/src/generators/base_annotation_generator.dart';
 import 'package:finder_matcher_gen/src/models/class_extract_model.dart';
@@ -10,40 +9,46 @@ import 'package:finder_matcher_gen/src/writers/writers_export.dart';
 import 'package:source_gen/source_gen.dart';
 
 /// A generator for generating Matcher classes
-class MatcherGenerator extends BaseAnnotaionGenerator {
+class MatcherGenerator extends BaseAnnotationGenerator {
   final _typeToSpecification = <String, MatchSpecification>{};
   final _defaultConstructorFields = <String, Set<ConstructorFieldModel>>{};
 
   @override
-  List<DartObject> generateFor(ConstantReader annotation) {
+  List<WidgetDartObject> generateFor(ConstantReader annotation) {
     final annotationFields = annotation.read('_matchers').listValue;
-    final types = <DartObject>[];
+    final widgetTypes = <WidgetDartObject>[];
 
     for (final element in annotationFields) {
-      types.add(element.getField('_type')!);
-
       final fieldTypeName = element
           .getField('_type')
           ?.toTypeValue()!
           .removeGenericParamSOrReturntr;
 
-      final specificationValue = element
-          .getField('_specification')!
-          .variable!
-          .displayName
-          .specificationValue;
+      final specificationDisplay =
+          element.getField('_specification')!.variable!.displayName;
 
-      _typeToSpecification[fieldTypeName!] = specificationValue;
+      final typeToSpecificationKey = '$fieldTypeName-$specificationDisplay';
+
+      final specificationValue = specificationDisplay.specificationValue;
+
+      _typeToSpecification[typeToSpecificationKey] = specificationValue;
 
       if (specificationValue == MatchSpecification.matchesNWidgets) {
         if (!_defaultConstructorFields.containsKey(fieldTypeName)) {
-          _defaultConstructorFields[fieldTypeName] = {};
+          _defaultConstructorFields[fieldTypeName!] = {};
         }
         _defaultConstructorFields[fieldTypeName]!
             .add(const ConstructorFieldModel(name: 'n', type: 'int'));
       }
+
+      widgetTypes.add(
+        WidgetDartObject(
+          dartObject: element.getField('_type')!,
+          id: typeToSpecificationKey,
+        ),
+      );
     }
-    return types;
+    return widgetTypes;
   }
 
   @override
@@ -80,10 +85,13 @@ class MatcherGenerator extends BaseAnnotaionGenerator {
   }
 
   @override
-  String get suffix => 'Matcher';
+  String classSuffix(ClassElementExtract extract) =>
+      _getClassSpecification(extract)!.matcherSuffix;
 
-  MatchSpecification? _getClassSpecification(ClassElementExtract extract) =>
-      _typeToSpecification[extract.className];
+  MatchSpecification? _getClassSpecification(
+    ClassElementExtract extract,
+  ) =>
+      _typeToSpecification[extract.id];
 
   @override
   Map<String, Set<ConstructorFieldModel>> get defaultConstructorFields =>

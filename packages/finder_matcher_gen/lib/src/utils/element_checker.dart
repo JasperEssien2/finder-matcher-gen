@@ -65,7 +65,8 @@ bool isNotPartOfDartCore(DartType dartType) =>
     !dartType.isDartCoreRecord &&
     !dartType.isDartCoreSet &&
     !dartType.isDartCoreString &&
-    !dartType.isDartCoreSymbol;
+    !dartType.isDartCoreSymbol &&
+    !dartType.element!.library!.isInSdk;
 
 /// Throws an exception when [Element] is private
 void checkElementNotPrivate(Element element) {

@@ -1,4 +1,6 @@
 import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/type.dart';
+import 'package:finder_matcher_gen/src/class_visitor.dart';
 import 'package:source_gen/source_gen.dart';
 
 /// Throws an exception when class element does not comform to generation
@@ -32,14 +34,14 @@ void checkBadTypeByClassElement(
 
 /// Throws an exception when [MethodElement] does not conform to
 /// method generation specification
-void checkBadTypeByMethodElement(MethodElement element) {
+void checkBadTypeByMethodElement(MethodGetterElementWrapper element) {
   if (element.parameters.isNotEmpty) {
     throwException(
       'Unsupported: annotated method should have no parameter',
-      element: element,
+      element: element.element,
     );
   }
-  checkElementNotPrivate(element);
+  checkElementNotPrivate(element.element);
 }
 
 /// Throws an exception when [FieldElement] type does not conform to
@@ -47,6 +49,24 @@ void checkBadTypeByMethodElement(MethodElement element) {
 void checkBadTypeByFieldElement(FieldElement element) {
   checkElementNotPrivate(element);
 }
+
+/// Checks if this [DartType] is not core library
+bool isNotPartOfDartCore(DartType dartType) =>
+    !dartType.isDartCoreBool &&
+    !dartType.isDartCoreDouble &&
+    !dartType.isDartCoreEnum &&
+    !dartType.isDartCoreInt &&
+    !dartType.isDartCoreIterable &&
+    !dartType.isDartCoreList &&
+    !dartType.isDartCoreMap &&
+    !dartType.isDartCoreNull &&
+    !dartType.isDartCoreNum &&
+    !dartType.isDartCoreObject &&
+    !dartType.isDartCoreRecord &&
+    !dartType.isDartCoreSet &&
+    !dartType.isDartCoreString &&
+    !dartType.isDartCoreSymbol &&
+    !dartType.element!.library!.isInSdk;
 
 /// Throws an exception when [Element] is private
 void checkElementNotPrivate(Element element) {

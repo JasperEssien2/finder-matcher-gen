@@ -13,22 +13,25 @@ import 'package:example/widgets.dart';
 import 'package:example/models.dart';
 import 'package:flutter/foundation.dart';
 
-final matchesOneHomeScreen = _HomeScreenMatcher();
+final matchesOneHomeScreen = _HomeScreenOneMatcher();
 
 matchesNItemTask(
         {required Color priorityColorValue,
         required TaskModel taskModelValue,
         required int n}) =>
-    _ItemTaskMatcher(
+    _ItemTaskNMatcher(
         priorityColorValue: priorityColorValue,
         taskModelValue: taskModelValue,
         n: n);
 
 matchesOneTaskListView({required List<TaskModel> tasksValue}) =>
-    _TaskListViewMatcher(tasksValue: tasksValue);
+    _TaskListViewOneMatcher(tasksValue: tasksValue);
 
-class _HomeScreenMatcher extends Matcher {
-  _HomeScreenMatcher();
+matchesNoTaskListView({required List<TaskModel> tasksValue}) =>
+    _TaskListViewNoneMatcher(tasksValue: tasksValue);
+
+class _HomeScreenOneMatcher extends Matcher {
+  _HomeScreenOneMatcher();
 
   @override
   Description describe(Description description) {
@@ -69,8 +72,8 @@ class _HomeScreenMatcher extends Matcher {
   }
 }
 
-class _ItemTaskMatcher extends Matcher {
-  _ItemTaskMatcher({
+class _ItemTaskNMatcher extends Matcher {
+  _ItemTaskNMatcher({
     required Color priorityColorValue,
     required TaskModel taskModelValue,
     required int n,
@@ -162,8 +165,8 @@ class _ItemTaskMatcher extends Matcher {
   }
 }
 
-class _TaskListViewMatcher extends Matcher {
-  _TaskListViewMatcher({
+class _TaskListViewOneMatcher extends Matcher {
+  _TaskListViewOneMatcher({
     required List<TaskModel> tasksValue,
   }) : _tasksValue = tasksValue;
 
@@ -228,6 +231,66 @@ class _TaskListViewMatcher extends Matcher {
           "--- tasks is ${matchState['widget.tasks-found']} but ${matchState['widget.tasks-expected']} was expected \n\n");
     }
 
+    return mismatchDescription;
+  }
+}
+
+class _TaskListViewNoneMatcher extends Matcher {
+  _TaskListViewNoneMatcher({
+    required List<TaskModel> tasksValue,
+  }) : _tasksValue = tasksValue;
+
+  final List<TaskModel> _tasksValue;
+
+  @override
+  Description describe(Description description) {
+    return description.add('matches no TaskListView widget');
+  }
+
+  @override
+  bool matches(covariant Finder finder, Map matchState) {
+    matchState['custom.finder'] = finder;
+
+    var matchedCount = 0;
+
+    final elements = finder.evaluate();
+
+    for (final element in elements) {
+      if (element.widget is TaskListView) {
+        final widget = element.widget as TaskListView;
+
+        var expectedDeclarationCount = 0;
+
+        if (listEquals(widget.tasks, _tasksValue)) {
+          expectedDeclarationCount++;
+        } else {
+          matchState['widget.tasks-expected'] = _tasksValue;
+
+          if (matchState['widget.tasks-found'] == null) {
+            matchState['widget.tasks-found'] = <dynamic>{};
+          }
+
+          matchState['widget.tasks-found'].add(widget.tasks);
+        }
+
+        if (expectedDeclarationCount == 1) {
+          matchedCount++;
+        }
+      }
+    }
+
+    matchState['custom.matchedCount'] = matchedCount;
+
+    return matchedCount == 0;
+  }
+
+  @override
+  Description describeMismatch(covariant Finder finder,
+      Description mismatchDescription, Map matchState, bool verbose) {
+    if (matchState['custom.count'] >= 1) {
+      mismatchDescription.add(
+          '--- zero TaskListView widgets expected but found ${matchState['custom.count'] ?? 0}\n\n');
+    }
     return mismatchDescription;
   }
 }

@@ -155,7 +155,7 @@ abstract class BaseAnnotationGenerator extends GeneratorForAnnotation<Match> {
     }
 
     if (_requiresFoundation(classExtract)) {
-      _importsStringBuffer.writeln("import 'package:flutter/foundation.dart';");
+      _writeImport("import 'package:flutter/foundation.dart';");
     }
 
     for (final import in classExtract.imports ?? {}) {

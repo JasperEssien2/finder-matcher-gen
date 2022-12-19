@@ -276,7 +276,7 @@ class MatchNoWidgetMethodsBuilder extends BaseMatcherMethodsCodeBuilder {
     stringBuffer
       ..writeln("if(matchState['custom.count'] >= 1) {")
       ..writeln(
-        """mismatchDescription.add('$mismatchSymbol zero ${extract.className} widgets expected but found \${matchState['custom.count'] ?? 0}'\\n\\n);""",
+        """mismatchDescription.add('$mismatchSymbol zero ${extract.className} widgets expected but found \${matchState['custom.count'] ?? 0}\\n\\n');""",
       )
       ..writeln('}')
       ..writeln('return mismatchDescription;');

@@ -39,16 +39,34 @@ void main() {
     expect(findAddTargetBottomSheet, findsNothing);
   });
 
-  testWidgets('Ensure adding task with 0 priority works as expecting',
+  testWidgets('Ensure adding task with 5 priority works as expected',
       (WidgetTester tester) async {
     await _pumpApp(tester);
 
     final context = tester.state(find.byType(HomeScreen)).context;
-    final spinnerGap = (MediaQuery.of(context).size.width - 32) / 5;
 
-    print('Spinner gap ------------------- $spinnerGap');
+    await _inputTaskNameAndPriority(tester, 'Task',
+        drag: MediaQuery.of(context).size.width / 2);
 
-    await _inputTaskNameAndPriority(tester, 'Task', drag: spinnerGap * 7);
+    await _saveTaskEntry(tester);
+
+    final expectedTask = TaskModel('Task', 5);
+
+    expect(
+      find.byType(ItemTask),
+      matchesNItemTask(
+        priorityColorValue: Colors.red,
+        taskModelValue: expectedTask,
+        n: 1,
+      ),
+    );
+  });
+
+  testWidgets('Ensure adding task with 0 priority works as expecting',
+      (WidgetTester tester) async {
+    await _pumpApp(tester);
+
+    await _inputTaskNameAndPriority(tester, 'Task');
 
     await _saveTaskEntry(tester);
 
@@ -63,62 +81,6 @@ void main() {
       ),
     );
   });
-
-  // testWidgets('Ensure adding task with 0 priority works as expecting',
-  //     (WidgetTester tester) async {
-  //   await _pumpApp(tester);
-
-  //   await _inputTaskNameAndPriority(tester, 'Task' );
-
-  //   await _saveTaskEntry(tester);
-
-  //   final expectedTask = TaskModel('Task', 0);
-
-  //   expect(
-  //     find.byType(ItemTask),
-  //     matchesNItemTask(
-  //       priorityColorValue: Colors.green,
-  //       taskModelValue: expectedTask,
-  //       n: 1,
-  //     ),
-  //   );
-  // });
-
-  testWidgets(
-    'Ensure adding task with priority level works as expecting',
-    (WidgetTester tester) async {
-      await _pumpApp(tester);
-
-      final context = tester.state(find.byType(HomeScreen)).context;
-      final spinnerGap = (MediaQuery.of(context).size.width - 32) / 5;
-
-      final taskToInput = ['Zero priority task', '5 priority task'];
-      final colors = [Colors.green, Colors.red];
-      final drag = [-spinnerGap * 2, spinnerGap * 5];
-      final priority = [1, 5];
-
-      for (var element in taskToInput) {
-        final index = taskToInput.indexOf(element);
-
-        await _inputTaskNameAndPriority(
-          tester,
-          element,
-          drag: drag[index],
-        );
-
-        expect(
-          find.byType(ItemTask),
-          matchesNItemTask(
-            priorityColorValue: colors[index],
-            taskModelValue: TaskModel(element, priority[index]),
-            n: 1,
-          ),
-        );
-
-        await _saveTaskEntry(tester);
-      }
-    },
-  );
 }
 
 Future<void> _inputTaskNameAndPriority(WidgetTester tester, String taskName,

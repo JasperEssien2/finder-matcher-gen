@@ -86,3 +86,27 @@ extension ElementListExt on List<Element> {
     return false;
   }
 }
+
+/// Extension on [MatchSpecification]
+extension MatchSpecificationExt on MatchSpecification {
+  /// Retuns a widget matcher class name suffix based on [MatchSpecification]
+  String get matcherSuffix {
+    var prefix = '';
+
+    switch (this) {
+      case MatchSpecification.matchesNoWidget:
+        prefix = 'None';
+        break;
+      case MatchSpecification.matchesAtleastOneWidget:
+        prefix = 'AtleastOne';
+        break;
+      case MatchSpecification.matchesNWidgets:
+        prefix = 'N';
+        break;
+      case MatchSpecification.matchesOneWidget:
+        prefix = 'One';
+        break;
+    }
+    return '${prefix}Matcher';
+  }
+}

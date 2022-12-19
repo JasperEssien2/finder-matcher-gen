@@ -13,6 +13,7 @@ import 'app_test.matchers.dart';
     MatchWidget(HomeScreen, MatchSpecification.matchesOneWidget),
     MatchWidget(ItemTask, MatchSpecification.matchesNWidgets),
     MatchWidget(TaskListView, MatchSpecification.matchesOneWidget),
+    MatchWidget(TaskListView, MatchSpecification.matchesNoWidget),
   ],
   finders: [AddTargetBottomSheet, AppFloatingActionButton],
 )

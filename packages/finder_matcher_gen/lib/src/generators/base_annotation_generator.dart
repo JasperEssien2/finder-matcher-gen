@@ -206,7 +206,7 @@ abstract class BaseAnnotationGenerator extends GeneratorForAnnotation<Match> {
     if (constructorFields.isNotEmpty) {
       _globalVariablesStringBuffer
         ..write(
-          '${prefix(extract)}${extract.className}${extract.genericParam}({',
+          '${globalVariableNamePrefix(extract)}${extract.className}${extract.genericParam}({',
         )
         ..write(
           constructorFields
@@ -224,7 +224,7 @@ abstract class BaseAnnotationGenerator extends GeneratorForAnnotation<Match> {
         ..write('); \n\n');
     } else {
       _globalVariablesStringBuffer.writeln(
-        '''final ${prefix(extract)}${extract.className} = $generatedClassName(); \n''',
+        '''final ${globalVariableNamePrefix(extract)}${extract.className} = $generatedClassName(); \n''',
       );
     }
   }
@@ -232,7 +232,7 @@ abstract class BaseAnnotationGenerator extends GeneratorForAnnotation<Match> {
   /// Used to prefix global variables names
   ///
   /// [ClassElementExtract] get neccessary class information
-  String prefix(ClassElementExtract extract);
+  String globalVariableNamePrefix(ClassElementExtract extract);
 
   /// A name that is appended to generated class
   String classSuffix(ClassElementExtract extract);

@@ -69,7 +69,7 @@ class MatcherGenerator extends BaseAnnotationGenerator {
   }
 
   @override
-  String prefix(ClassElementExtract extract) {
+  String globalVariableNamePrefix(ClassElementExtract extract) {
     switch (_getClassSpecification(extract)) {
       case MatchSpecification.matchesOneWidget:
         return 'matchesOne';
@@ -81,6 +81,11 @@ class MatcherGenerator extends BaseAnnotationGenerator {
         return 'matchesN';
       case null:
         return 'matches';
+      case MatchSpecification.hasAncestorOf:
+      return 'hasAncestorOf${extract.}'
+      case MatchSpecification.doesNotHaveAncestorOf:
+        // TODO: Handle this case.
+        break;
     }
   }
 

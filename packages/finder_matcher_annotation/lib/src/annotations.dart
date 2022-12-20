@@ -34,12 +34,17 @@ class MatchWidget {
   ///
   /// * MatchSpecification.matchesNWidgets: Generates a matcher that ensures
   /// the specified number of widgets was matched
-  const MatchWidget(Type type, MatchSpecification specification)
-      : _type = type,
-        _specification = specification;
+  const MatchWidget(
+    Type type,
+    MatchSpecification specification, {
+    Type? ancestorType,
+  })  : _type = type,
+        _specification = specification,
+        _ancestorType = ancestorType;
 
   final Type _type;
   final MatchSpecification _specification;
+  final Type? _ancestorType;
 }
 
 /// An enum [MatchDeclaration]
@@ -56,11 +61,11 @@ enum MatchSpecification {
   /// Generate matcher that matches "n" widgets
   matchesNWidgets,
 
-  /// Generates a matcher that asserts this widget is contained in specified 
+  /// Generates a matcher that asserts this widget is contained in specified
   /// widget
   hasAncestorOf,
 
-  /// Generates a matcher that assert this widget is not contained in specified 
+  /// Generates a matcher that assert this widget is not contained in specified
   /// widget
   doesNotHaveAncestorOf,
 }

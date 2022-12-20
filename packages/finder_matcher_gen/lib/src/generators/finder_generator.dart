@@ -30,7 +30,7 @@ class FinderGenerator extends BaseAnnotationGenerator {
   }
 
   @override
-  String prefix(ClassElementExtract extract) => 'find';
+  String globalVariableNamePrefix(ClassElementExtract extract) => 'find';
 
   @override
   String classSuffix(ClassElementExtract extract) => 'MatchFinder';

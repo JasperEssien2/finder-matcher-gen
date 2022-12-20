@@ -16,7 +16,7 @@ class ClassElementExtract extends Equatable {
   ///
   ///[genericParam]: A string format of this class generic if any(E.g: <R, T>)
   ///
-  ///[declarations]: A list of getters, methods, and fields that os annotated
+  ///[declarations]: A list of getters, methods, and fields that is annotated
   ///with @MatchDeclaration
   ///
   ///[constructorFields]: A set of fields to initialise in the generated class

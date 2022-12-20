@@ -55,6 +55,14 @@ enum MatchSpecification {
 
   /// Generate matcher that matches "n" widgets
   matchesNWidgets,
+
+  /// Generates a matcher that asserts this widget is contained in specified 
+  /// widget
+  hasAncestorOf,
+
+  /// Generates a matcher that assert this widget is not contained in specified 
+  /// widget
+  doesNotHaveAncestorOf,
 }
 
 /// Annotations to mark declarations that would be used to validate a

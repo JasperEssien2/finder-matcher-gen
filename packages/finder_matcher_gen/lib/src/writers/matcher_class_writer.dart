@@ -1,5 +1,7 @@
 import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/type.dart';
 import 'package:finder_matcher_annotation/finder_matcher_annotation.dart';
+import 'package:finder_matcher_gen/src/generators/matcher_generator.dart';
 import 'package:finder_matcher_gen/src/models/class_extract_model.dart';
 import 'package:finder_matcher_gen/src/models/override_method_model.dart';
 import 'package:finder_matcher_gen/src/utils/utils_export.dart';
@@ -13,10 +15,10 @@ class WidgetMatcherClassWriter extends ClassCodeWriter {
   /// should validate as "matched"
   WidgetMatcherClassWriter(
     super.classExtract,
-    MatchSpecification specification,
+    MatcherGeneratorSpecification specification,
   ) : _specification = specification;
 
-  final MatchSpecification _specification;
+  final MatcherGeneratorSpecification _specification;
 
   @override
   List<OverrideMethodModel> get methodsToOverride => [
@@ -55,7 +57,7 @@ class WidgetMatcherClassWriter extends ClassCodeWriter {
       ];
 
   BaseMatcherMethodsCodeBuilder get _getSpecificationCodeBuilder {
-    switch (_specification) {
+    switch (_specification.specification) {
       case MatchSpecification.matchesNoWidget:
         return MatchNoWidgetMethodsBuilder(classExtract);
       case MatchSpecification.matchesAtleastOneWidget:
@@ -65,6 +67,16 @@ class WidgetMatcherClassWriter extends ClassCodeWriter {
 
       case MatchSpecification.matchesOneWidget:
         return MatchOneWidgetMethodsBuilder(classExtract);
+      case MatchSpecification.hasAncestorOf:
+        return MatchHasAncestorOfWidgetMethodsBuilder(
+          classExtract,
+          ancestorType: _specification.secondaryType!,
+        );
+      case MatchSpecification.doesNotHaveAncestorOf:
+        return MatchHasNoAncestorOfWidgetMethodsBuilder(
+          classExtract,
+          ancestorType: _specification.secondaryType!,
+        );
     }
   }
 
@@ -75,7 +87,7 @@ class WidgetMatcherClassWriter extends ClassCodeWriter {
   String get classNameSuffix => _specification.matcherSuffix;
 }
 
-/// A base class for writing Matcher method code to [StringBuffer]
+/// A base class for writing Matcher override methods code to [StringBuffer]
 abstract class BaseMatcherMethodsCodeBuilder {
   /// Mandatory [ClassElementExtract]
   BaseMatcherMethodsCodeBuilder(
@@ -85,14 +97,23 @@ abstract class BaseMatcherMethodsCodeBuilder {
   /// [ClassElementExtract] contains extracted information from [ClassElement]
   final ClassElementExtract extract;
 
-  /// Responsible for writing all required methods into the [StringBuffer]
-  void write(StringBuffer stringBuffer) {
-    writeDescribeMethod(stringBuffer);
+  /// Responsible for writing matches() method into [StringBuffer]
+  void writeMatchesMethod(StringBuffer stringBuffer);
 
-    writeMatchesMethod(stringBuffer);
+  /// Responsible for writing describe() method into [StringBuffer]
+  void writeDescribeMethod(StringBuffer stringBuffer);
 
-    writeDescribeMismatchMethod(stringBuffer);
-  }
+  /// Responsible for writing describeMismatch() method into [StringBuffer]
+  void writeDescribeMismatchMethod(StringBuffer stringBuffer);
+}
+
+/// A base class for writing Matcher override methods code to [StringBuffer]
+abstract class BaseMatcherCountMethodsCodeBuilder
+    extends BaseMatcherMethodsCodeBuilder {
+  /// Mandatory [ClassElementExtract]
+  BaseMatcherCountMethodsCodeBuilder(
+    super.extract,
+  );
 
   /// Class name
   String get className;
@@ -101,6 +122,7 @@ abstract class BaseMatcherMethodsCodeBuilder {
   String get expectCount;
 
   /// Responsible for writing describe() into [StringBuffer]
+  @override
   void writeDescribeMethod(StringBuffer stringBuffer) {
     stringBuffer.writeln(
       """return description.add('matches $expectCount $className widget');""",
@@ -108,6 +130,7 @@ abstract class BaseMatcherMethodsCodeBuilder {
   }
 
   /// Responsible for writing matches() into [StringBuffer]
+  @override
   void writeMatchesMethod(StringBuffer stringBuffer) {
     stringBuffer
       ..writeln("matchState['custom.finder'] = finder;\n")
@@ -155,14 +178,15 @@ abstract class BaseMatcherMethodsCodeBuilder {
   String get matchReturnStatement;
 
   /// Responsible for writing describeMismatch() into [StringBuffer]
+  @override
   void writeDescribeMismatchMethod(StringBuffer stringBuffer);
 
   /// Start mismatch description text
   String get mismatchSymbol => '---';
 }
 
-/// Builds matcher method that ensures only one widget is matched
-class MatchOneWidgetMethodsBuilder extends BaseMatcherMethodsCodeBuilder {
+/// Builds matcher method that asserts only one widget is matched
+class MatchOneWidgetMethodsBuilder extends BaseMatcherCountMethodsCodeBuilder {
   /// Mandatory [ClassElementExtract]
   MatchOneWidgetMethodsBuilder(super.extract);
 
@@ -196,9 +220,9 @@ class MatchOneWidgetMethodsBuilder extends BaseMatcherMethodsCodeBuilder {
   }
 }
 
-/// Builds matcher method that ensures at least one widget is matched
+/// Builds matcher method that asserts at least one widget is matched
 class MatchAtleastOneWidgetMethodsBuilder
-    extends BaseMatcherMethodsCodeBuilder {
+    extends BaseMatcherCountMethodsCodeBuilder {
   /// Mandatory [ClassElementExtract]
   MatchAtleastOneWidgetMethodsBuilder(super.extract);
 
@@ -227,8 +251,8 @@ class MatchAtleastOneWidgetMethodsBuilder
   }
 }
 
-/// Builds matcher method that ensures exact N number of widgets is matched
-class MatchNWidgetMethodsBuilder extends BaseMatcherMethodsCodeBuilder {
+/// Builds matcher method that asserts exact N number of widgets is matched
+class MatchNWidgetMethodsBuilder extends BaseMatcherCountMethodsCodeBuilder {
   /// Mandatory [ClassElementExtract]
   MatchNWidgetMethodsBuilder(super.extract);
 
@@ -257,8 +281,8 @@ class MatchNWidgetMethodsBuilder extends BaseMatcherMethodsCodeBuilder {
   }
 }
 
-/// Builds matcher method that ensures no widget is matched
-class MatchNoWidgetMethodsBuilder extends BaseMatcherMethodsCodeBuilder {
+/// Builds matcher method that asserts no widget is matched
+class MatchNoWidgetMethodsBuilder extends BaseMatcherCountMethodsCodeBuilder {
   /// Mandatory [ClassElementExtract]
   MatchNoWidgetMethodsBuilder(super.extract);
 
@@ -303,4 +327,127 @@ Iterable<String> getMatchOneDeclarationsMismatchCheckCode(
       return code += '}\n\n';
     },
   );
+}
+
+/// Builds a Matcher that asserts a single widget is in the specified widget
+class MatchHasAncestorOfWidgetMethodsBuilder
+    extends BaseMatcherMethodsCodeBuilder {
+  /// A mandatory [ClassElementExtract]
+  /// The ancestor widget to check
+  MatchHasAncestorOfWidgetMethodsBuilder(
+    super.extract, {
+    required this.ancestorType,
+  });
+
+  ///[ancestorType]
+  final DartType ancestorType;
+
+  @override
+  void writeMatchesMethod(StringBuffer stringBuffer) {
+    stringBuffer
+      ..writeln(
+        '''bool predicate(widget) => widget.runtimeType == ${ancestorType.dartTypeStrWithGeneric};\n''',
+      )
+      ..writeln('final nodes = finder.evaluate();\n')
+      ..writeln('if(nodes.length != 1){')
+      ..writeln('''matchState['custom.length'] = nodes.length;''')
+      ..writeln('return false;')
+      ..writeln('}\n')
+      ..writeln('bool result = false;\n')
+      ..writeln('nodes.single.visitAncestorElements((Element ancestor) {')
+      ..writeln('if (predicate(ancestor.widget)) {')
+      ..writeln('result = true;')
+      ..writeln('return false;')
+      ..writeln('}')
+      ..writeln('return true;')
+      ..writeln('});\n')
+      ..writeln('''matchState['custom.ancestorOf'] = result;''')
+      ..writeln('return result;');
+  }
+
+  @override
+  void writeDescribeMethod(StringBuffer stringBuffer) {
+    stringBuffer.write(
+      """return description.add('${extract.className} is in ${ancestorType.dartTypeStrWithGeneric}');""",
+    );
+  }
+
+  @override
+  void writeDescribeMismatchMethod(StringBuffer stringBuffer) {
+    stringBuffer
+      ..writeln(
+          """if(matchState.containsKey('custom.length') && matchState['custom.length'] > 1) {""")
+      ..writeln(
+        """mismatchDescription.add('--- Found more than one ${extract.className} widgets, 1 was expected but found \${matchState['custom.length'] ?? 0}\\n\\n');""",
+      )
+      ..writeln('}')
+      ..writeln("""if(matchState.containsKey('custom.ancestorOf') && !matchState['custom.ancestorOf']) {""")
+      ..writeln(
+        """mismatchDescription.add('--- ${extract.className} is not contained in ${ancestorType.dartTypeStrWithGeneric}\\n\\n');""",
+      )
+      ..writeln('}')
+      ..writeln('return mismatchDescription;');
+  }
+}
+
+/// Builds a Matcher that asserts a single widget is not in the specified widget
+class MatchHasNoAncestorOfWidgetMethodsBuilder
+    extends BaseMatcherMethodsCodeBuilder {
+  /// A mandatory [ClassElementExtract]
+  /// The ancestor widget to check
+  MatchHasNoAncestorOfWidgetMethodsBuilder(
+    super.extract, {
+    required this.ancestorType,
+  });
+
+  ///[ancestorType]
+  final DartType ancestorType;
+
+  @override
+  void writeMatchesMethod(StringBuffer stringBuffer) {
+    stringBuffer
+      ..writeln(
+        '''bool predicate(widget) => widget.runtimeType == ${ancestorType.dartTypeStrWithGeneric};\n''',
+      )
+      ..writeln('final nodes = finder.evaluate();\n')
+      ..writeln('if(nodes.length != 1){')
+      ..writeln('''matchState['custom.length'] = nodes.length;''')
+      ..writeln('return false;')
+      ..writeln('}\n')
+      ..writeln('bool found = false;\n')
+      ..writeln('nodes.single.visitAncestorElements((Element ancestor) {')
+      ..writeln('if (predicate(ancestor.widget)) {')
+      ..writeln('found = true;')
+      ..writeln('return false;')
+      ..writeln('}')
+      ..writeln('return true;')
+      ..writeln('});\n')
+      ..writeln('''matchState['custom.foundAncestor'] = found;''')
+      ..writeln('return !found;');
+  }
+
+  @override
+  void writeDescribeMethod(StringBuffer stringBuffer) {
+    stringBuffer.write(
+      """return description.add('${extract.className} is in ${ancestorType.dartTypeStrWithGeneric}');""",
+    );
+  }
+
+  @override
+  void writeDescribeMismatchMethod(StringBuffer stringBuffer) {
+    stringBuffer
+      ..writeln(
+          """if(matchState.containsKey('custom.length') && matchState['custom.length'] > 1) {""")
+      ..writeln(
+        """mismatchDescription.add('--- Found more than one ${extract.className} widgets, 1 was expected but found \${matchState['custom.length'] ?? 0}\\n\\n');""",
+      )
+      ..writeln('}')
+      ..writeln(
+          """if(matchState.containsKey('custom.foundAncestor') && matchState['custom.foundAncestor']) {""")
+      ..writeln(
+        """mismatchDescription.add('--- ${extract.className} found in ${ancestorType.dartTypeStrWithGeneric} but expected otherwise\\n\\n');""",
+      )
+      ..writeln('}')
+      ..writeln('return mismatchDescription;');
+  }
 }

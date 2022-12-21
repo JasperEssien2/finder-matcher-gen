@@ -99,9 +99,7 @@ abstract class BaseAnnotationGenerator extends GeneratorForAnnotation<Match> {
 
     final classExtract = classVisitor.classExtract
         .copyWithConstructorFields(
-          fieldModels:
-              defaultConstructorFields[classVisitor.classExtract.className] ??
-                  {},
+          fieldModels: defaultConstructorFields[id] ?? {},
         )
         .copyWith(genericParam: genericParam, id: id);
 
@@ -122,7 +120,7 @@ abstract class BaseAnnotationGenerator extends GeneratorForAnnotation<Match> {
     final extract = ClassElementExtract(
       className: className,
       classUri: classUri,
-      constructorFields: defaultConstructorFields[className],
+      constructorFields: defaultConstructorFields[id],
       genericParam: genericParams ?? '',
       id: id,
     );
@@ -206,7 +204,7 @@ abstract class BaseAnnotationGenerator extends GeneratorForAnnotation<Match> {
     if (constructorFields.isNotEmpty) {
       _globalVariablesStringBuffer
         ..write(
-          '${globalVariableNamePrefix(extract)}${extract.className}${extract.genericParam}({',
+          '''${globalVariableNamePrefix(extract)}({''',
         )
         ..write(
           constructorFields
@@ -224,7 +222,7 @@ abstract class BaseAnnotationGenerator extends GeneratorForAnnotation<Match> {
         ..write('); \n\n');
     } else {
       _globalVariablesStringBuffer.writeln(
-        '''final ${globalVariableNamePrefix(extract)}${extract.className} = $generatedClassName(); \n''',
+        '''final ${globalVariableNamePrefix(extract)} = $generatedClassName(); \n''',
       );
     }
   }

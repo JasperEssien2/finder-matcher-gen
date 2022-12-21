@@ -30,6 +30,12 @@ matchesOneTaskListView({required List<TaskModel> tasksValue}) =>
 matchesNoTaskListView({required List<TaskModel> tasksValue}) =>
     _TaskListViewNoneMatcher(tasksValue: tasksValue);
 
+final addTargetBottomSheetHasAncestorOfDialog =
+    _AddTargetBottomSheetHasAncestorOfDialogMatcher();
+
+final addTargetBottomSheetDoesNotHaveAncestorOfDialog =
+    _AddTargetBottomSheetDoesNotHaveAncestorOfDialogMatcher();
+
 class _HomeScreenOneMatcher extends Matcher {
   _HomeScreenOneMatcher();
 
@@ -290,6 +296,106 @@ class _TaskListViewNoneMatcher extends Matcher {
     if (matchState['custom.count'] >= 1) {
       mismatchDescription.add(
           '--- zero TaskListView widgets expected but found ${matchState['custom.count'] ?? 0}\n\n');
+    }
+    return mismatchDescription;
+  }
+}
+
+class _AddTargetBottomSheetHasAncestorOfDialogMatcher extends Matcher {
+  _AddTargetBottomSheetHasAncestorOfDialogMatcher();
+
+  @override
+  Description describe(Description description) {
+    return description.add('AddTargetBottomSheet is in Dialog');
+  }
+
+  @override
+  bool matches(covariant Finder finder, Map matchState) {
+    bool predicate(widget) => widget.runtimeType == Dialog;
+
+    final nodes = finder.evaluate();
+
+    if (nodes.length != 1) {
+      matchState['custom.length'] = nodes.length;
+      return false;
+    }
+
+    bool result = false;
+
+    nodes.single.visitAncestorElements((Element ancestor) {
+      if (predicate(ancestor.widget)) {
+        result = true;
+        return false;
+      }
+      return true;
+    });
+
+    matchState['custom.ancestorOf'] = result;
+    return result;
+  }
+
+  @override
+  Description describeMismatch(covariant Finder finder,
+      Description mismatchDescription, Map matchState, bool verbose) {
+    if (matchState.containsKey('custom.length') &&
+        matchState['custom.length'] > 1) {
+      mismatchDescription.add(
+          '--- Found more than one AddTargetBottomSheet widgets, 1 was expected but found ${matchState['custom.length'] ?? 0}\n\n');
+    }
+    if (matchState.containsKey('custom.ancestorOf') &&
+        !matchState['custom.ancestorOf']) {
+      mismatchDescription
+          .add('--- AddTargetBottomSheet is not contained in Dialog\n\n');
+    }
+    return mismatchDescription;
+  }
+}
+
+class _AddTargetBottomSheetDoesNotHaveAncestorOfDialogMatcher extends Matcher {
+  _AddTargetBottomSheetDoesNotHaveAncestorOfDialogMatcher();
+
+  @override
+  Description describe(Description description) {
+    return description.add('AddTargetBottomSheet is in Dialog');
+  }
+
+  @override
+  bool matches(covariant Finder finder, Map matchState) {
+    bool predicate(widget) => widget.runtimeType == Dialog;
+
+    final nodes = finder.evaluate();
+
+    if (nodes.length != 1) {
+      matchState['custom.length'] = nodes.length;
+      return false;
+    }
+
+    bool found = false;
+
+    nodes.single.visitAncestorElements((Element ancestor) {
+      if (predicate(ancestor.widget)) {
+        found = true;
+        return false;
+      }
+      return true;
+    });
+
+    matchState['custom.foundAncestor'] = found;
+    return !found;
+  }
+
+  @override
+  Description describeMismatch(covariant Finder finder,
+      Description mismatchDescription, Map matchState, bool verbose) {
+    if (matchState.containsKey('custom.length') &&
+        matchState['custom.length'] > 1) {
+      mismatchDescription.add(
+          '--- Found more than one AddTargetBottomSheet widgets, 1 was expected but found ${matchState['custom.length'] ?? 0}\n\n');
+    }
+    if (matchState.containsKey('custom.foundAncestor') &&
+        matchState['custom.foundAncestor']) {
+      mismatchDescription.add(
+          '--- AddTargetBottomSheet found in Dialog but expected otherwise\n\n');
     }
     return mismatchDescription;
   }

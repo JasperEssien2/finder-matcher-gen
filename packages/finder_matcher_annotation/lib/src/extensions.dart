@@ -13,6 +13,10 @@ extension MatchSpecificationExt on MatchSpecification {
         return 'matchesAtleastOneWidget';
       case MatchSpecification.matchesNWidgets:
         return 'matchesNWidgets';
+      case MatchSpecification.hasAncestorOf:
+        return 'hasAncestorOf';
+      case MatchSpecification.doesNotHaveAncestorOf:
+        return 'doesNotHaveAncestorOf';
     }
   }
 }
@@ -31,6 +35,10 @@ extension StringExt on String {
         return MatchSpecification.matchesAtleastOneWidget;
       case 'matchesNWidgets':
         return MatchSpecification.matchesNWidgets;
+      case 'hasAncestorOf':
+        return MatchSpecification.hasAncestorOf;
+      case 'doesNotHaveAncestorOf':
+        return MatchSpecification.doesNotHaveAncestorOf;
     }
 
     throw Exception('Unrecognised MatchSpecification: $this');

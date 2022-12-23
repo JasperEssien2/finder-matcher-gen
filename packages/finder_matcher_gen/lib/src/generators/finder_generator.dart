@@ -1,6 +1,5 @@
 // ignore_for_file: type_annotate_public_apis
 
-import 'package:analyzer/dart/constant/value.dart';
 import 'package:finder_matcher_gen/src/generators/base_annotation_generator.dart';
 import 'package:finder_matcher_gen/src/models/class_extract_model.dart';
 import 'package:finder_matcher_gen/src/models/constructor_field_model.dart';
@@ -8,10 +7,13 @@ import 'package:finder_matcher_gen/src/writers/writers_export.dart';
 import 'package:source_gen/source_gen.dart';
 
 /// A generator for generating Finder classes
-class FinderGenerator extends BaseAnnotaionGenerator {
+class FinderGenerator extends BaseAnnotationGenerator {
   @override
-  List<DartObject> generateFor(ConstantReader annotation) =>
-      annotation.read('_finders').listValue;
+  List<WidgetDartObject> generateFor(ConstantReader annotation) => annotation
+      .read('_finders')
+      .listValue
+      .map((e) => WidgetDartObject(dartObject: e))
+      .toList();
 
   @override
   void writeClassToBuffer(
@@ -27,12 +29,12 @@ class FinderGenerator extends BaseAnnotaionGenerator {
     super.writeClassToBuffer(extract, classStringBuffer);
   }
 
+  @override
+  String globalVariableNamePrefix(ClassElementExtract extract) =>
+      'find${extract.className}${extract.genericParam}';
 
   @override
-  String prefix(ClassElementExtract extract) => 'find';
-
-  @override
-  String get suffix => 'MatchFinder';
+  String classSuffix(ClassElementExtract extract) => 'MatchFinder';
 
   @override
   Map<String, Set<ConstructorFieldModel>> get defaultConstructorFields => {};

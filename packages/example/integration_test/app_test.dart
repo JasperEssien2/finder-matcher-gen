@@ -44,9 +44,6 @@ void main() {
     await _inputTaskNameAndPriority(tester, 'Task');
 
     expect(findAddTargetBottomSheet, findsOneWidget);
-    expect(findAddTargetBottomSheet, addTargetBottomSheetHasAncestorOfDialog);
-    expect(findAddTargetBottomSheet,
-        addTargetBottomSheetDoesNotHaveAncestorOfDialog);
 
     await _saveTaskEntry(tester);
 

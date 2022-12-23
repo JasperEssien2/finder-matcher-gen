@@ -8,6 +8,9 @@ import 'model.dart';
 
 extension ElementAnnotationExt on ElementAnnotation {
   bool get isMatchDeclaration {
+    print(
+      'MATCH DECLARATION LIBRARY NAME --------------- ${element?.library?.name}',
+    );
     return this is PropertyAccessorElement &&
         element!.name == 'MatchDeclaration';
     //  && element.library.name == libraryName;

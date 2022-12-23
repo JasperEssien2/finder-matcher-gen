@@ -14,6 +14,16 @@ import 'app_test.matchers.dart';
     MatchWidget(ItemTask, MatchSpecification.matchesNWidgets),
     MatchWidget(TaskListView, MatchSpecification.matchesOneWidget),
     MatchWidget(TaskListView, MatchSpecification.matchesNoWidget),
+    MatchWidget(
+      AddTargetBottomSheet,
+      MatchSpecification.hasAncestorOf,
+      secondaryType: Dialog,
+    ),
+    MatchWidget(
+      AddTargetBottomSheet,
+      MatchSpecification.doesNotHaveAncestorOf,
+      secondaryType: Dialog,
+    ),
   ],
   finders: [AddTargetBottomSheet, AppFloatingActionButton],
 )

@@ -27,6 +27,7 @@ abstract class ClassCodeWriter with OverrideMethodsWriter {
   /// where MatchFinder is the extendsName and HomePage is the class name
   String get extendsName;
 
+  /// Class name suffix
   String get classNameSuffix;
 
   /// Indicates if this class should be marked const or not

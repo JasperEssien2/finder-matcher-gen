@@ -13,16 +13,11 @@ dependencies:
   custom_lint_builder: ^0.0.16
   equatable: ^2.0.5
   finder_matcher_annotation:
-    git:
-      url: https://github.com/JasperEssien2/finder-matcher-gen.git
-      ref: master
-      path: packages/finder_matcher_annotation
-
+    path: ../finder_matcher_annotation/
   meta: ^1.8.0
   path: ^1.8.2
   source_gen:   
   
-
 dev_dependencies:
   build_runner:
   build_test:

@@ -24,8 +24,11 @@ abstract class ClassCodeWriter with OverrideMethodsWriter {
       _classHeaderBuffer.toString() + _classBodyBuffer.toString();
 
   /// The name to attach to existing class name, e.g HomePageMatchFinder
-  /// where MatchFinder is the suffix and HomePage is the class name
-  String get suffix;
+  /// where MatchFinder is the extendsName and HomePage is the class name
+  String get extendsName;
+
+  /// Class name suffix
+  String get classNameSuffix;
 
   /// Indicates if this class should be marked const or not
   bool get isClassConst => false;
@@ -52,7 +55,7 @@ abstract class ClassCodeWriter with OverrideMethodsWriter {
       return;
     }
     _classHeaderBuffer.writeln(
-      '''class ${classExtract.generatedClassName!}$suffix${classExtract.genericParam} extends $suffix {''',
+      '''class ${classExtract.generatedClassName!}$classNameSuffix${classExtract.genericParam} extends $extendsName {''',
     );
   }
 
@@ -73,7 +76,7 @@ abstract class ClassCodeWriter with OverrideMethodsWriter {
 
     _classHeaderBuffer
       ..write(
-        '''${isClassConst ? 'const' : ''} ${classExtract.generatedClassName!}$suffix(''',
+        '''${isClassConst ? 'const' : ''} ${classExtract.generatedClassName!}$classNameSuffix(''',
       )
       ..write(constructorParamsCodeList[0])
       ..write(')${constructorParamsCodeList[1]}')

@@ -22,24 +22,21 @@ class MatchWidget {
   /// Accepts [Type] of the widget. E.g MyHomePage
   /// An enum [MatchSpecification] that indicates how many widgets should be
   /// matched by generated Matcher.
-  ///
-  /// * MatchSpecification.matchesOneWidget: Generates a matcher that ensures
-  /// exactly one widget was matched
-  ///
-  /// * MatchSpecification.matchesNoWidget: Generates a matcher that ensures
-  /// no widget was matched
-  ///
-  /// * MatchSpecification.matchesAtleastOneWidget: Generates a matcher that
-  /// ensures at least one widget was matched
-  ///
-  /// * MatchSpecification.matchesNWidgets: Generates a matcher that ensures
-  /// the specified number of widgets was matched
-  const MatchWidget(Type type, MatchSpecification specification)
-      : _type = type,
-        _specification = specification;
+  /// A [secondaryType] to accomodate any other type needed to generate 
+  /// this matcher. For example to generate a matcher that asserts that a given 
+  /// widget type [type] is contained in another widget, [secondaryType] is 
+  /// initialised to accomaodte the second widget type
+  const MatchWidget(
+    Type type,
+    MatchSpecification specification, {
+    Type? secondaryType,
+  })  : _type = type,
+        _specification = specification,
+        _secondaryType = secondaryType;
 
   final Type _type;
   final MatchSpecification _specification;
+  final Type? _secondaryType;
 }
 
 /// An enum [MatchDeclaration]
@@ -55,6 +52,14 @@ enum MatchSpecification {
 
   /// Generate matcher that matches "n" widgets
   matchesNWidgets,
+
+  /// Generates a matcher that asserts this widget is contained in specified
+  /// widget
+  hasAncestorOf,
+
+  /// Generates a matcher that assert this widget is not contained in specified
+  /// widget
+  doesNotHaveAncestorOf,
 }
 
 /// Annotations to mark declarations that would be used to validate a

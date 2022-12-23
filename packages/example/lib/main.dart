@@ -1,3 +1,5 @@
+import 'package:example/models.dart';
+import 'package:example/widgets.dart';
 import 'package:finder_matcher_annotation/finder_matcher_annotation.dart';
 import 'package:flutter/material.dart';
 
@@ -14,85 +16,79 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
+        useMaterial3: true,
         primarySwatch: Colors.blue,
+        sliderTheme: const SliderThemeData(
+          trackHeight: 10,
+        ),
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const HomeScreen(),
     );
   }
 }
 
-class MyHomePage<T, R> extends StatefulWidget {
-  const MyHomePage({
-    super.key,
-    required this.title,
-    this.generic,
-  });
-
-  @MatchDeclaration(defaultValue: 'love-leads')
-  final String title;
-
-  @MatchDeclaration()
-  final T? generic;
-
-  @MatchDeclaration()
-  List<DataRow> incrementCounter() => [];
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
+class _HomeScreenState extends State<HomeScreen> {
+  final tasks = <TaskModel>[];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
+      backgroundColor: Colors.white,
+      appBar: AppBar(title: const Text('Tasks')),
+      body: tasks.isEmpty
+          ? Center(
+              child: Padding(
+                padding: const EdgeInsets.all(32.0).copyWith(bottom: 100),
+                child: const Text(
+                  "Your task list is empty. Tap on the 'Add Task' button to add a task.",
+                  style: TextStyle(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 16,
+                  ),
+                ),
+              ),
+            )
+          : TaskListView(tasks: tasks),
+      floatingActionButton: AppFloatingActionButton(
+        onPress: () async {
+          final newTask = await showModalBottomSheet(
+            context: context,
+            builder: (c) => const AddTargetBottomSheet(),
+          );
+
+          if (newTask != null) {
+            tasks.add(newTask);
+
+            setState(() {});
+          }
+        },
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
 
-class MyWorldWidget extends StatelessWidget {
-  const MyWorldWidget({super.key});
+class TaskListView extends StatelessWidget {
+  const TaskListView({
+    Key? key,
+    required this.tasks,
+  }) : super(key: key);
+  
+  @MatchDeclaration()
+  final List<TaskModel> tasks;
 
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return ListView.builder(
+      itemCount: tasks.length,
+      itemBuilder: (context, index) => ItemTask(taskModel: tasks[index]),
+      physics: const BouncingScrollPhysics(),
+    );
   }
 }

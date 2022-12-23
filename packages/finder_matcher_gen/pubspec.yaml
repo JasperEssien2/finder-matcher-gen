@@ -17,7 +17,7 @@ dependencies:
       url: https://github.com/JasperEssien2/finder-matcher-gen.git
       ref: master
       path: packages/finder_matcher_annotation
-   
+
   meta: ^1.8.0
   path: ^1.8.2
   source_gen:   

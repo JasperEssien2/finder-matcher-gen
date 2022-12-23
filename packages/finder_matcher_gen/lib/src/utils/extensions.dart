@@ -2,6 +2,7 @@ import 'package:analyzer/dart/constant/value.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:finder_matcher_annotation/finder_matcher_annotation.dart';
+import 'package:finder_matcher_gen/src/generators/matcher_generator.dart';
 import 'package:finder_matcher_gen/src/utils/element_checker.dart';
 import 'package:source_gen/source_gen.dart';
 
@@ -9,15 +10,22 @@ import 'package:source_gen/source_gen.dart';
 extension StringExt on String {
   /// Removes all asterisk symbol for a given string
   String get replaceAsterisk => replaceAll('*', '');
+
+  /// Replaces the first letter to lower case
+  String get firstToLowerCase => replaceFirst(this[0], this[0].toLowerCase());
 }
 
 /// An extension of [DartType]
 extension DartTypeExt on DartType {
+  /// Returns string of [DartType] without generic param.
   /// Replaces all asterisks and generic from the [DartType] string
   String get dartTypeStr =>
       toString().replaceAsterisk.replaceAll(typeGenericParamStr ?? '', '');
 
-  /// If this [DartType] has an associated param, it returns it.
+  /// Returns string of [DartType] including generic param
+  String get dartTypeStrWithGeneric => toString().replaceAsterisk;
+
+  /// If this [DartType] has an associated generic param, it returns it.
   ///
   /// For example: a [HomePage<T, R>] returns <T, R>
   String? get typeGenericParamStr {
@@ -41,7 +49,7 @@ extension DartTypeExt on DartType {
   }
 
   ///
-  String get removeGenericParamSOrReturntr {
+  String get removeGenericParams {
     final string = toString();
 
     final start = string.indexOf('<');
@@ -84,5 +92,35 @@ extension ElementListExt on List<Element> {
     }
 
     return false;
+  }
+}
+
+/// Extension on [MatchSpecification]
+extension MatchSpecificationExt on MatcherGeneratorSpecification {
+  /// Retuns a widget matcher class name suffix based on [MatchSpecification]
+  String get matcherSuffix {
+    var prefix = '';
+
+    switch (specification) {
+      case MatchSpecification.matchesNoWidget:
+        prefix = 'None';
+        break;
+      case MatchSpecification.matchesAtleastOneWidget:
+        prefix = 'AtleastOne';
+        break;
+      case MatchSpecification.matchesNWidgets:
+        prefix = 'N';
+        break;
+      case MatchSpecification.matchesOneWidget:
+        prefix = 'One';
+        break;
+      case MatchSpecification.hasAncestorOf:
+        prefix = 'HasAncestorOf${secondaryType!.dartTypeStr}';
+        break;
+      case MatchSpecification.doesNotHaveAncestorOf:
+        prefix = 'DoesNotHaveAncestorOf${secondaryType!.dartTypeStr}';
+        break;
+    }
+    return '${prefix}Matcher';
   }
 }

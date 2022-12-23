@@ -8,6 +8,9 @@ import 'model.dart';
 
 extension ElementAnnotationExt on ElementAnnotation {
   bool get isMatchDeclaration {
+    print(
+      'MATCH DECLARATION LIBRARY NAME --------------- ${element?.library?.name}',
+    );
     return this is PropertyAccessorElement &&
         element!.name == 'MatchDeclaration';
     //  && element.library.name == libraryName;
@@ -27,8 +30,10 @@ extension ElementExt on Element {
       .hasAnnotationOf(this, throwOnUnresolved: false);
 
   String? get declarationType {
-    if (kind == ElementKind.GETTER || kind == ElementKind.METHOD) {
+    if (kind == ElementKind.METHOD) {
       return (this as MethodElement).returnType.toString();
+    } else if (kind == ElementKind.GETTER) {
+      return (this as PropertyAccessorElement).returnType.toString();
     } else if (kind == ElementKind.FIELD) {
       return (this as FieldElement).type.toString();
     }

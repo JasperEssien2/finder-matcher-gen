@@ -1,3 +1,3 @@
 {
-    "dart_data_class_generator.useEquatable": true
+    "dart_data_class_generator.useEquatable": false
 }

@@ -116,7 +116,7 @@ A common pitfall while using this annotation is passing a wrong data type (*diff
 Run the command below to generate the custom finder and matcher code.
 
 ```
-dart pub run build_runner build
+flutter pub run build_runner build
 ```
 
 After a successful run, you should notice two newly generated files.

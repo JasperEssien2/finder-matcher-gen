@@ -1,3 +1,5 @@
+
+
 ---
 layout: default
 title: Quick Start
@@ -29,11 +31,23 @@ dev_dependencies:
   build_runner: ^[version]
 ```
 
+Run the command below to install.
+
+```
+dart pub get
+```
+
+Copy and paste the code below into your test file to import.
+
+```dart
+ import 'package:finder_matcher_annotation/finder_matcher_annotation.dart';
+```
+
 ## Annotation usage
-Finder-matcher-gen makes use of annotation declarations to generate code. There are two annotations provided by this tool: `@Match` and `@MatchDeclaration`.
+Finder-matcher-gen makes use of annotation declarations to generate code. This tool provides two annotations: `@Match` and `@MatchDeclaration`.
 
 ### @Match annotation
-Apply `@Match` annotation to a declaration, usually the test `main()` function to specify widgets to generate a finder or matcher counterpart.
+Apply `@Match` annotation to a declaration, usually, the test `main()` function to specify widgets to generate a finder or matcher counterpart.
 
 ```dart
 @Match(finders: [], matchers: [])
@@ -45,12 +59,12 @@ void main() {
 The `@MatchAnnotation` accepts two parameters: a list of `Type` for finders; a list of `MatchWidget` for matchers.
 
 #### Finders
-For a widget named `TrafficLightLampWidget` pass the type of the widget to the finders param of `@Match` annotation to generate a finder counterpart .
+For a widget named `TrafficLightLampWidget` pass the type of the widget to the finders param of the `@Match` annotation to generate a finder counterpart.
 
 ```dart
 @Match(finders: [TrafficLightLampWidget])
 ```
-> You can pass any number of widget type to the `finders` param to generate a finder counterpart.
+> You can pass any number of widget types to the `finders` param to generate a finder counterpart.
 
 #### Matcher
 Pass a list of `MatchWidget` to the `matchers` param. `MatchWidgets` accepts three params.
@@ -61,14 +75,14 @@ Pass a list of `MatchWidget` to the `matchers` param. `MatchWidgets` accepts thr
 
 - An optional `secondaryType`: The runtime representation of another widget that this Matcher will utilise.
 
-    > Some Matcher specifications involves a different widget. For example, to generate a matcher that asserts if `WidgetA` is contained in `WidgetB`, `WidgetB` will be passed as the `secondaryType`. 
+    > Some Matcher specifications involve a different widget. For example, to generate a matcher that asserts if `WidgetA` is contained in `WidgetB`, `WidgetB` will be passed as the `secondaryType`. 
 
-To learn more on the different match specification you can set, click [here](https://jasperessien2.github.io/finder-matcher-gen/generate-matcher).
+To learn more about the different match specifications you can set, click [here](https://jasperessien2.github.io/finder-matcher-gen/generate-matcher).
 
 ### @MatchDeclaration annotation
-In most cases, declarations (*getters*, *fields*, *functions*) defined in a widget are an essential part of the widget identity. In other words, they will be used for assertion test code.
+In most cases, declarations (*getters*, *fields*, *functions*) defined in a widget are essential to the widget’s identity. In other words, they will be used for assertion test code.
 
-Annotate widget fields, getters, or functions with `@MatchDeclaration` to let this tool utilise them for validation code. The `@MatchDeclaration` annotation accepts a `defaultValue` argument used to assert this declaration. If none is provided, a constructor field for this declaration will be added to the generated code.
+Annotate widget fields, getters, or functions with `@MatchDeclaration` to let this tool utilise them for validation code. The `@MatchDeclaration` annotation accepts a `defaultValue` argument used to assert this declaration. A constructor field for this declaration will be added to the generated code if none is provided.
 
 ```dart
 class RedTrafficLightLampWidget extends StatelessWidget{
@@ -88,14 +102,27 @@ The code below highlights the result of providing a default value and otherwise.
 return widget.lightColor == _lightColor && widget.text == 'STOP';
 ```
 
-A common pitfall while using this annotation is passing a wrong data type (*different from the data type of annotated declaration*) to the `defaultValue`. Fortunately, this package provides static analysis to throw an error when you make these kind of mistakes.
+A common pitfall while using this annotation is passing a wrong data type (*different from the data type of annotated declaration*) to the `defaultValue`. Fortunately, this package provides static analysis to throw an error when you make this kind of mistake.
 
 > **Note:** The annotation `@MatchDeclaration` can only be used on *getters*, *fields*, and *non-void methods*
 
 ## Generate code
+Run the command below to generate the custom finder and matcher code.
 
-### Limitations
-- Can only generate Matcher for widget classes
-- Annotated declarations in the State class of a Stateful widget is ignored.
+```
+dart pub run build_runner build
+```
 
-Head over to the github page to request for a feature or see existing issues.
+After a successful run, you should notice two newly generated files.
+
+- A `${my_test_file}.finders.dart` file containing generated finders.
+- A `${my_test_file}.matchers.dart` file containing generated matchers.
+
+Click [here]() to explore how to use generated files.
+
+## Limitations
+There are some current limitations concerning this tool. Here are some:
+- Can only generate Matcher for widget classes.
+- Annotated declarations in the State class of a Stateful widget are ignored.
+
+Check out the GitHub page to request a feature or see existing issues by following [this link](https://github.com/JasperEssien2/finder-matcher-gen/issues).

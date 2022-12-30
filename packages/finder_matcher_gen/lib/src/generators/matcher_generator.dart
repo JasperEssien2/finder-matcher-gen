@@ -118,7 +118,7 @@ class MatcherGenerator extends BaseAnnotationGenerator {
         );
 
         final secondaryType = spec!.secondaryType!;
-        return '''${extract.className!.firstToLowerCase}HasAncestorOf${secondaryType.dartTypeStr}''';
+        return '''${extract.className!.firstToLowerCase}HasAncestorOf${secondaryType.dartTypeStr}${extract.genericParam}''';
       case MatchSpecification.doesNotHaveAncestorOf:
         assert(
           spec!.secondaryType != null,
@@ -126,7 +126,7 @@ class MatcherGenerator extends BaseAnnotationGenerator {
         );
 
         final secondaryType = spec!.secondaryType!;
-        return '''${extract.className!.firstToLowerCase}DoesNotHaveAncestorOf${secondaryType.dartTypeStr}''';
+        return '''${extract.className!.firstToLowerCase}DoesNotHaveAncestorOf${secondaryType.dartTypeStr}${extract.genericParam}''';
     }
   }
 

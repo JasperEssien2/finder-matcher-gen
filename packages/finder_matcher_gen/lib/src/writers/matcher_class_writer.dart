@@ -376,12 +376,15 @@ class MatchHasAncestorOfWidgetMethodsBuilder
   void writeDescribeMismatchMethod(StringBuffer stringBuffer) {
     stringBuffer
       ..writeln(
-          """if(matchState.containsKey('custom.length') && matchState['custom.length'] > 1) {""")
+        """if(matchState.containsKey('custom.length') && matchState['custom.length'] > 1) {""",
+      )
       ..writeln(
         """mismatchDescription.add('--- Found more than one ${extract.className} widgets, 1 was expected but found \${matchState['custom.length'] ?? 0}\\n\\n');""",
       )
       ..writeln('}')
-      ..writeln("""if(matchState.containsKey('custom.ancestorOf') && !matchState['custom.ancestorOf']) {""")
+      ..writeln(
+        """if(matchState.containsKey('custom.ancestorOf') && !matchState['custom.ancestorOf']) {""",
+      )
       ..writeln(
         """mismatchDescription.add('--- ${extract.className} is not contained in ${ancestorType.dartTypeStrWithGeneric}\\n\\n');""",
       )
@@ -437,13 +440,15 @@ class MatchHasNoAncestorOfWidgetMethodsBuilder
   void writeDescribeMismatchMethod(StringBuffer stringBuffer) {
     stringBuffer
       ..writeln(
-          """if(matchState.containsKey('custom.length') && matchState['custom.length'] > 1) {""")
+        """if(matchState.containsKey('custom.length') && matchState['custom.length'] > 1) {""",
+      )
       ..writeln(
         """mismatchDescription.add('--- Found more than one ${extract.className} widgets, 1 was expected but found \${matchState['custom.length'] ?? 0}\\n\\n');""",
       )
       ..writeln('}')
       ..writeln(
-          """if(matchState.containsKey('custom.foundAncestor') && matchState['custom.foundAncestor']) {""")
+        """if(matchState.containsKey('custom.foundAncestor') && matchState['custom.foundAncestor']) {""",
+      )
       ..writeln(
         """mismatchDescription.add('--- ${extract.className} found in ${ancestorType.dartTypeStrWithGeneric} but expected otherwise\\n\\n');""",
       )

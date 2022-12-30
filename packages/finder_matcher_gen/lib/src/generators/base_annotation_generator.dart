@@ -200,31 +200,58 @@ abstract class BaseAnnotationGenerator extends GeneratorForAnnotation<Match> {
         '''${extract.generatedClassName}${classSuffix(extract)}${extract.genericParam}''';
 
     final constructorFields = extract.constructorFields ?? {};
+    final hasConstructorFields = constructorFields.isNotEmpty;
+    final hasGenericParam = extract.genericParam.isNotEmpty;
 
-    if (constructorFields.isNotEmpty) {
-      _globalVariablesStringBuffer
-        ..write(
-          '''${globalVariableNamePrefix(extract)}({''',
-        )
-        ..write(
-          constructorFields
-              .map((e) => 'required ${e.type} ${e.name}')
-              .toList()
-              .join(', '),
-        )
-        ..write('}) => $generatedClassName(')
-        ..write(
-          constructorFields
-              .map((e) => '${e.name}: ${e.name}')
-              .toList()
-              .join(', '),
-        )
-        ..write('); \n\n');
-    } else {
-      _globalVariablesStringBuffer.writeln(
-        '''final ${globalVariableNamePrefix(extract)} = $generatedClassName(); \n''',
+    if (hasConstructorFields || hasGenericParam) {
+      _writeGlobalFunction(
+        extract,
+        hasGenericParam,
+        hasConstructorFields,
+        constructorFields,
+        generatedClassName,
       );
+    } else {
+      _writeGlobalVariable(extract, generatedClassName);
     }
+  }
+
+  void _writeGlobalFunction(
+    ClassElementExtract extract,
+    bool hasGenericParam,
+    bool hasConstructorFields,
+    Set<ConstructorFieldModel> constructorFields,
+    String generatedClassName,
+  ) {
+    _globalVariablesStringBuffer
+      ..write(
+        '''${globalVariableNamePrefix(extract)}(''',
+      )
+      ..write(hasGenericParam && !hasConstructorFields ? '' : '{')
+      ..write(
+        constructorFields
+            .map((e) => 'required ${e.type} ${e.name}')
+            .toList()
+            .join(', '),
+      )
+      ..write(hasGenericParam && !hasConstructorFields ? '' : '}')
+      ..write(') => $generatedClassName(')
+      ..write(
+        constructorFields
+            .map((e) => '${e.name}: ${e.name}')
+            .toList()
+            .join(', '),
+      )
+      ..write('); \n\n');
+  }
+
+  void _writeGlobalVariable(
+    ClassElementExtract extract,
+    String generatedClassName,
+  ) {
+    _globalVariablesStringBuffer.writeln(
+      '''final ${globalVariableNamePrefix(extract)} = $generatedClassName(); \n''',
+    );
   }
 
   /// Used to prefix global variables names

@@ -108,7 +108,10 @@ The code below highlights the result of providing a default value and otherwise.
 return widget.lightColor == _lightColor && widget.text == 'STOP';
 ```
 
-A common pitfall while using this annotation is passing a wrong data type (*different from the data type of the annotated property*) to the `defaultValue`. Fortunately, this package provides static analysis to throw an error when this kind of mistake is made.
+### Linting
+A common pitfall while using this annotation is passing a wrong data type (*different from the data type of the annotated property*) to the `defaultValue`.
+
+Fortunately, this package provides static analysis to throw an error when this kind of mistake is made.
 
 > **Note:** The annotation `@MatchDeclaration` can only be used on *getters*, *fields*, and *non-void methods*
 
@@ -131,4 +134,4 @@ There are some current limitations concerning this tool. Here are some:
 - Can only generate Matcher for widget classes.
 - Annotated declarations in the State class of a Stateful widget are ignored.
 
-Check out the GitHub page to request a feature or see existing issues by following [this link](https://github.com/JasperEssien2/finder-matcher-gen/issues).
+ To request a feature or file an issue check out the GitHub page [here](https://github.com/JasperEssien2/finder-matcher-gen/issues).

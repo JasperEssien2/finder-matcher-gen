@@ -2,7 +2,7 @@
 
 /// Annotation for marking widgets to generate Finder or Matcher classes
 class Match {
-  ///Accepts two parametera
+  ///Accepts two parameters
   ///* A list of [MatchWidget] that specifies widgets to generate
   ///a corresponding matcher
   ///* A list [Type] widgets to generate corresponsing finder classes
@@ -22,9 +22,9 @@ class MatchWidget {
   /// Accepts [Type] of the widget. E.g MyHomePage
   /// An enum [MatchSpecification] that indicates how many widgets should be
   /// matched by generated Matcher.
-  /// A [secondaryType] to accomodate any other type needed to generate 
-  /// this matcher. For example to generate a matcher that asserts that a given 
-  /// widget type [type] is contained in another widget, [secondaryType] is 
+  /// A [secondaryType] to accomodate any other type needed to generate
+  /// this matcher. For example to generate a matcher that asserts that a given
+  /// widget type [type] is contained in another widget, [secondaryType] is
   /// initialised to accomaodte the second widget type
   const MatchWidget(
     Type type,
@@ -66,14 +66,16 @@ enum MatchSpecification {
 /// Finder or Matcher
 ///
 /// Supported declarations are as follows
-///   * setters
+///   * getters
 ///   * fields
 ///   * non-void method
 ///
-///Only limited Return types are supported: int, bool, double, String, List, Map
 class MatchDeclaration<T> {
-  ///
+  /// Annotations to mark declarations that would be used to validate a
+  /// Finder or Matcher
   const MatchDeclaration({T? defaultValue}) : _defaultValue = defaultValue;
 
+  /// A default value for this asserting this declaration. If none is provided,
+  /// a constructor field will be added to generated code.
   final T? _defaultValue;
 }

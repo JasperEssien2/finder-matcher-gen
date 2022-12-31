@@ -1,32 +1,15 @@
-# Finder Matcher Gen
-- [Finder Matcher Gen](#finder-matcher-gen)
-  * [Installation 💻](#installation---)
-  * [Annotation usage](#annotation-usage)
-    + [@Match annotation](#-match-annotation)
-      - [Finders](#finders)
-      - [Matcher](#matcher)
-    + [@MatchDeclaration annotation](#-matchdeclaration-annotation)
-    + [Linting](#linting)
-  * [Generate code](#generate-code)
-  * [Detailed Documentation](#detailed-documentation)
-  * [Continuous Integration 🤖](#continuous-integration---)
-  * [Running Tests 🧪](#running-tests---)
+---
+layout: page
+title: Quick Start
+permalink: quickstart
+id: quickstart
+next_page: generate-finder
+previous_page: overview
+---
 
-<small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
+To get started add this package to your codebase.
 
-
-[![style: very good analysis][very_good_analysis_badge]][very_good_analysis_link]
-[![Powered by Mason](https://img.shields.io/endpoint?url=https%3A%2F%2Ftinyurl.com%2Fmason-badge)](https://github.com/felangel/mason)
-[![License: MIT][license_badge]][license_link]
-
-A Flutter package for generating custom Finders and Matchers for widget tests.
-
-## Installation 💻
-
-**❗ In order to start using Finder Matcher Gen you must have the [Dart SDK][dart_install_link] installed on your machine.**
-
-Add `finder_matcher_gen` to your `pubspec.yaml`:
-
+## Add to project
 Run the following command on your terminal:
 
 ```sh
@@ -54,9 +37,7 @@ dev_dependencies:
 
 Run the command below to install.
 
-Install it:
-
-```sh
+```
 flutter pub get
 ```
 
@@ -65,8 +46,6 @@ Copy and paste the code below into your test file to import.
 ```dart
  import 'package:finder_matcher_annotation/finder_matcher_annotation.dart';
 ```
-
----
 
 ## Annotation usage
 Finder-matcher-gen makes use of annotation declarations to generate code. This tool provides two annotations: `@Match` and `@MatchDeclaration` annotations.
@@ -154,52 +133,9 @@ After a successful run, you should notice two newly generated files.
 
 For more information, see [generate section](https://jasperessien2.github.io/finder-matcher-gen/finder) to explore how to use generated files.
 
----
-## Detailed Documentation
+## Limitations
+There are some current limitations concerning this tool. Here are some:
+- Can only generate Matcher for widget classes.
+- Annotated declarations in the State class of a Stateful widget are ignored.
 
-For more detailed information of using this tool, visit the [documentation](https://jasperessien2.github.io/finder-matcher-gen/).
-
----
-
-## Continuous Integration 🤖
-
-Finder Matcher Gen comes with a built-in [GitHub Actions workflow][github_actions_link] powered by [Very Good Workflows][very_good_workflows_link] but you can also add your preferred CI/CD solution.
-
-Out of the box, on each pull request and push, the CI `formats`, `lints`, and `tests` the code. This ensures the code remains consistent and behaves correctly as you add functionality or make changes. The project uses [Very Good Analysis][very_good_analysis_link] for a strict set of analysis options used by our team. Code coverage is enforced using the [Very Good Workflows][very_good_coverage_link].
-
----
-
-## Running Tests 🧪
-
-To run all unit tests:
-
-```sh
-dart pub global activate coverage 1.2.0
-dart test --coverage=coverage
-dart pub global run coverage:format_coverage --lcov --in=coverage --out=coverage/lcov.info
-```
-
-To view the generated coverage report you can use [lcov](https://github.com/linux-test-project/lcov).
-
-```sh
-# Generate Coverage Report
-genhtml coverage/lcov.info -o coverage/
-
-# Open Coverage Report
-open coverage/index.html
-```
-
-[dart_install_link]: https://dart.dev/get-dart
-[github_actions_link]: https://docs.github.com/en/actions/learn-github-actions
-[license_badge]: https://img.shields.io/badge/license-MIT-blue.svg
-[license_link]: https://opensource.org/licenses/MIT
-[logo_black]: https://raw.githubusercontent.com/VGVentures/very_good_brand/main/styles/README/vgv_logo_black.png#gh-light-mode-only
-[logo_white]: https://raw.githubusercontent.com/VGVentures/very_good_brand/main/styles/README/vgv_logo_white.png#gh-dark-mode-only
-[mason_link]: https://github.com/felangel/mason
-[very_good_analysis_badge]: https://img.shields.io/badge/style-very_good_analysis-B22C89.svg
-[very_good_analysis_link]: https://pub.dev/packages/very_good_analysis
-[very_good_coverage_link]: https://github.com/marketplace/actions/very-good-coverage
-[very_good_ventures_link]: https://verygood.ventures
-[very_good_ventures_link_light]: https://verygood.ventures#gh-light-mode-only
-[very_good_ventures_link_dark]: https://verygood.ventures#gh-dark-mode-only
-[very_good_workflows_link]: https://github.com/VeryGoodOpenSource/very_good_workflows
+ To request a feature or file an issue check out the [GitHub page](https://github.com/JasperEssien2/finder-matcher-gen/issues).

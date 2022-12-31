@@ -118,7 +118,7 @@ extension MatchSpecificationExt on MatcherGeneratorSpecification {
         prefix = 'HasAncestorOf${secondaryType!.dartTypeStr}';
         break;
       case MatchSpecification.doesNotHaveAncestorOf:
-        prefix = 'DoesNotHaveAncestorOf${secondaryType!.dartTypeStr}';
+        prefix = 'HasNoAncestorOf${secondaryType!.dartTypeStr}';
         break;
     }
     return '${prefix}Matcher';

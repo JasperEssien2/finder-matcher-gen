@@ -1,6 +1,7 @@
 ---
 layout: page
 title: Generate Finder
+permalink: finder
 ---
 
 Annotate the `main()` function of your test file with the `@Match` annotation. Pass a list of widget types to the `finders` param to generate a finder counterpart.

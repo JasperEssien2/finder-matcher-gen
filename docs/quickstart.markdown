@@ -1,6 +1,7 @@
 ---
 layout: page
 title: Quick Start
+permalink: quickstart
 ---
 
 To get started add this package to your codebase.

@@ -1,7 +1,7 @@
 ---
 layout: page
 title: Generate Matcher 
-
+permalink: matcher
 ---
 Annotate the `main()` function of your test file with the `@Match` annotation. Pass a list of `MatchWidget` to the `matchers` param to generate a matcher counterpart.
 

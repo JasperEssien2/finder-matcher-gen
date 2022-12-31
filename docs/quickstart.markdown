@@ -2,6 +2,9 @@
 layout: page
 title: Quick Start
 permalink: quickstart
+id: quickstart
+next_page: generate-finder
+previous_page: overview
 ---
 
 To get started add this package to your codebase.
@@ -128,7 +131,7 @@ After a successful run, you should notice two newly generated files.
 - A `${my_test_file}.finders.dart` file containing generated finders.
 - A `${my_test_file}.matchers.dart` file containing generated matchers.
 
-For more information, see [generate section]() to explore how to use generated files.
+For more information, see [generate section](https://jasperessien2.github.io/finder-matcher-gen/finder) to explore how to use generated files.
 
 ## Limitations
 There are some current limitations concerning this tool. Here are some:

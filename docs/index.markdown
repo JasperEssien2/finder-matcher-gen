@@ -4,6 +4,8 @@
 
 layout: page
 title: Overview
+id: overview
+next_page: quickstart
 ---
 Finder-Matcher Gen is an open-source project that allows you to generate custom `Finder` and `Matcher` classes using annotations.
 
@@ -211,4 +213,4 @@ This package aims to accomplish two things:
 
 It does this by easing the pain of writing these custom matchers or finders from you as a developer through code generation. 
 
-For a quick start on using this package, go to the [quickstart page](https://jasperessien2.github.io/finder-matcher-gen/quickstart). For a deeper understanding of generating finder and matcher classes, go to the [generate finder](https://jasperessien2.github.io/finder-matcher-gen/generate-finder) and [generate matcher](https://jasperessien2.github.io/finder-matcher-gen/generate-matcher) pages.
+For a quick start on using this package, go to the [quickstart page](https://jasperessien2.github.io/finder-matcher-gen/quickstart). For a deeper understanding of generating finder and matcher classes, go to the [generate finder](https://jasperessien2.github.io/finder-matcher-gen/finder) and [generate matcher](https://jasperessien2.github.io/finder-matcher-gen/matcher) pages.

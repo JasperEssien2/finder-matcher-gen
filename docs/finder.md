@@ -2,6 +2,9 @@
 layout: page
 title: Generate Finder
 permalink: finder
+id: generate-finder
+next_page: generate-matcher
+previous_page: quickstart
 ---
 
 Annotate the `main()` function of your test file with the `@Match` annotation. Pass a list of widget types to the `finders` param to generate a finder counterpart.

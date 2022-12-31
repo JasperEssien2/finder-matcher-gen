@@ -22,8 +22,8 @@ title: Finder-Matcher Generator
 email: jasperessien2@gmail.com
 description: >- # this means to ignore newlines until "baseurl:"
  Finder-Matcher Gen is an open source project that allows you to generate custom `Finder` and `Matcher` classes by using annotations.
-baseurl: "" # the subpath of your site, e.g. /blog
-url: "" # the base hostname & protocol for your site, e.g. http://example.com
+baseurl: "/finder-matcher-gen/" # the subpath of your site, e.g. /blog
+url: "https://jasperessien2.github.io" # the base hostname & protocol for your site, e.g. http://example.com
 twitter_username: EssienJasper
 github_username:  JasperEssien2
 

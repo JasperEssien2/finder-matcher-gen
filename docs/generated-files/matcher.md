@@ -13,19 +13,32 @@ void main() {
     //Test code in here
 }
 ```
-A `${my_test_file}.matchers.dart` file containing generated custom matcher classes is created after running the generation command. The generated custom matchers are private by default and expose a global variable or function for use.
+A `${my_test_file}.matchers.dart` is created after a successful build_runner build. It contains generated custom matcher code. The generated custom matchers are private by default and expose a global variable or function for use.
+
+You can generate different matchers for the same widget, by passing different instances of `MatchWidget` with same widget type and different `MatchSpecification` to the `@Match` annotation.
+
+```dart
+@Match(matchers: [ 
+    MatchWidget(MyWidget, MatchSpecification.matchesOneWidget),
+    MatchWidget(MyWidget, MatchSpecification.hasAncestorOf, secondaryType: Dialog),
+])
+void main() {
+    //Test code in here
+}
+```
 
 ### Match specifications 
-There are a number of cases you can assert a widget with. The enum `MatchSpecification` is provided to specify the generated matcher assertion behaviour. The table below summarises the `MatchSpecification` values that can be set.
+There are several test cases to assert a widget. The enum `MatchSpecification` is provided to specify the generated matcher assertion case. The following sections summarises the `MatchSpecification` values that can be set.
 
 #### One widget matcher
-Set `MatchSpecification.matchesOneWidget` to generate a matcher that asserts **exactly one** widget with specified properties is found in the widget tree. Throw an error otherwise.
+Set `MatchSpecification.matchesOneWidget` to generate a matcher that asserts **exactly one** widget with specified properties is found in the widget tree.
 
-The generated code header follows the pattern:
+The code below shows the format of the exposed function or variable:
 
 ```dart
 final matchesOneMyWidget = _MyWidgetOneMatcher();
 ```
+> Where `MyWidget` is the name of the widget
 
 ##### Usage
 Pass generated matcher to the second param of the `expect()` function.
@@ -35,9 +48,9 @@ expect(finder, matchesOneMyWidget);
 ```
 
 #### No widget matcher
-Set `MatchSpecification.matchesNoWidget` to generate a matcher that asserts **no** widget with specified properties is found in the widget tree. Throw an error otherwise.
+Set `MatchSpecification.matchesNoWidget` to generate a matcher that asserts **no** widget with specified properties is found in the widget tree.
 
-The generated global function follows the pattern:
+The code below shows the format of the exposed function or variable:
 
 ```dart
 final matchesNoMyWidget = _MyWidgetNoneMatcher();
@@ -50,10 +63,10 @@ Pass generated matcher to the second param of the `expect()` function.
 expect(finder, matchesNoMyWidget);
 ```
 
-#### Atleast one widget matcher
-Set `MatchSpecification.matchesAtleastOneWidget` to generate a matcher that asserts **atleast one** widget with specified properties is found in the widget tree. Throw an error otherwise.
+#### At least one widget matcher
+Set `MatchSpecification.matchesAtleastOneWidget` to generate a matcher that asserts **at least one** widget with specified properties is found in the widget tree.
 
-The generated global function follows the pattern:
+The code below shows the format of the exposed function or variable:
 
 ```dart
 final matchesAtleastOneMyWidget = _MyWidgetAtleastOneMatcher();
@@ -67,31 +80,33 @@ expect(finder, matchesAtleastOneMyWidget);
 ```
 
 #### N widget matcher
-Set `MatchSpecification.matchesNWidget` to generate a matcher that asserts **N** number of widget with specified properties is found in the widget tree. Throw an error otherwise.
+Set `MatchSpecification.matchesNWidget` to generate a matcher that asserts **N** number of widgets with specified properties are found in the widget tree.
 
-The generated global function follows the pattern:
+The code below shows the format of the exposed function:
 
 ```dart
 matchesNMyWidget(required int n) => _MyWidgetNMatcher(n: n);
 ```
 
 ##### Usage
-Pass generated matcher to the second param of the `expect()` function.
+Pass generated matcher to the second param of the `expect()` function passing in the expected count of widgets.
 
 ```dart
 expect(finder, matchesNMyWidget(n: 5));
 ```
 
-#### Has ancestor of widget matcher
-Set `MatchSpecification.hasAncestorOf` to generate a matcher that asserts has a widget has a parent of specified widget. Throw an error otherwise.
+#### Has ancestor matcher
+Set `MatchSpecification.hasAncestorOf` to generate a matcher that asserts `MyWidget` is in another specified widget.
 
-By setting `MatchSpecification.hasAncestorOf` the `secondaryType` cannot be null. Pass the ancestor type as the `secondaryType` to `MatchWidget` object.
+By setting this specification, the `secondaryType` cannot be null. Pass the potential ancestor widget type as the `secondaryType` argument to the `MatchWidget` object.
 
-The generated global function follows the pattern:
+The code below shows the format of the exposed function or variable:
 
 ```dart
 final myWidgetHasAncestorOfParentWidget = _MyWidgetHasAncestorOfParentWidgetMatcher();
 ```
+
+> Where `ParentWidget` is the potential ancestor widget type.
 
 ##### Usage
 Pass generated matcher to the second param of the `expect()` function.
@@ -100,16 +115,17 @@ Pass generated matcher to the second param of the `expect()` function.
 expect(finder, myWidgetHasAncestorOfParentWidget);
 ```
 
-#### No ancestor of widget matcher
-Set `MatchSpecification.doesNotHaveAncestorOf` to generate a matcher that asserts that a widget does not have a parent of specified widget. Throw an error otherwise.
+#### No ancestor matcher
+Set `MatchSpecification.doesNotHaveAncestorOf` to generate a matcher that asserts that `MyWidget` is not in the specified widget.
 
-By setting `MatchSpecification.doesNotHaveAncestorOf` the `secondaryType` cannot be null. Pass the ancestor type as the `secondaryType` to `MatchWidget` object.
+By setting this specification, the `secondaryType` cannot be null. Pass the potential ancestor widget type as the `secondaryType` argument to the `MatchWidget` object.
 
-The generated global function follows the pattern:
+The code below shows the format of the exposed function or variable:
 
 ```dart
 final myWidgetDoesNotHaveAncestorOfParentWidget = _MyWidgetHasNoAncestorOfParentWidgetMatcher();
 ```
+> Where `ParentWidget` is the potential ancestor widget type.
 
 ##### Usage
 Pass generated matcher to the second param of the `expect()` function.
@@ -153,3 +169,4 @@ matchesOneMyGenericWidget<K, V>() => _MyGenericWidgetOneMatcher<K, V>();
 ```
 
  To request a feature or file an issue check out the [GitHub page](https://github.com/JasperEssien2/finder-matcher-gen/issues).
+

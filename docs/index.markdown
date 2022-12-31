@@ -65,7 +65,7 @@ Your widget test should assert that the red and green `TrafficLightLampWidget` i
 
 In this scenario, using `find.byType(TrafficLightLampWidget)` isn’t ideal, because two widgets with the same type are in the widget tree.
 
-Without a custom Finder, your find code will probably be written as:
+Without a custom finder, your find code will probably be written as:
 
 ```dart
   testWidgets('Ensure red and green light widget exists',
@@ -94,7 +94,7 @@ Without a custom Finder, your find code will probably be written as:
   });
 ```
 
-By introducing a custom Finder the test can be simplified to
+By introducing a custom finder the test can be simplified to
 
 ```dart
   testWidgets('Ensure red and green light widget exists',
@@ -108,7 +108,7 @@ By introducing a custom Finder the test can be simplified to
   });
 ```
 
-> Notice how introducing a custom Finder makes the code concise and clean.
+> Notice how introducing a custom finder makes the code concise and clean.
 
 When writing widget and integration tests, you pass an instance of a subclass of `Finder` as the first argument to the `expect()` function.
 
@@ -155,7 +155,7 @@ class RedLight extends TrafficLight {
 
 You want to write tests to validate that the red and green light behaves correctly when activated or deactivated by invoking the `stop()` or `go()` function.
 
-Without introducing a custom Matcher, your test assertion logic for the above code will probably look like this.
+Without introducing a custom matcher, your test assertion logic for the above code will probably look like this.
 
 ```dart
  test(
@@ -178,7 +178,7 @@ Without introducing a custom Matcher, your test assertion logic for the above co
     },
   );    
 ```
-By introducing a custom Matcher you hide (abstract) assertion logic. The test code above can then be refactored to the code below:
+By introducing a custom matcher you hide (abstract) assertion logic. The test code above can then be refactored to the code below:
 
 
 ```dart
@@ -200,7 +200,7 @@ By introducing a custom Matcher you hide (abstract) assertion logic. The test co
   ); 
 ```
 
-Given that custom finder and matcher aid in writing clean and concise test code, it begs the question, *why should you use this finder-matcher-gen package?*
+Given that custom finder and matcher aid in writing clean and concise test code, how does finder-matcher-gen help you?
 
 ### Why should you use Finder-Matcher Gen
 
@@ -211,4 +211,4 @@ This package aims to accomplish two things:
 
 It does this by easing the pain of writing these custom matchers or finders from you as a developer through code generation. 
 
-For a quick start on using this package, go to the [quickstart page](https://jasperessien2.github.io/finder-matcher-gen/quickstart). For a deeper understanding of generating Finder and Matcher classes, go to the [generate finder](https://jasperessien2.github.io/finder-matcher-gen/generate-finder) and [generate matcher](https://jasperessien2.github.io/finder-matcher-gen/generate-matcher) pages.
+For a quick start on using this package, go to the [quickstart page](https://jasperessien2.github.io/finder-matcher-gen/quickstart). For a deeper understanding of generating finder and matcher classes, go to the [generate finder](https://jasperessien2.github.io/finder-matcher-gen/generate-finder) and [generate matcher](https://jasperessien2.github.io/finder-matcher-gen/generate-matcher) pages.

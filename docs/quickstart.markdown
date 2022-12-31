@@ -127,11 +127,11 @@ After a successful run, you should notice two newly generated files.
 - A `${my_test_file}.finders.dart` file containing generated finders.
 - A `${my_test_file}.matchers.dart` file containing generated matchers.
 
-Click [here]() to explore how to use generated files.
+For more information, see [generate section]() to explore how to use generated files.
 
 ## Limitations
 There are some current limitations concerning this tool. Here are some:
 - Can only generate Matcher for widget classes.
 - Annotated declarations in the State class of a Stateful widget are ignored.
 
- To request a feature or file an issue check out the GitHub page [here](https://github.com/JasperEssien2/finder-matcher-gen/issues).
+ To request a feature or file an issue check out the [GitHub page](https://github.com/JasperEssien2/finder-matcher-gen/issues).

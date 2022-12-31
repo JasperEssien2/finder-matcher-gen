@@ -3,7 +3,7 @@ layout: page
 title: Generate Finder
 ---
 
-Annotate the `main()` function of your test file with the `@Match` annotation. Pass a list of widget types to generate a Finder counterpart.
+Annotate the `main()` function of your test file with the `@Match` annotation. Pass a list of widget types to the `finders` param to generate a finder counterpart.
 
 ```dart
 @Match(finders: [MyWidget, HomeScreen, ItemListView])
@@ -12,10 +12,10 @@ void main() {
 }
 ```
 
-A `${my_test_file}.finders.dart` file containing generated custom finder classes is created after running the generation command. The generated custom Finders are private by default and expose a global variable or function for use.
+A `${my_test_file}.finders.dart` file containing generated custom finder classes is created after running the generation command. The generated custom finders are private by default and expose a global variable or function for use.
 
 ### Naming convention
-Generated Finder class names follow the pattern `_${MyWidgetName}MatchFinder`.
+Generated finder class names follow the pattern `_${MyWidgetName}MatchFinder`.
 
 ```dart
 class _MyWidgetMatchFinder extends MatchFinder {
@@ -64,7 +64,7 @@ class MyGenericWidget<K, V> extends StatelessWidget {
 The generated code header output will be:
 
 ```dart
-findMyGenericWidget<K, V>() => _MyGenericWidgetMatcher<K, V>();
+findMyGenericWidget<K, V>() => _MyGenericWidgetMatchFinder<K, V>();
 ```
 
 ### Usage
@@ -92,4 +92,4 @@ Use the generated finder by passing it as the first argument to the `expect()` f
   });
 ```
 
- To request a feature or file an issue check out the GitHub page [here](https://github.com/JasperEssien2/finder-matcher-gen/issues).
+ To request a feature or file an issue check out the [GitHub page](https://github.com/JasperEssien2/finder-matcher-gen/issues).

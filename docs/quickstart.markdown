@@ -12,15 +12,15 @@ To get started add this package to your codebase.
 ## Add to project
 Run the following command on your terminal:
 
-```
+```sh
 flutter pub add finder_matcher_annotation
 ```
 
-```
+```sh
 flutter pub add finder_matcher_gen --dev
 ```
 
-```
+```sh
 flutter pub add build_runner --dev
 ```
 

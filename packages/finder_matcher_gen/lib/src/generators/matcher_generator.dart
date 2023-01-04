@@ -142,6 +142,9 @@ class MatcherGenerator extends BaseAnnotationGenerator {
   @override
   Map<String, Set<ConstructorFieldModel>> get defaultConstructorFields =>
       _idToDefaultConstructorFields;
+
+  @override
+  String get generatorName => 'Matcher';
 }
 
 ///

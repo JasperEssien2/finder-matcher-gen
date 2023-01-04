@@ -60,7 +60,7 @@ abstract class BaseAnnotationGenerator extends GeneratorForAnnotation<Match> {
 
       final className = classElement.thisType.dartTypeStr;
 
-      checkBadTypeByClassElement(classElement);
+      checkBadTypeByClassElement(classElement, generateFor: generatorName);
 
       final elements = List<Element>.from([])
         ..addAll(classElement.fields)
@@ -261,6 +261,9 @@ abstract class BaseAnnotationGenerator extends GeneratorForAnnotation<Match> {
 
   /// A name that is appended to generated class
   String classSuffix(ClassElementExtract extract);
+
+  /// Generator name used for debug purposes
+  String get generatorName;
 }
 
 // ignore: public_member_api_docs

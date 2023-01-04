@@ -106,4 +106,5 @@ While running the command to generate files, you might encounter some build fail
 |Applying `@MatchDeclaration` annotation on a private declaration|Unsupported access modifier: Cannot utilise a private declaration|
 |Applying `@MatchDeclaration` annotation to a declaration that isn’t a field, getter, or method |Unsupported entity annotated: Apply annotations to Fields, Methods, or Getters only|
 
- To request a feature or file an issue check out the [GitHub page](https://github.com/JasperEssien2/finder-matcher-gen/issues).
+
+To request a feature or file an issue check out the [GitHub page](https://github.com/JasperEssien2/finder-matcher-gen/issues).

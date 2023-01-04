@@ -3,7 +3,7 @@ import 'package:analyzer/dart/element/type.dart';
 import 'package:finder_matcher_gen/src/class_visitor.dart';
 import 'package:source_gen/source_gen.dart';
 
-/// Throws an exception when class element does not comform to generation
+/// Throws an exception when class element does not conform to generation
 /// class specifications
 void checkBadTypeByClassElement(
   ClassElement element, {
@@ -26,7 +26,7 @@ void checkBadTypeByClassElement(
 
   if (!hasWidgetSuperType) {
     throwException(
-      '''Unsupported class: Finders or Matchers can only be generated for widgets''',
+      '''Unsupported class: $generateFor can only be generated for widgets''',
       element: element,
     );
   }
@@ -72,7 +72,7 @@ bool isNotPartOfDartCore(DartType dartType) =>
 void checkElementNotPrivate(Element element) {
   if (element.isPrivate) {
     throwException(
-      'Unsupported access modifer: Cannot utilise a private entity',
+      'Unsupported access modifer: Cannot utilise a private declaration',
       element: element,
     );
   }

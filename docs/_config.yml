@@ -26,6 +26,7 @@ baseurl: "/finder-matcher-gen/" # the subpath of your site, e.g. /blog
 url: "https://jasperessien2.github.io" # the base hostname & protocol for your site, e.g. http://example.com
 twitter_username: EssienJasper
 github_username:  JasperEssien2
+markdown: GFM
 
 # Build settings
 theme: minima

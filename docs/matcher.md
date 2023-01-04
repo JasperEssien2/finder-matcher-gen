@@ -170,5 +170,14 @@ The generated code header output will be:
 matchesOneMyGenericWidget<K, V>() => _MyGenericWidgetOneMatcher<K, V>();
 ```
 
+### Handling Exceptions
+While running the command to generate files, you might encounter some build failures. The table below summarises the exceptions that are likely to be thrown during development to better equip you in resolving them.
+|Triggers| Message|
+|------|-----|
+|Passing a non-widget class type to `@Match` annotation|Unsupported class: Matcher can only be generated for widgets|
+|Applying `@MatchDeclaration` annotation on a method with parameters|Unsupported: annotated method should have no parameter|
+|Applying `@MatchDeclaration` annotation on a private declaration|Unsupported access modifier: Cannot utilise a private declaration|
+|Applying `@MatchDeclaration` annotation to a declaration that isn’t a field, getter, or method |Unsupported entity annotated: Apply annotations to Fields, Methods, or Getters only|
+
  To request a feature or file an issue check out the [GitHub page](https://github.com/JasperEssien2/finder-matcher-gen/issues).
 

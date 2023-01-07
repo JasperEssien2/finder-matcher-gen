@@ -1,18 +1,7 @@
-targets:
-  $default:
-    builders:
-      finder_matcher_gen|finder_matcher_generator:
-        enabled: true
-
-        generate_for:
-        - integration_test/**
-        - test/**
- 
-
 builders:
-  finder_matcher_generator:
+  finder_matcher_gen:
     import: "package:finder_matcher_gen/builder.dart"
     builder_factories: ["generateFinder", "generateMatcher"]
-    build_extensions: {"{{file}.dart": ["finders/{{file}}.finder.dart"]}
+    build_extensions: {".dart": [".finders.dart", ".matchers.dart"]}
     auto_apply: dependents
     build_to: "source"

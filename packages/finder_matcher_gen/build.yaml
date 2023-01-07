@@ -14,6 +14,6 @@ builders:
   finder_matcher_gen:
     import: "package:finder_matcher_gen/builder.dart"
     builder_factories: ["generateFinder", "generateMatcher"]
-    build_extensions: {"{{file}}.dart": ["generated/{{file}}.finders.dart, generated/{{file}}.matchers.dart"]}
+    build_extensions: {".dart": [".finders.dart", ".matchers.dart"]}
     auto_apply: dependents
     build_to: "source"

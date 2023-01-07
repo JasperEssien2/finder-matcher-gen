@@ -1,0 +1,9 @@
+targets:
+  $default:
+    sources:
+      - integration_test/**
+      - lib/**
+      - test/**
+      - pubspec.*
+      - $package$
+ 

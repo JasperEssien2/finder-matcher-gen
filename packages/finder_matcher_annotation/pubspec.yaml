@@ -1,7 +1,9 @@
 name: finder_matcher_annotation
-description: A Flutter package containing annotations to mark widgets for Finder and Matcher generation.
-version: 0.1.0+1
-publish_to: none
+description: A Flutter package containing annotations to mark widgets for finder_matcher_gen.
+version: 0.1.0
+repository: https://github.com/JasperEssien2/finder-matcher-gen
+issue_tracker: https://github.com/JasperEssien2/finder-matcher-gen/issues
+homepage: https://jasperessien2.github.io/finder-matcher-gen/
 
 environment:
   sdk: ">=2.18.0 <3.0.0"

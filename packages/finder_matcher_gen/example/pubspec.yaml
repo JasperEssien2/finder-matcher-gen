@@ -14,9 +14,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  finder_matcher_annotation:
-    path: ../finder_matcher_annotation/
-
+  finder_matcher_annotation: ^0.1.0
   cupertino_icons: ^1.0.2
   
 dev_dependencies:
@@ -24,8 +22,7 @@ dev_dependencies:
     sdk: flutter
   
   build_runner:
-  finder_matcher_gen:
-    path: ../finder_matcher_gen/
+  finder_matcher_gen: ^0.1.0
   
   custom_lint: ^0.0.16
   flutter_lints: ^2.0.0

@@ -14,7 +14,7 @@ It is a companion tool for writing widget and integration tests. Before diving i
 ### What is a Finder
 Finder searches a widget tree for widgets that meets certain requirements or pattern. If you've written widget or integration tests before, you've most likely used Finders. The function call `find.byType(type)` and `find.text('title')` uses an implementation of the `Finder` class to locate widgets by type and text respectively.
 
-Assume you have a widget named `TrafficLightWidget` that replicates an actual traffic light:
+Assuming you have a widget named `TrafficLightWidget` that replicates an actual traffic light:
 
 ```dart
 class TrafficLightWidget extends StatelessWidget {

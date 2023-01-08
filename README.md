@@ -1,16 +1,16 @@
 # Finder Matcher Gen
-- [Finder Matcher Gen](#finder-matcher-gen)
-  * [Installation 💻](#installation---)
-  * [Annotation usage](#annotation-usage)
-    + [@Match annotation](#-match-annotation)
-      - [Finders](#finders)
-      - [Matcher](#matcher)
-    + [@MatchDeclaration annotation](#-matchdeclaration-annotation)
-    + [Linting](#linting)
-  * [Generate code](#generate-code)
-  * [Detailed Documentation](#detailed-documentation)
-  * [Continuous Integration 🤖](#continuous-integration---)
-  * [Running Tests 🧪](#running-tests---)
+- [Installation 💻](#installation---)
+- [Annotation usage](#annotation-usage)
+  * [@Match annotation](#-match-annotation)
+    + [Finders](#finders)
+    + [Matcher](#matcher)
+  * [@MatchDeclaration annotation](#-matchdeclaration-annotation)
+  * [Linting](#linting)
+- [Generate code](#generate-code)
+  * [Configure generation for integration tests](#configure-generation-for-integration-tests)
+- [Detailed Documentation](#detailed-documentation)
+- [Continuous Integration 🤖](#continuous-integration---)
+- [Running Tests 🧪](#running-tests---)
 
 <small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
 
@@ -18,7 +18,7 @@
 [![Powered by Mason](https://img.shields.io/endpoint?url=https%3A%2F%2Ftinyurl.com%2Fmason-badge)](https://github.com/felangel/mason)
 [![License: MIT][license_badge]][license_link]
 
-A Flutter package for generating custom Finders and Matchers for widget tests.
+A Flutter package for generating custom Finder and Matcher for widget tests. Not sure what a Matcher or Finder is? Visit finder-matcher-gen [documentation](https://jasperessien2.github.io/finder-matcher-gen/).
 
 ## Installation 💻
 
@@ -152,6 +152,23 @@ After a successful run, you should notice two newly generated files.
 - A `${my_test_file}.matchers.dart` file containing generated matchers.
 
 For more information, see [generate section](https://jasperessien2.github.io/finder-matcher-gen/finder) to explore how to use generated files.
+
+### Configure generation for integration tests
+Create a `build.yaml` file in the top-level folder of your project. Insert the code below in the newly created file.
+
+```yaml
+targets:
+  $default:
+    sources:
+      - integration_test/**
+      - lib/**
+      - test/**
+      # Note that it is important to include these in the default target.
+      - pubspec.*
+      - $package$
+ 
+```
+> You can also include custom folders where you need to generate matchers and finders. 
 
 ---
 ## Detailed Documentation

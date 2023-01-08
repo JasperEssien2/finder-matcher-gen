@@ -4,6 +4,7 @@ targets:
       - integration_test/**
       - lib/**
       - test/**
+      # Note that it is important to include these in the default target.
       - pubspec.*
       - $package$
  

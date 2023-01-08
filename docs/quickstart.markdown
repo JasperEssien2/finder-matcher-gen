@@ -133,6 +133,23 @@ After a successful run, you should notice two newly generated files.
 
 For more information, see [generate section](https://jasperessien2.github.io/finder-matcher-gen/finder) to explore how to use generated files.
 
+### Configure generation for integration tests
+Create a `build.yaml` file in the top-level folder of your project. Insert the code below in the newly created file.
+
+```yaml
+targets:
+  $default:
+    sources:
+      - integration_test/**
+      - lib/**
+      - test/**
+      # Note that it is important to include these in the default target.
+      - pubspec.*
+      - $package$
+ 
+```
+> You can also include custom folders where you need to generate matchers and finders. 
+
 ## Limitations
 There are some current limitations concerning this tool. Here are some:
 - Can only generate Matcher for widget classes.

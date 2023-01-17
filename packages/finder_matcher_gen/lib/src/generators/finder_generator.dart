@@ -38,7 +38,7 @@ class FinderGenerator extends BaseAnnotationGenerator {
 
   @override
   Map<String, Set<ConstructorFieldModel>> get defaultConstructorFields => {};
-  
+
   @override
   String get generatorName => 'Finder';
 }

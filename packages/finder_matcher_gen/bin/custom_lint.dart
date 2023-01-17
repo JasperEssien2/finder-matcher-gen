@@ -17,7 +17,6 @@ class _FinderMatcherAnnotationLint extends PluginBase {
     final library = unit.libraryElement;
 
     for (final element in library.topLevelElements.whereType<ClassElement>()) {
-
       /// Throw lint error if declaration is used on a class
       if (element.isMatchDeclaration) {
         final invalidMatch = InvalidMatchDeclaration(element: element);

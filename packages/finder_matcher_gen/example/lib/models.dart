@@ -7,10 +7,10 @@ class TaskModel {
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
-  
+
     return other is TaskModel &&
-      other.task == task &&
-      other.priority == priority;
+        other.task == task &&
+        other.priority == priority;
   }
 
   @override

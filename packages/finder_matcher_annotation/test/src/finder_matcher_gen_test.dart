@@ -41,7 +41,7 @@ void main() {
       MatchSpecification.doesNotHaveAncestorOf,
     );
 
-    expect(()=>'randomStr'.specificationValue, throwsException);
+    expect(() => 'randomStr'.specificationValue, throwsException);
   });
 
   test('Test MatchSpecificationExt', () {

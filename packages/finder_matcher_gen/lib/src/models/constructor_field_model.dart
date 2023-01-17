@@ -32,7 +32,6 @@ class ConstructorFieldModel extends Equatable {
   }
 
   @override
-
   bool? get stringify => true;
 
   @override

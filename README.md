@@ -1,18 +1,19 @@
 # Finder Matcher Gen
+- [Motivation  ✨](#motivation---)
 - [Installation 💻](#installation---)
-- [Annotation usage](#annotation-usage)
+- [Annotation usage 🎮](#annotation-usage)
   * [@Match annotation](#-match-annotation)
-    + [Finders](#finders)
+    + [Finders 🔍](#finders)
     + [Matcher](#matcher)
   * [@MatchDeclaration annotation](#-matchdeclaration-annotation)
   * [Linting](#linting)
 - [Generate code](#generate-code)
   * [Configure generation for integration tests](#configure-generation-for-integration-tests)
-- [Detailed Documentation](#detailed-documentation)
+- [Detailed Documentation 📄](#detailed-documentation)
+- [Bugs/Request 🐛](#bugsrequest)
 - [Continuous Integration 🤖](#continuous-integration---)
 - [Running Tests 🧪](#running-tests---)
 
-<small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
 
 [![style: very good analysis][very_good_analysis_badge]][very_good_analysis_link]
 [![Powered by Mason](https://img.shields.io/endpoint?url=https%3A%2F%2Ftinyurl.com%2Fmason-badge)](https://github.com/felangel/mason)
@@ -20,7 +21,18 @@
 
 A Flutter package for generating custom Finder and Matcher for widget tests. Not sure what a Matcher or Finder is? Visit finder-matcher-gen [documentation](https://jasperessien2.github.io/finder-matcher-gen/).
 
-## Installation 💻
+
+## ✨ Motivation
+I find myself writing custom Finder and Matcher to abstract validation code for widget/integration tests. Implementing these can be tedious.
+
+Finder-Matcher-Gen tries to fix this by implementing these custom classes for you.
+
+||Before|After|
+|---|---|---|
+|**Finder**|![before-finder](https://raw.githubusercontent.com/jasperessien2/finder-matcher-gen/master/resources/before-finder.png)|![after-finder](https://raw.githubusercontent.com/jasperessien2/finder-matcher-gen/master/resources/after-finder.png)|
+|**Matcher**|![before-matcher](https://raw.githubusercontent.com/jasperessien2/finder-matcher-gen/master/resources/before-matcher.png)|![after-matcher](https://raw.githubusercontent.com/jasperessien2/finder-matcher-gen/master/resources/after-matcher.png)|
+
+## 💻 Installation 
 
 **❗ In order to start using Finder Matcher Gen you must have the [Dart SDK][dart_install_link] installed on your machine.**
 
@@ -67,7 +79,8 @@ Copy and paste the code below into your test file to import.
 
 ---
 
-## Annotation usage
+
+## 🚀 Annotation usage
 Finder-matcher-gen makes use of annotation declarations to generate code. This tool provides two annotations: `@Match` and `@MatchDeclaration` annotations.
 
 ### @Match annotation
@@ -139,7 +152,7 @@ Fortunately, this package provides static analysis to throw an error when this k
 
 > **Note:** The annotation `@MatchDeclaration` can only be used on *getters*, *fields*, and *non-void methods*
 
-## Generate code
+## 🏭 Generate code
 Run the command below to generate the custom finder and matcher code.
 
 ```
@@ -171,13 +184,19 @@ targets:
 > You can also include custom folders where you need to generate matchers and finders. 
 
 ---
-## Detailed Documentation
+## 📄 Detailed Documentation
 
 For more detailed information of using this tool, visit the [documentation](https://jasperessien2.github.io/finder-matcher-gen/).
 
 ---
 
-## Continuous Integration 🤖
+## 🐛 Bugs/Request
+
+If you encounter any problems feel free to open an issue. If you feel the library is missing a feature, please raise a ticket on Github and I'll look into it. Pull requests are also welcomed.
+
+---
+
+## 🤖 Continuous Integration 
 
 Finder Matcher Gen comes with a built-in [GitHub Actions workflow][github_actions_link] powered by [Very Good Workflows][very_good_workflows_link] but you can also add your preferred CI/CD solution.
 
@@ -185,7 +204,7 @@ Out of the box, on each pull request and push, the CI `formats`, `lints`, and `t
 
 ---
 
-## Running Tests 🧪
+<!-- ## 🧪 Running Tests 
 
 To run all unit tests:
 
@@ -204,6 +223,8 @@ genhtml coverage/lcov.info -o coverage/
 # Open Coverage Report
 open coverage/index.html
 ```
+
+-->
 
 [dart_install_link]: https://dart.dev/get-dart
 [github_actions_link]: https://docs.github.com/en/actions/learn-github-actions
